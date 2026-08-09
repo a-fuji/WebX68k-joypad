@@ -506,11 +506,11 @@ export function blankProfile(deadzone: number = DEFAULT_DEADZONE): GamepadProfil
   return { deadzone, bindings: [] };
 }
 
-// --- 8BitDo M30 / Micro 用の既知プリセット ---
+// --- 実機確認済み non-standard パッド用の既知プリセット ---
 //
-// 実機(D-inputモード)で判明したボタン/軸の対応(内部index、0始まり)。表示は1始まりだが、
-// ここでの値は内部indexそのもの。gamepad.id に 'M30'/'Micro' を含むかどうか(大文字小文字無視)で
-// 判定する。standard 申告でない可能性が高いパッドのため、mapping==='standard' かどうかに関わらず
+// 実機(D-inputモード等)で判明したボタン/軸の対応(内部index、0始まり)。表示は1始まりだが、
+// ここでの値は内部indexそのもの。gamepad.id のVendor/Product IDを優先して機種判定する。
+// standard 申告でない可能性が高いパッドのため、mapping==='standard' かどうかに関わらず
 // このプリセットを優先して適用する(knownPadPresetFor が null を返す場合だけ、従来の
 // mapping==='standard' ? XINPUT_PRESET : 全未割当、へフォールバックする)。
 
@@ -575,6 +575,18 @@ export const MICRO_CPSF_SFC_PRESET: ReadonlyArray<{ source: Source; binding: Bin
 ];
 
 /**
+ * ZUIKI X68000 Z JOYCARD(BLACK) の標準(2ボタン)プリセット。
+ * Chrome系ブラウザでの実機値(2026-08-09): Vendor 33dd / Product 0013、mapping=''、
+ * buttons=12、axes=2。BEOWULF(BWR1.XDF)でタイトル決定・移動までゲスト側E2E確認済み。
+ * UI表示の「ボタン3/2」は内部index 2/1に対応する。
+ */
+export const X68000Z_STANDARD_PRESET: ReadonlyArray<{ source: Source; binding: Binding }> = [
+  ...DPAD_AXIS_BINDINGS,
+  joyBtn(2, 'TRG1'),
+  joyBtn(1, 'TRG2'),
+];
+
+/**
  * gamepad.id から USB Vendor/Product ID を抽出する純粋関数。
  *
  * ブラウザによって gamepad.id の書式が異なるため、両方を試す:
@@ -598,14 +610,18 @@ export function extractVendorProduct(padId: string): string | null {
  * 実機(ゲームパッドチェックサイトで実測、2026-08-08)で確定させた値:
  * - 8BitDo M30 gamepad: Vendor 2dc8 / Product 0651
  * - 8BitDo Micro gamepad: Vendor 2dc8 / Product 9020
+ * - ZUIKI X68000 Z JOYCARD(BLACK): Vendor 33dd / Product 0013
  */
-const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, 'm30' | 'micro'> = {
+type KnownPadKind = 'm30' | 'micro' | 'x68000z';
+
+const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, KnownPadKind> = {
   '2dc8:0651': 'm30',
   '2dc8:9020': 'micro',
+  '33dd:0013': 'x68000z',
 };
 
 /**
- * gamepad.id から既知パッド種別('m30'/'micro')を判定する、唯一の情報源。
+ * gamepad.id から既知パッド種別を判定する、唯一の情報源。
  * knownPadPresetFor()(プリセット選択)がこれを使う(判定ロジックの二重実装を避けるため)。
  * 軸の静止値は固定値テーブルを持たず、パッド種別に関わらず動的な較正(AxisCalibration)で
  * 決める設計に変更したため、静止値の固定はここには存在しない(2026-08-08 参照)。
@@ -617,7 +633,7 @@ const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, 'm30' | 'micro'> = {
  * 誤爆しない 'm30' のみをフォールバックとして残し、'micro' 系は vendor/product が
  * 取れた場合に限定する。
  */
-function knownPadKindFor(padId: string): 'm30' | 'micro' | null {
+function knownPadKindFor(padId: string): KnownPadKind | null {
   const vendorProduct = extractVendorProduct(padId);
   const known = vendorProduct ? VENDOR_PRODUCT_TO_KNOWN_PAD[vendorProduct] : undefined;
   if (known !== undefined) return known ?? null; // vendor/productは取れたが未知のペア: 誤爆を避けるため文字列フォールバックに落とさない。
@@ -642,12 +658,14 @@ export function knownPadPresetFor(padId: string, padType: PadType): ReadonlyArra
   const kind = knownPadKindFor(padId);
   if (kind === 'm30') return padType === 'cpsf-md' ? M30_CPSF_MD_PRESET : M30_STANDARD_PRESET;
   if (kind === 'micro') return padType === 'cpsf-sfc' ? MICRO_CPSF_SFC_PRESET : MICRO_STANDARD_PRESET;
+  // 実機が標準2ボタン仕様なので、誤って8ボタン種別が選ばれていても安全な2ボタン割当を返す。
+  if (kind === 'x68000z') return X68000Z_STANDARD_PRESET;
   return null;
 }
 
 /**
  * 保存済みプロファイルが無いパッドに対する既定値を決める、唯一の情報源。
- * 1. gamepad.id が既知パッド(M30/Micro)にマッチすれば、mapping の申告に関わらずそのプリセットを使う
+ * 1. gamepad.id が既知パッド(M30/Micro/X68000 Z)にマッチすれば、mapping の申告に関わらずそのプリセットを使う
  *    (これらは standard 申告でない可能性が高く、mapping 頼みだと全未割当のまま始まってしまうため)。
  * 2. マッチしなければ従来どおり: mapping === 'standard' のときだけ XINPUT_PRESET、
  *    そうでなければ全未割当で始める(index の意味がパッドごとに違うため、推測で埋めない)。

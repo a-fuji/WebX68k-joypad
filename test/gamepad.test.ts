@@ -25,6 +25,7 @@ import {
   saveGamepadStore,
   snapshotPad,
   type GamepadStore,
+  X68000Z_STANDARD_PRESET,
 } from '../src/gamepad';
 import { SharedKeyInput } from '../src/virtual-keyboard';
 
@@ -1207,21 +1208,23 @@ describe('軸較正(AxisCalibration・離れてから確定方式): 実機で確
   });
 });
 
-// 8BitDo M30/Micro 用プリセット(Vendor/Product ID一致で選ばれる既定バインディング)。
+// 実機確認済みnon-standardパッド用プリセット(Vendor/Product ID一致で選ばれる既定バインディング)。
 // 値は実機で確認済みのボタンindex(内部0始まり)対応表そのもの(推測ではない)。
 //
 // 誤爆対策(2026-08-08発覚): 旧実装は gamepad.id に'Micro'を含むかどうか(大文字小文字無視)で
 // 判定していたが、'Micro'は'Microsoft'の部分文字列のため 'Microsoft X-Box 360 pad' のような
 // Xboxコントローラのidでも誤爆してMicro用プリセットが選ばれてしまっていた。
 // 現在は Vendor/Product ID(gamepad.idに埋め込まれる `(Vendor: xxxx Product: yyyy)`)を
-// 最優先で見る。実機値: M30=2dc8:0651, Micro=2dc8:9020(ゲームパッドチェックサイトで実測)。
+// 最優先で見る。実機値: M30=2dc8:0651, Micro=2dc8:9020, X68000 Z=33dd:0013。
 const M30_ID = '8BitDo M30 gamepad (Vendor: 2dc8 Product: 0651)';
 const MICRO_ID = '8BitDo Micro gamepad (Vendor: 2dc8 Product: 9020)';
+const X68000Z_ID = 'X68000 Z JOYCARD(BLACK) (Vendor: 33dd Product: 0013)';
 
 describe('extractVendorProduct(gamepad.id からのVendor/Product抽出)', () => {
   it('Chromeが埋め込む "(Vendor: xxxx Product: yyyy)" 形式から小文字の vendor:product を取り出す', () => {
     expect(extractVendorProduct(M30_ID)).toBe('2dc8:0651');
     expect(extractVendorProduct(MICRO_ID)).toBe('2dc8:9020');
+    expect(extractVendorProduct(X68000Z_ID)).toBe('33dd:0013');
   });
 
   it('大文字小文字/桁の揺れを吸収する', () => {
@@ -1243,10 +1246,11 @@ describe('extractVendorProduct(gamepad.id からのVendor/Product抽出)', () =>
     expect(extractVendorProduct('2dc8-0651-8BitDo M30 gamepad')).toBe('2dc8:0651');
     expect(extractVendorProduct('2dc8-9020-8BitDo Micro gamepad')).toBe('2dc8:9020');
     expect(extractVendorProduct('2DC8-0651-8BitDo M30 gamepad')).toBe('2dc8:0651'); // 大文字小文字を吸収。
+    expect(extractVendorProduct('33dd-0013-X68000 Z JOYCARD(BLACK)')).toBe('33dd:0013');
   });
 });
 
-describe('knownPadPresetFor(8BitDo M30/MicroのVendor/Product一致プリセット)', () => {
+describe('knownPadPresetFor(実機確認済みパッドのVendor/Product一致プリセット)', () => {
   it('⑤ Vendor/Product一致するM30パッドはpadType===defaultでM30_STANDARD_PRESETが選ばれる(A→TRG1,B→TRG2)', () => {
     expect(knownPadPresetFor(M30_ID, 'default')).toBe(M30_STANDARD_PRESET);
   });
@@ -1290,6 +1294,28 @@ describe('knownPadPresetFor(8BitDo M30/MicroのVendor/Product一致プリセッ�
     expect(preset).toContainEqual({ source: { kind: 'button', index: 11 }, binding: { kind: 'joy', target: 'TRG6' } });
     expect(preset).toContainEqual({ source: { kind: 'button', index: 10 }, binding: { kind: 'joy', target: 'TRG7' } });
     expect(preset).toContainEqual({ source: { kind: 'button', index: 6 }, binding: { kind: 'joy', target: 'TRG8' } });
+  });
+
+  it('Vendor/Product一致するX68000 Zパッドは実機確認済み2ボタンプリセットが選ばれる', () => {
+    const preset = knownPadPresetFor(X68000Z_ID, 'default');
+    expect(preset).toBe(X68000Z_STANDARD_PRESET);
+    expect(preset).toEqual([
+      { source: { kind: 'axis', index: 0, dir: -1 }, binding: { kind: 'joy', target: 'LEFT' } },
+      { source: { kind: 'axis', index: 0, dir: 1 }, binding: { kind: 'joy', target: 'RIGHT' } },
+      { source: { kind: 'axis', index: 1, dir: -1 }, binding: { kind: 'joy', target: 'UP' } },
+      { source: { kind: 'axis', index: 1, dir: 1 }, binding: { kind: 'joy', target: 'DOWN' } },
+      { source: { kind: 'button', index: 2 }, binding: { kind: 'joy', target: 'TRG1' } },
+      { source: { kind: 'button', index: 1 }, binding: { kind: 'joy', target: 'TRG2' } },
+    ]);
+    expect(knownPadPresetFor(X68000Z_ID, 'cpsf-md')).toBe(X68000Z_STANDARD_PRESET);
+  });
+
+  it('defaultProfileForはmappingなしのX68000 Zパッドにも初回プリセットを適用する', () => {
+    const profile = defaultProfileFor({ mapping: '', id: X68000Z_ID }, 'default');
+    expect(profile.bindings).toEqual(X68000Z_STANDARD_PRESET.map((entry) => ({
+      source: entry.source,
+      binding: entry.binding,
+    })));
   });
 
   it('未知のパッドidはnull(呼び出し側がmapping===standardか否かでフォールバックする)', () => {

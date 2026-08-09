@@ -7,6 +7,8 @@ X68000 エミュレータ [px68k-libretro](https://github.com/uraraworks/px68k-l
 システムディスクを同梱しているため、URL を開くだけで Human68k が起動します。
 
 設計・実装の詳細は [docs/DESIGN.md](docs/DESIGN.md) を参照してください。
+Joypad・URL指定XDF・AI自動検証の現状監査と今後の作業順は
+[docs/JOYPAD_XDF_ROADMAP.md](docs/JOYPAD_XDF_ROADMAP.md) にまとめています。
 
 ## 今すぐ試す
 
