@@ -3701,10 +3701,12 @@ function rescale(): void {
   const sidesMargin = Math.min(sidesBoxes.left.w, sidesBoxes.right.w);
   const autoVpadPlacement: VpadPlacement =
     leftover >= VPAD_PANEL_MIN_HEIGHT ? 'panel' : sidesMargin >= VPAD_SIDES_MIN_WIDTH ? 'sides' : 'overlay';
-  // 共有URLで下部パネルを明示指定できるようにする。縦の余りが足りない端末では
-  // パネルが潰れて操作不能になるため、通常の自動判定へ戻す。
-  const nextVpadPlacement: VpadPlacement = urlVpadPanel && leftover >= VPAD_PANEL_MIN_HEIGHT ? 'panel' : autoVpadPlacement;
-  const vpadPanelHeight = Math.min(Math.max(leftover, 0), VPAD_PANEL_MAX_HEIGHT);
+  // 共有URLで下部パネルを明示指定できるようにする。明示時は画面下へ必ず置き、
+  // 縦幅が足りない小さなビューポートではページ全体をスクロールして操作できるようにする。
+  const nextVpadPlacement: VpadPlacement = urlVpadPanel ? 'panel' : autoVpadPlacement;
+  const vpadPanelHeight = urlVpadPanel
+    ? Math.min(Math.max(leftover, VPAD_PANEL_MIN_HEIGHT), VPAD_PANEL_MAX_HEIGHT)
+    : Math.min(Math.max(leftover, 0), VPAD_PANEL_MAX_HEIGHT);
   // 5. モードが変わったときだけ reparent する(applyVpadPlacement内部で判定)。sidesBoxes は
   //    モード不変でも毎回渡す(ビューポートサイズの変化に追従させるため)。
   applyVpadPlacement(nextVpadPlacement, vpadPanelHeight, sidesBoxes);
