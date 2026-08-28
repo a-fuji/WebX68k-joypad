@@ -918,6 +918,8 @@ const urlFd1 = urlParams.get('fd1') ?? undefined;
 const urlFd2 = urlParams.get('fd2') ?? undefined;
 const urlHdd = urlParams.get('hdd') ?? undefined;
 const urlRun = urlParams.get('run') === '1';
+// vpad=1: タッチ端末向けにバーチャルパッドを起動時から表示する。
+const urlVpad = urlParams.get('vpad') === '1';
 const urlSystem = urlParams.get('system') === '1';
 // lib=<url>: 複数指定可(ディスクライブラリへ登録するだけの共有リンク用)。
 // カンマ区切りにしないのはURL自体にカンマが含まれ得るため。複数指定は getAll で受け取る。
@@ -4562,7 +4564,7 @@ async function applyUrlParams(): Promise<void> {
   // system=1: fd1 の明示指定が無いときだけ、同梱システムディスクをFDD0として使う
   // (WebNP2 の freedos=1 相当。fd1 が指定されていればそちらを優先する)。
   const wantsBundledSystem = urlSystem && !urlFd1;
-  if (!urlFd1 && !urlFd2 && !urlHdd && !wantsBundledSystem && !urlRun && urlLib.length === 0) return;
+  if (!urlFd1 && !urlFd2 && !urlHdd && !wantsBundledSystem && !urlRun && !urlVpad && urlLib.length === 0) return;
 
   if (wantsBundledSystem) {
     const bytes = await fetchBytes(BUNDLED_DISK_URL);
@@ -4615,6 +4617,9 @@ async function applyUrlParams(): Promise<void> {
     }
     return;
   }
+
+  // vpad=1: タッチ端末でもリンクを開いた時点から操作できるようパッドを表示する。
+  if (urlVpad) openInputPanel('pad');
 
   // run=1: オーバーレイの2択を待たずそのまま自動起動する(ディスク未指定でも run=1 だけで起動する)。
   if (urlRun) await startFromOverlay(false);
