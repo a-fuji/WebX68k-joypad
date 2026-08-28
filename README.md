@@ -22,14 +22,51 @@ See [docs/DESIGN.md](docs/DESIGN.md) for design and implementation details.
 |---|---|---|
 | `lang` | UI language (`ja` / `en`) | If omitted, resolved in order: `localStorage['webx68k.lang']` → the browser's `navigator.language` (`ja` if it starts with `ja`) → default `en`. Can be switched at runtime with the language toggle button in the toolbar's "..." menu; the choice is persisted to `localStorage` |
 | `bridge` | `1` (or empty) to enable the MCP WebSocket bridge | Connects to `ws://127.0.0.1:3099`. See "MCP support" below |
-| `fd1` / `fd2` | URL of a disk image to load into FDD1 / FDD2 | See below |
+| `fd1` / `fd2` | URL of a disk image to load into FDD0 / FDD1 | See below |
 | `hdd` | URL of a disk image to set into the HDD slot | See below |
+| `lib` | URL of a disk image to register in the Disk Library only (repeatable) | See below |
+| `cpu` | `10`/`16`/`25`/`33`/`66`/`100` to override the CPU clock (MHz) for this boot only | A one-off override for reproducing a recommended environment from a shared URL. Reflected in the settings UI but not persisted to `localStorage` (opening the link alone must not overwrite the user's saved default) |
+| `ram` | `1`–`12` to override the RAM size (MB) for this boot only | A one-off override for reproducing a recommended environment from a shared URL. Reflected in the settings UI but not persisted to `localStorage` (opening the link alone must not overwrite the user's saved default) |
+| `aspect` | `4:3` or `native` to override the display aspect ratio mode for this boot only | A one-off override for reproducing a recommended environment from a shared URL. Reflected in the toggle button state but not persisted to `localStorage` (opening the link alone must not overwrite the user's saved default) |
 | `run` | `1` to auto-boot without showing the start overlay | |
-| `system` | `1` to load the bundled system disk (`human302.xdf`) into FDD1 | Ignored if `fd1` is also given — `fd1` takes priority |
+| `system` | `1` to load the bundled system disk (`human302.xdf`) into FDD0 | Ignored if `fd1` is also given — `fd1` takes priority |
 
 Notes on `fd1`/`fd2`/`hdd`:
 
-- The URL must be served from a **CORS-enabled origin**, or the fetch will fail.
+- The URL must be served from a **CORS-enabled origin**. GitHub raw, GitHub
+  Pages, and your own CORS-enabled server work directly (plain fetch).
+- GitHub **blob URLs** (`https://github.com/<owner>/<repo>/blob/<ref>/<path>`)
+  and **raw URLs** (`.../raw/<ref>/<path>`) are automatically rewritten to
+  `https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>` before
+  fetching, so they are fetched directly without going through the relay
+  service (`raw.githubusercontent.com` is CORS-enabled; the plain `github.com`
+  URL redirects there without CORS headers, so a direct fetch would fail).
+  You can paste a `blob` URL copied straight from the GitHub UI. **Release
+  asset URLs** (`.../releases/download/<tag>/<asset>` and
+  `.../releases/latest/download/<asset>`) are not rewritten, since
+  `raw.githubusercontent.com` cannot serve release assets — these still go
+  through the relay service as before (or direct fetch if `VITE_DISK_PROXY`
+  is unset).
+- Google Drive share links return an HTML viewer page instead of the raw file
+  when fetched directly (no CORS error, just the wrong content), so the
+  public page **fetches this host through a relay service from the start**.
+  If you fork and host this yourself, you need to set `VITE_DISK_PROXY` (see
+  below) to use this — without it, this host is reported as unfetchable.
+- Dropbox share links are fetched **directly**: the app automatically
+  rewrites just the hostname before fetching, so you can paste the URL
+  exactly as copied ("Copy link", with `dl=0` left as-is — no need to change
+  it to `dl=1`). This works even without a relay service configured. Only
+  file-level share links (`/scl/fi/...`) have been verified; folder shares
+  and password-protected links are untested. If direct fetch fails, it falls
+  back to the relay service as before (when one is configured).
+- **OneDrive share links (`1drv.ms` / `onedrive.live.com` / `sharepoint.com`)
+  are not supported** — they don't work even through the relay (confirmed by
+  testing). Please use Google Drive or Dropbox instead.
+- If you use Google Drive, sharing must be set to **"Anyone with the link"**
+  (leaving it "Restricted" redirects to a login page and fetching fails).
+  Also make sure you copy the **full share link without truncating it** —
+  links issued before 2021 carry a `resourcekey` query parameter, and
+  dropping it causes the same login-page redirect.
 - Revisiting the same URL does **not** re-download it — the image already saved
   in the browser (including any edits made from the guest side) is reused.
 - If the URL points to a **ZIP or LZH archive**, it is fetched and extracted the
@@ -45,10 +82,28 @@ Notes on `fd1`/`fd2`/`hdd`:
   itself unless `run=1` is also given. While set (and before boot), you can
   still edit its contents via file transfer.
 
+Notes on `lib` (for sharing links to multi-disk collections):
+
+- Use `?lib=<url>` and repeat it (`&lib=<url2>`, ...) to specify **multiple
+  URLs** (comma-separated values aren't supported, since a URL itself can
+  contain a comma).
+- Unlike `fd1`/`fd2`/`hdd`, `lib` registers images **regardless of their kind**
+  (FD or HDD) — a ZIP mixing HDD and FD images can be registered as-is (the
+  usual kind check still applies once you insert an image into a slot).
+- Regardless of how many disk images it resolves to, `lib` never auto-inserts
+  into a slot — it **always opens the Disk Library** so the recipient can pick
+  what to use.
+- `run=1` is skipped whenever `lib` is given.
+- If combined with `fd1`/`fd2`/`hdd`, those slots are processed first, then
+  `lib`.
+- Fetching, resuming on revisit, and archive extraction follow the same rules
+  as `fd1`/`fd2`/`hdd` (CORS required, no re-download on revisit, ZIP/LZH
+  auto-extracted).
+
 ### Toolbar
 
-Four buttons stay directly on the toolbar: Reset, Fullscreen, Virtual
-Keyboard, and Screenshot. Everything else lives behind the "..." (More)
+Five buttons stay directly on the toolbar: Reset, Fullscreen, Virtual
+Keyboard, Screenshot, and Speed. Everything else lives behind the "..." (More)
 button as a two-level menu: Display (4:3 display toggle), Input (mouse
 capture/resync, gamepad settings), Disk (Disk Library, file transfer), and
 State (save/load state) groups, plus Settings, Help, and the language toggle
@@ -74,11 +129,17 @@ On first load, a start overlay offers two choices:
   appears). If a HDD is already set (see below), this button instead reads
   "Boot with the Selected Disks" and boots with it
 - **Start with System Disk** — boots with the bundled `human302.xdf` inserted
-  into FDD1, straight into Human68k
+  into FDD0, straight into Human68k
 
 Audio playback requires a click due to browser autoplay restrictions, so
 starting playback always begins from one of these two buttons — clicking
 elsewhere on the overlay does nothing.
+
+`AudioWorklet` is only available in a secure context (`https:` or
+`localhost`); opening the page over a plain LAN IP address (`http://
+192.168.x.x:port/`) leaves it unavailable. In that case WebX68k now boots
+silently instead of failing to boot at all — audio simply has nowhere to
+go.
 
 ### Drag & drop
 
@@ -87,25 +148,25 @@ drop-accepting area is highlighted with a border while dragging:
 
 - **The screen area** (over the emulator display) — a HDD image goes to the
   HDD slot (a message is shown if it's locked because the machine has already
-  booted); a FD image goes to FDD1, or to FDD2 if FDD1 is already occupied and
-  FDD2 is free (to make use of the two floppy drives). An archive containing
+  booted); a FD image goes to FDD0, or to FDD1 if FDD0 is already occupied and
+  FDD1 is free (to make use of the two floppy drives). An archive containing
   multiple images doesn't go into a slot — it's registered as a group and the
   Disk Library opens so you can pick which disk goes where.
-- **A drive slot row** (FDD1 / FDD2 / HDD) — inserts straight into that slot,
+- **A drive slot row** (FDD0 / FDD1 / HDD) — inserts straight into that slot,
   as before.
 - **The Disk Library dialog** — only registers the file(s) into the library;
   nothing is inserted into a slot, since opening the library means you're
   about to choose a destination yourself.
 
-### Drive slots (FDD1 / FDD2 / HDD)
+### Drive slots (FDD0 / FDD1 / HDD)
 
-The toolbar's console footer has three drive rows: FDD1, FDD2, and HDD. Each
+The toolbar's console footer has three drive rows: FDD0, FDD1, and HDD. Each
 row lets you insert a file, insert from the Disk Library, create a blank
 disk (FDD only), eject, or download the current image. Dropping a file onto
 a slot row inserts it into that slot (see "Drag & drop" above for the other
 drop targets).
 
-- **FDD1/FDD2 are hot-swappable** — insert/eject while the core is running,
+- **FDD0/FDD1 are hot-swappable** — insert/eject while the core is running,
   no reset needed.
 - **HDDs can only be handled before boot.** The emulator core cannot swap a
   HDD while running, so dropping/inserting a HDD image before boot no longer
@@ -175,6 +236,27 @@ video resolution (it's resized in `handleVideoRefresh()` whenever the mode
 changes — 256x256 / 512x512 / 768x512 etc.), so the saved image is exactly
 the resolution currently being displayed, with no letterboxing to crop.
 
+### Emulation speed
+
+The toolbar's "Speed" button is an ON/OFF toggle. OFF (the default) runs at
+100% (normal) speed; ON runs at whatever multiplier is chosen in the
+settings panel (25% / 50% / 75% / 150% / 200% / 300% / 400%, default 200%).
+While ON, the button shows a badge with the current multiplier. The change
+takes effect immediately from the toggle itself — no reset needed — and
+audio pitch shifts along with it, like a tape running fast or slow (BGM
+speeds up too). The setting is not saved, so playback always starts at OFF
+(100%) on boot and after a reset.
+
+How fast it can actually go depends on your device's processing power. 400%
+is a selectable ceiling, not a guaranteed speed — the settings panel shows
+the measured speed you're actually getting, so you can see where it tops
+out.
+
+This is separate from the machine configuration's "CPU speed"
+(`px68k_cpuspeed`, 10-100MHz) setting: that one changes the emulated
+hardware's actual clock and needs a reset, while this one just changes the
+host's execution pace and applies immediately.
+
 ### Virtual keyboard
 
 The keyboard icon on the toolbar opens an X68000-layout virtual keyboard.
@@ -184,6 +266,78 @@ again. Multi-modifier chords, multi-touch input, and long-press repeat are
 supported. Open the separate keypad only when needed with the Keypad button.
 Kana labels reflect the virtual keyboard's client-side state; if it differs from the guest, press the Kana key again to bring them back in sync.
 
+Long-press repeat delay/interval follow the X68000's own SRAM setting (the one
+SWITCH.X changes), for both the physical and virtual keyboard. Changing it via
+SWITCH.X while running is picked up live. As on real hardware, repeat keeps the
+key held and emits make codes only; a single break code is sent when the key is
+actually released.
+
+SRAM (boot drive, memory size, key repeat, and other SWITCH.X settings) is
+automatically persisted to IndexedDB, so these settings survive a page reload.
+That said, key repeat is the only SWITCH.X setting the host emulates itself —
+key-click sound and keyboard LED control aren't supported, and the memory
+size always follows the settings dialog rather than SWITCH.X.
+
+### Virtual pad (on-screen pad)
+
+For playing games on a phone, the "Show Input Panel" toolbar button (also
+toggled by the ⌨/🎮/🖱 chip once a panel is open) can show a touch virtual pad
+instead of the virtual keyboard or virtual trackpad — they're mutually
+exclusive. Directional
+input is an analog-stick-style control (a fixed base with a knob, snapping to
+8 directions), so a light tap near the edge of the circle is enough to get a
+direction out.
+
+What each on-screen part sends is a **profile**: a map from a screen part
+(stick directions, buttons) to either a joystick input or a keyboard key.
+Four built-in profiles are included: Joystick (2 Buttons), Cursor Keys +
+Space, Tenkey, and Joystick (6 Buttons). The 6-button layout follows a real
+Mega Drive 6-button pad — X/Y/Z on the top row, A/B/C on the bottom, both
+rising left to right.
+
+The pad's on-screen position is chosen automatically from **measured**
+layout space (never a hardcoded screen-width breakpoint), in one of three
+placements:
+
+- **Panel** — when there's spare room below the screen (as in portrait), the
+  pad sits in the same slot as the virtual keyboard, as a docked strip. The
+  screen is not shrunk.
+- **Sides** — when there's spare room on the left and right of the screen (as
+  in landscape), the stick and buttons go there instead, so nothing covers
+  the guest screen.
+- **Overlay** — when neither kind of margin is big enough, the pad is drawn
+  semi-transparently on top of the screen.
+
+Pressing 🎮 while the pad is showing opens the profile-select menu.
+
+#### Editing the pad's assignments
+
+"Edit assignments…" at the end of the 🎮 profile menu opens an editor for
+the pad's 12 input sources (stick up/down/left/right, A/B/C, X/Y/Z, and
+Aux 1/2). Each row can be bound to either a keyboard key or a joystick
+button.
+
+The key picker shares the same layout as the virtual keyboard; assigning a
+key automatically advances to the next row. Editing a built-in profile
+automatically creates a copy for you to edit — the built-in itself is never
+changed.
+
+### Keyboard-to-joystick mapping
+
+For PC users without a gamepad who want to play joystick-only software, a
+physical key can be mapped to a joystick input. Open it from the toolbar's
+"..." menu → Input group → "Keyboard Assignment". **It is disabled by
+default**, so it never gets in the way of normal typing until turned on.
+
+Three built-in profiles are included: Arrows -> Joystick (2 Buttons), Arrows
+-> Joystick (6 Buttons) (for CPSF-MD-style software), and Arrows -> Numpad —
+the last one also doubles as a way to play numpad-only software on a laptop
+that has no numpad. Once enabled, any key you've mapped stops working as a
+regular character key. Press "Add Key" and then press the physical key you
+want to register; it's added as a new input source that you can bind to a
+joystick button or a keyboard key. Editing a built-in profile automatically
+creates a copy for you to edit — the built-in itself is never changed.
+
 ### Mouse
 
 Click "Capture Mouse" in the toolbar's "..." menu (Input group), or
@@ -192,6 +346,23 @@ relative mouse movement to the guest. Press **Esc** (or the same menu item
 again) to release. The "Mouse Resync" entry in the same group re-anchors
 absolute-position tracking if the guest cursor and host cursor ever drift
 apart.
+
+On touch devices (where the Pointer Lock API is unavailable — e.g. iOS
+Safari), open the **virtual trackpad** instead, via the 🖱 option on the
+⌨/🎮/🖱 input-panel chip (or the "Show Input Panel" toolbar button). It's
+the third kind of input panel alongside the virtual keyboard and virtual
+pad, and it sits in the same strip between the screen and the toolbar
+rather than over the screen — so your finger never covers the guest
+display while you operate it.
+
+Operation is laptop-trackpad style: drag with one finger to move the
+cursor by the finger's motion (with the mouse sensitivity setting
+applied), tap for a left click at the current cursor position, two-finger
+tap for a right click, and long-press (450ms) to hold the left button
+down, then drag to drag. Because the cursor moves independently of the
+finger, it is never hidden under your fingertip. Two-finger drag (the
+usual trackpad gesture for scrolling/wheel) is not supported — the X68000
+mouse only has left/right buttons, with no wheel concept to map it to.
 
 ### Display mode (dot-for-dot / 4:3)
 
@@ -213,21 +384,26 @@ toggling the mode never shifts the surrounding layout.
 
 ### Fullscreen
 
-The "Fullscreen" toolbar button makes the screen (the black stage box that
-contains the canvas) fill the display. The X68000 can switch resolution
-while running (256x256 / 512x512 / 768x512, etc.), but fullscreen keeps
-whichever aspect ratio is currently selected — dot-for-dot or 4:3 (see
-"Display mode" above) — and letterboxes with black bars, matching the
-windowed view's look. Click the button again, or press **Esc**, to exit
-fullscreen.
+The "Fullscreen" toolbar button makes the **whole card — including the
+toolbar** — fill the display, not just the screen. This means Reset,
+switching the input panel, and the rest of the toolbar all stay usable while
+fullscreen. The X68000 can switch resolution while running (256x256 /
+512x512 / 768x512, etc.), but fullscreen keeps whichever aspect ratio is
+currently selected — dot-for-dot or 4:3 (see "Display mode" above) — and
+letterboxes with black bars, matching the windowed view's look. Click the
+button again, or press **Esc**, to exit fullscreen.
+
+On iPhone, the Fullscreen API is only available on `<video>` elements, so
+WebX68k falls back to a page-side pseudo-fullscreen (collapsing the
+surrounding page UI) instead — the toolbar still remains visible there too.
 
 If mouse capture is also active while fullscreen, pressing **Esc once
 releases both at the same time** — it does not take two presses. This is a
 browser-level behavior we can't override (the release can't be
 `preventDefault`-ed, and re-entering fullscreen right after can't be done
-from script either), and since fullscreen only covers the screen itself
-(the toolbar isn't visible), Esc is the only way to release the mouse while
-fullscreen — an intentional trade-off in favor of immersion.
+from script either); since native fullscreen swallows Esc, it's the only way
+to release the mouse while fullscreen — an intentional trade-off in favor of
+immersion.
 
 ### BIOS settings
 
@@ -240,6 +416,20 @@ future visits, taking priority over the bundled files.
 
 The `EN`/`JA` button in the toolbar's "..." menu switches the UI language at
 runtime; the choice is saved and reused on your next visit.
+
+### Add to Home Screen (PWA)
+
+On iPhone, there is no way for a web page to hide the browser's URL bar.
+Adding WebX68k to the Home Screen and launching it from there starts it in
+standalone mode, without the URL bar (on Android, the Fullscreen toolbar
+button already hides it, since native fullscreen is supported there).
+
+**Saved disks, state, and BIOS (IndexedDB) are not shared between the Home
+Screen app and a regular browser (Safari/Chrome)** — on iOS, the Home Screen
+app, Safari, and Chrome each have their own independent storage (confirmed on
+a real device). It's best to pick one and stick with it; if you play from the
+Home Screen app, you also need to register disks from that same app. This is
+an iOS platform limitation that cannot be worked around from the app side.
 
 ## Bundled ROM / disk images
 
@@ -261,7 +451,30 @@ the bundled files on future visits.
 
 - **HDD**: can only be set/edited before boot; read-only and locked once
   running. Blank HDDs are FAT16 data drives only (no IPL).
-- **FDD1/FDD2**: hot-swappable at any time.
+- **FDD0/FDD1**: hot-swappable at any time.
+
+## Sprout68k shared runtime
+
+Opening a `#p1=` link (a program shared from
+[Sprout68k](https://github.com/uraraworks/Sprout68k)) needs a 5 KB runtime, bundled
+under `public/sprout-runtime/v1/`. It is **fetched at build time and served by this
+site at runtime**, so shared links keep working offline and do not depend on GitHub
+being reachable.
+
+To update it to a newer ABI version:
+
+```sh
+node tools/fetch-sprout-runtime.mjs
+```
+
+This pulls from the pinned release tag (`runtime-v1`), verifies every file against the
+manifest, and writes `public/sprout-runtime/v1/` and `src/sprout-share.mts`. Then update
+`EXPECTED_MANIFEST_SHA256` in `test/sprout-share.test.ts` to the new manifest hash —
+that constant is what proves the bundled copy really is the published release, so the
+test fails until you do.
+
+**Older runtime versions must never be deleted.** Code in a shared URL calls the jump
+table of the version it was built against.
 
 ## MCP support (control WebX68k from AI agents)
 
@@ -295,9 +508,19 @@ npm run dev     # dev server
 npm run build   # type-check + production build (dist/)
 ```
 
+To enable relay fetching for Google Drive, set the `VITE_DISK_PROXY`
+environment variable at build time to the URL of your own relay service (no
+trailing `/`). If unset (the default), no relay is used and sources that the
+direct fetch fails for will simply error out. See the comment in
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) for how this is
+configured for the public GitHub Pages build. Dropbox does not need this
+setting — it is fetched directly via an automatic hostname rewrite (falling
+back to the relay, when configured, only if direct fetch fails for an
+unverified share format).
+
 Building the emulator core itself (px68k-libretro → WebAssembly) is done via
 `scripts/build-core.sh`; see [docs/DESIGN.md](docs/DESIGN.md) for the full
-build setup and how the FDD1/FDD2/HDD triple-mount trick works.
+build setup and how the FDD0/FDD1/HDD triple-mount trick works.
 
 ## License
 
@@ -321,8 +544,8 @@ This repository is **GPLv2** ([COPYING](COPYING)).
 - Bundled IPL-ROM/Human68k system disk — boots with no setup required
 - Boot overlay with "Start Without a Disk" (relabeled "Boot with the Selected
   Disks" when a HDD is set) / "Start with System Disk"
-- FDD1/FDD2/HDD triple-mount (via a cmd-file + core-option combination), with
-  HDD locked while running and FDD1/FDD2 hot-swappable
+- FDD0/FDD1/HDD triple-mount (via a cmd-file + core-option combination), with
+  HDD locked while running and FDD0/FDD1 hot-swappable
 - Setting a HDD before boot (from the library, a drop, or the slot buttons),
   and editing its contents while it is only set
 - Blank HDD creation (40MB, FAT16-formatted, Human68k-partitioned; carries no
@@ -334,7 +557,7 @@ This repository is **GPLv2** ([COPYING](COPYING)).
 - Loading disk images from a ZIP/LZH archive (drop, file picker, or the `fd1`/
   `fd2`/`hdd` URL parameters): a single image inside goes straight into the
   slot; multiple images are grouped as a folder in the Disk Library for you to
-  pick from, since the emulator can't tell whether a title wants FDD1+FDD2
+  pick from, since the emulator can't tell whether a title wants FDD0+FDD1
   loaded together or single-drive swapping
 - File manager: two-pane file transfer between browser and mounted disk
   images, with Human68k Shift_JIS filename handling and ZIP/LZH extraction
@@ -358,6 +581,19 @@ This repository is **GPLv2** ([COPYING](COPYING)).
   browser's localStorage. A settings dialog covers ports/pad type/assignments
 - Own-BIOS loading (IPLROM.DAT/CGROM.DAT) via the Settings panel, persisted
   to IndexedDB and prioritized over the bundled files
+- Virtual pad (on-screen touch pad) for phones: analog-stick-style
+  direction input with 8-way snapping, 4 built-in profiles (2-button
+  joystick / cursor keys+space / tenkey / 6-button joystick), a full
+  assignment editor, and 3 auto-selected placements (panel/sides/overlay)
+  measured from actual available space
+- Keyboard-to-joystick mapping for PC users without a gamepad (3 built-in
+  profiles), off by default
+- Fullscreen now covers the whole card (toolbar included), with an iPhone
+  pseudo-fullscreen fallback since the Fullscreen API there only supports
+  `<video>`
+- Add to Home Screen (PWA) support so iPhone can hide the browser's URL bar
+- Boots silently (instead of failing to boot) when `AudioWorklet` is
+  unavailable, e.g. opening the page over a plain LAN IP address
 
 ## Known limitations
 
@@ -374,5 +610,5 @@ This repository is **GPLv2** ([COPYING](COPYING)).
 - Dropping/selecting/loading-by-URL a ZIP or LZH archive that contains more
   than one disk image never auto-inserts any of them — it's always registered
   as a group in the Disk Library for you to pick from, since there's no way to
-  tell whether a title expects simultaneous FDD1+FDD2 loading or single-drive
+  tell whether a title expects simultaneous FDD0+FDD1 loading or single-drive
   disk swapping.
