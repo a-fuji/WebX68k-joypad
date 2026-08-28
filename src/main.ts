@@ -919,7 +919,10 @@ const urlFd2 = urlParams.get('fd2') ?? undefined;
 const urlHdd = urlParams.get('hdd') ?? undefined;
 const urlRun = urlParams.get('run') === '1';
 // vpad=1: タッチ端末向けにバーチャルパッドを起動時から表示する。
-const urlVpad = urlParams.get('vpad') === '1';
+// vpad=panel: 可能な場合はゲーム画面の下部へ固定する(狭い画面では自動配置へフォールバック)。
+const urlVpadParam = urlParams.get('vpad');
+const urlVpad = urlVpadParam === '1' || urlVpadParam === 'panel';
+const urlVpadPanel = urlVpadParam === 'panel';
 const urlSystem = urlParams.get('system') === '1';
 // lib=<url>: 複数指定可(ディスクライブラリへ登録するだけの共有リンク用)。
 // カンマ区切りにしないのはURL自体にカンマが含まれ得るため。複数指定は getAll で受け取る。
@@ -3696,8 +3699,11 @@ function rescale(): void {
   // sides にするかどうかは、セーフエリアを引いた後の実際のボックス幅で決める
   // (切り欠きに食われて狭くなった側で判定しないと、部品が縮みすぎたまま sides になる)。
   const sidesMargin = Math.min(sidesBoxes.left.w, sidesBoxes.right.w);
-  const nextVpadPlacement: VpadPlacement =
+  const autoVpadPlacement: VpadPlacement =
     leftover >= VPAD_PANEL_MIN_HEIGHT ? 'panel' : sidesMargin >= VPAD_SIDES_MIN_WIDTH ? 'sides' : 'overlay';
+  // 共有URLで下部パネルを明示指定できるようにする。縦の余りが足りない端末では
+  // パネルが潰れて操作不能になるため、通常の自動判定へ戻す。
+  const nextVpadPlacement: VpadPlacement = urlVpadPanel && leftover >= VPAD_PANEL_MIN_HEIGHT ? 'panel' : autoVpadPlacement;
   const vpadPanelHeight = Math.min(Math.max(leftover, 0), VPAD_PANEL_MAX_HEIGHT);
   // 5. モードが変わったときだけ reparent する(applyVpadPlacement内部で判定)。sidesBoxes は
   //    モード不変でも毎回渡す(ビューポートサイズの変化に追従させるため)。
