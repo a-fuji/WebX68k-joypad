@@ -27,6 +27,8 @@ interface Dict {
   toolbarSaveState(): string;
   toolbarLoadState(): string;
   toolbarScreenshot(): string;
+  /** ツールバーの速度ボタン(ON/OFFトグル)のツールチップ/aria-label。 */
+  toolbarSpeedLabel(): string;
   statusScreenshotSaved(): string;
   stateSaved(): string;
   stateLoaded(): string;
@@ -38,6 +40,8 @@ interface Dict {
   mouseResynced(): string;
   mouseTrackUnavailable(): string;
   mouseCaptureFailed(): string;
+  /** AudioWorklet が使えず無音で起動したときの案内(secure context 以外で開いた場合など)。 */
+  audioUnavailable(): string;
   toolbarMouseCapture(): string;
   toolbarMouseRelease(): string;
   toolbarMouseResync(): string;
@@ -72,6 +76,8 @@ interface Dict {
   slotInsert(): string;
   slotEject(): string;
   slotLockedWhileRunning(): string;
+  /** 実行中にFDを排出しようとしたときの確認(誤タップでゲストがフリーズする事故の防止)。 */
+  slotEjectConfirmRunning(): string;
   /** ドライブアクセスランプのスクリーンリーダー向けラベル。 */
   diskLampLabel(args: { drive: string }): string;
   /** スロットの「ライブラリから挿入」ボタン(ツールチップ)。 */
@@ -99,6 +105,10 @@ interface Dict {
   settingsMachineResetNote(): string;
   settingsCpuSpeedLabel(): string;
   settingsRamSizeLabel(): string;
+  settingsSpeedTitle(): string;
+  settingsSpeedNote(): string;
+  settingsSpeedLabel(): string;
+  settingsSpeedActualPrefix(): string;
   settingsClose(): string;
   biosStatusUser(): string;
   biosStatusBundled(): string;
@@ -188,10 +198,31 @@ interface Dict {
   urlFetchFailedNetwork(args: { url: string }): string;
   /** fetchはできたがHTTPステータスが失敗を示す場合のエラーメッセージ本文。 */
   urlFetchFailedHttp(args: { url: string; status: number }): string;
+  /** 配信元がOneDrive(1drv.ms/onedrive.live.com/sharepoint.com)だった場合の案内(中継しても取得できないため即座に案内する)。 */
+  urlFetchFailedOneDrive(args: { url: string }): string;
+  /** 配信元がGoogle Drive/Dropboxで、かつ中継(VITE_DISK_PROXY)が未設定だった場合の案内。 */
+  urlFetchFailedNeedsProxy(args: { url: string }): string;
+  /** 中継サーバ経由の取得が失敗した場合のエラーメッセージ本文(中継側のエラーコードを反映)。 */
+  urlFetchFailedProxy(args: { url: string; reason: string }): string;
+  /** 取得結果がディスクイメージではなくHTMLページ(共有リンクの閲覧ページ等)だった場合の案内。 */
+  urlFetchFailedHtmlPage(args: { url: string }): string;
+  // --- 中継サーバ(VITE_DISK_PROXY)のエラーコード別の理由文言(urlFetchFailedProxy の reason に渡す) ---
+  urlProxyReasonBadUrl(): string;
+  urlProxyReasonOriginNotAllowed(): string;
+  urlProxyReasonHostNotAllowed(): string;
+  urlProxyReasonTooLarge(): string;
+  urlProxyReasonRateLimited(): string;
+  urlProxyReasonUpstreamFailed(): string;
+  urlProxyReasonRedirectNotAllowed(): string;
+  urlProxyReasonUnknown(args: { status: number }): string;
   /** スロット単位の取得失敗を伝えるトースト(他スロットの読み込み/起動は継続する)。 */
   urlLoadFailedToast(args: { label: string; message: string }): string;
   /** 同梱システムディスク(?system=1)の取得に失敗したときのトースト。 */
   urlSystemFetchFailed(): string;
+  /** Sprout68k の共有リンク(#p1=)から作品を読み込んだときのトースト。tags は空のこともある。 */
+  sproutShareLoaded(args: { tags: string }): string;
+  /** Sprout68k の共有リンクを開けなかったときのトースト。 */
+  sproutShareFailed(args: { message: string }): string;
   /** URLパラメータの取得結果がZIP/LZHで、前回展開済みのグループがライブラリにあり再ダウンロードせず復帰したときのトースト。 */
   urlArchiveResumed(args: { label: string; count: number }): string;
   /** URLパラメータで取得したアーカイブにディスクイメージが1つも見つからなかった場合のエラー。 */
@@ -200,6 +231,8 @@ interface Dict {
   urlArchiveKindMismatch(args: { label: string; kind: 'hdd' | 'fd' }): string;
   /** URLパラメータのアーカイブが複数枚のディスクを含んでいたため、ライブラリを開いて選ばせるときの案内(run=1でも自動起動しない旨を含む)。 */
   urlArchiveNeedsSelection(): string;
+  /** ?lib=<url> (複数指定可)のトースト等で使う、何本目のlibか示すラベル(fdSlotLabel/hddSlotLabelのlib版)。 */
+  urlLibSlotLabel(args: { index: number }): string;
   /** run=1自動起動時、自動再生制限でAudioContextがsuspendedのままのときに出す表示。 */
   audioMutedBanner(): string;
 
@@ -324,6 +357,82 @@ interface Dict {
   gamepadPosDpadLeft(): string;
   gamepadPosDpadRight(): string;
   gamepadPosHome(): string;
+
+  // --- 入力パネル(仮想キーボード/バーチャルパッド)切り替え ---
+  /** ツールバーの入力パネルトグルボタン(どちらのパネルも非表示のとき)。 */
+  toolbarInputPanel(): string;
+  /** ツールバーの入力パネルトグルボタン(いずれかのパネルが表示中のとき)。 */
+  toolbarInputPanelHide(): string;
+  /** stage右上の切り替えチップ、仮想キーボード側ボタンのaria-label。 */
+  inputPanelSwitchKeyboard(): string;
+  /** stage右上の切り替えチップ、バーチャルパッド側ボタンのaria-label。 */
+  inputPanelSwitchPad(): string;
+  /** stage右上の切り替えチップ、バーチャルトラックパッド側ボタンのaria-label。 */
+  inputPanelSwitchTrackpad(): string;
+  /** バーチャルパッドの組み込みプロファイル表示名。 */
+  vpadProfileJoy2Button(): string;
+  vpadProfileCursorSpace(): string;
+  vpadProfileTenkey(): string;
+  vpadProfileJoy6Button(): string;
+  /** 🎮プロファイルメニュー末尾の「割当を編集…」行。 */
+  vpadEditAssignmentsMenuItem(): string;
+
+  // --- 入力プロファイル編集ダイアログ(input-profile-ui.ts) ---
+  inputProfileEditorTitle(): string;
+  inputProfileEditorDescription(): string;
+  inputProfileSelectLabel(): string;
+  inputProfileDuplicateBtn(): string;
+  inputProfileRenameBtn(): string;
+  inputProfileDeleteBtn(): string;
+  inputProfileBuiltinReadonlyNote(): string;
+  inputProfileBindingsTitle(): string;
+  inputProfileClearBindingBtn(): string;
+  inputProfileRowSelectedHint(): string;
+  inputProfilePickerTitle(): string;
+  inputProfileTabKeyboard(): string;
+  inputProfileTabJoystick(): string;
+  /** TRG3以降がポート1のパッド種別によっては効かない旨の注記。 */
+  inputProfileTrg3PlusNote(): string;
+  /** 割当一覧で「未割当」を表す文言。 */
+  inputProfileUnassigned(): string;
+  /** 自動複製・手動複製の既定名(元プロファイル名+接尾辞)。 */
+  inputProfileDuplicateLabel(options: { name: string }): string;
+  inputProfileDuplicatePrompt(options: { name: string }): string;
+  inputProfileRenamePrompt(): string;
+  inputProfileDeleteConfirm(options: { name: string }): string;
+  /** 組み込みプロファイル編集時に自動複製が起きたことを知らせるトースト。 */
+  inputProfileAutoDuplicatedToast(options: { name: string }): string;
+  /** バーチャルパッドの入力元一覧(割当編集ダイアログの行ラベル)。 */
+  inputProfileSourceDpadUp(): string;
+  inputProfileSourceDpadDown(): string;
+  inputProfileSourceDpadLeft(): string;
+  inputProfileSourceDpadRight(): string;
+  /** 補助ボタン1/2の行ラベル。 */
+  inputProfileSourceOpt(options: { n: number }): string;
+  /** 入力元一覧が可変(bindings由来)のモードでのみ出る「キーを追加」ボタン。 */
+  inputProfileAddKeyBtn(): string;
+  /** 「キーを追加」待機中、同じボタンの表示テキスト(押すと待機をやめる)。 */
+  inputProfileAddKeyCancelBtn(): string;
+  /** 「キーを追加」待機中に出す案内文言。 */
+  inputProfileAddKeyWaitingHint(): string;
+  /** 入力元一覧が可変のモードでのみ出る、行ごとの削除ボタン(その入力元自体を一覧から消す)。 */
+  inputProfileRemoveRowBtn(): string;
+
+  // --- ホストキー(物理キーボード再割り当て)ダイアログ ---
+  /** ツールバー「…」メニュー内の項目名兼ダイアログのボタンaria-label。 */
+  toolbarHostKey(): string;
+  hostKeyDialogTitle(): string;
+  hostKeyDialogDescription(): string;
+  /** 「キーボード割当を有効にする」チェックボックスのラベル。 */
+  hostKeyEnableLabel(): string;
+  hostKeyProfileSelectLabel(): string;
+  hostKeyBindingsTitle(): string;
+  /** 有効化の副作用(割り当てたキーが通常の文字入力として働かなくなる)を伝える注記。 */
+  hostKeyDisableTypingNote(): string;
+  /** 組み込みホストキープロファイルの表示名。 */
+  hostKeyProfileArrowsJoy(): string;
+  hostKeyProfileArrowsJoy6(): string;
+  hostKeyProfileTenkey(): string;
 }
 
 const STRINGS: Record<Lang, Dict> = {
@@ -346,6 +455,7 @@ const STRINGS: Record<Lang, Dict> = {
     toolbarSaveState: () => 'ステート保存',
     toolbarLoadState: () => 'ステート復元',
     toolbarScreenshot: () => 'スクリーンショット',
+    toolbarSpeedLabel: () => '速度変更',
     statusScreenshotSaved: () => 'スクリーンショットを保存しました。',
     stateSaved: () => 'ステートを保存しました。',
     stateLoaded: () => 'ステートを復元しました。',
@@ -357,6 +467,8 @@ const STRINGS: Record<Lang, Dict> = {
     mouseResynced: () => 'マウスの基準を取り直しました。',
     mouseTrackUnavailable: () => 'このソフトではマウス追従を利用できません。右ダブルクリックでキャプチャしてください。',
     mouseCaptureFailed: () => 'マウスをキャプチャできませんでした。',
+    audioUnavailable: () =>
+      '音声を初期化できなかったため、無音で起動しました。https または localhost で開くと音が出ます。',
     toolbarMouseCapture: () => 'マウスキャプチャ(右ダブルクリック)',
     toolbarMouseRelease: () => 'マウスキャプチャを解除(Esc)',
     toolbarMouseResync: () => 'マウス再同期',
@@ -392,6 +504,8 @@ const STRINGS: Record<Lang, Dict> = {
     slotInsert: () => 'ディスク挿入',
     slotEject: () => 'ディスク取り出し',
     slotLockedWhileRunning: () => '起動中はHDDを交換できません(ページを再読み込みしてから操作してください)',
+    slotEjectConfirmRunning: () =>
+      '実行中のディスクを取り出しますか？ソフトがディスクを読んでいる場合、フリーズすることがあります。\n(ディスク交換は、取り出さずにそのまま次のディスクを挿入すればできます)',
     diskLampLabel: ({ drive }) => `${drive} アクセスランプ`,
     slotInsertFromLibrary: () => 'ライブラリから挿入',
     slotInsertFromLibraryTitle: ({ drive }) => `${drive} へ挿入`,
@@ -416,13 +530,17 @@ const STRINGS: Record<Lang, Dict> = {
     settingsMachineResetNote: () => '変更を反映するにはリセットが必要です。',
     settingsCpuSpeedLabel: () => 'CPU速度',
     settingsRamSizeLabel: () => 'RAM',
+    settingsSpeedTitle: () => 'エミュレーション速度',
+    settingsSpeedNote: () => 'ツールバーの速度ボタンをONにしたときの倍率です。リセット不要で即時反映し、設定は保存されません。',
+    settingsSpeedLabel: () => '速度ボタンON時の倍率',
+    settingsSpeedActualPrefix: () => '実測',
     settingsClose: () => '閉じる',
     biosStatusUser: () => '設定済み',
     biosStatusBundled: () => '同梱ROM使用中(差し替え可)',
     biosStatusNone: () => '未設定',
     libraryDialogTitle: () => 'ディスクライブラリ',
     libraryDialogDescription: () =>
-      'これまでに挿入したディスクイメージはブラウザに保存され、ここから挿入するドライブ(FDD1 / FDD2 / HDD)を選んで再挿入できます。',
+      'これまでに挿入したディスクイメージはブラウザに保存され、ここから挿入するドライブ(FDD0 / FDD1 / HDD)を選んで再挿入できます。',
     libraryDialogClose: () => '閉じる',
     libraryBadgeBundled: () => '同梱',
     libraryBadgeHdd: () => 'HDD',
@@ -448,7 +566,7 @@ const STRINGS: Record<Lang, Dict> = {
 
     fmDialogTitle: () => 'ファイル転送',
     fmDialogNote: () =>
-      'ホストPCとFDD1/FDD2/HDD・ライブラリ内のディスクイメージとの間でファイルをやり取りします。ファイル名は自動的に8.3形式へ変換されます。実行中のFDDスロットへ書き込んだ場合はディスクを入れ直したのと同じ扱いになります。起動中のHDDは読み出し専用です。',
+      'ホストPCとFDD0/FDD1/HDD・ライブラリ内のディスクイメージとの間でファイルをやり取りします。ファイル名は自動的に8.3形式へ変換されます。実行中のFDDスロットへ書き込んだ場合はディスクを入れ直したのと同じ扱いになります。起動中のHDDは読み出し専用です。',
     fmHostPaneTitle: () => 'ホスト(このPC)',
     fmDiskPaneTitle: () => 'ディスクイメージ',
     fmSelectFilesBtn: () => 'ファイルを選択',
@@ -496,8 +614,26 @@ const STRINGS: Record<Lang, Dict> = {
     urlFetchFailedNetwork: ({ url }) =>
       `ディスクイメージの取得に失敗しました: ${url}\n(取得先がCORSに対応していない可能性があります)`,
     urlFetchFailedHttp: ({ url, status }) => `ディスクイメージの取得に失敗しました: ${url} (HTTP ${status})`,
+    urlFetchFailedOneDrive: ({ url }) =>
+      `ディスクイメージの取得に失敗しました: ${url}\nOneDriveの共有リンクは仕様上ご利用いただけません。Google DriveかDropboxをお使いください。`,
+    urlFetchFailedNeedsProxy: ({ url }) =>
+      `ディスクイメージの取得に失敗しました: ${url}\nこの配信元は中継サーバ経由でのみ取得できますが、このビルドでは中継(VITE_DISK_PROXY)が設定されていません。自分でホストしている場合は VITE_DISK_PROXY を設定してください(詳細はREADME)。`,
+    urlFetchFailedProxy: ({ url, reason }) => `ディスクイメージの取得に失敗しました: ${url}\n${reason}`,
+    urlFetchFailedHtmlPage: ({ url }) =>
+      `ディスクイメージの取得に失敗しました: ${url}\n取得結果がディスクイメージではなくWebページでした。共有リンクの公開設定(リンクを知っている全員が閲覧可)を確認するか、ダウンロードしたファイルを画面へドラッグ&ドロップしてください。`,
+    urlProxyReasonBadUrl: () => '中継サーバがURLを解釈できませんでした。',
+    urlProxyReasonOriginNotAllowed: () => '中継サーバがこのサイトからのリクエストを許可していません。',
+    urlProxyReasonHostNotAllowed: () => '中継サーバがこの配信元への転送を許可していません。',
+    urlProxyReasonTooLarge: () => 'ファイルサイズが中継サーバの上限を超えています。',
+    urlProxyReasonRateLimited: () => '中継サーバのリクエスト数が上限に達しています。しばらく待って再度お試しください。',
+    urlProxyReasonUpstreamFailed: () => '中継サーバから配信元への取得に失敗しました。',
+    urlProxyReasonRedirectNotAllowed: () =>
+      '配信元が別のサイト(ログイン画面など)へ転送しようとしたため中断しました。共有設定が「リンクを知っている全員が閲覧可」になっているか、共有リンクを省略せず全部コピーしているかご確認ください。',
+    urlProxyReasonUnknown: ({ status }) => `中継サーバでエラーが発生しました (HTTP ${status})。`,
     urlLoadFailedToast: ({ label, message }) => `${label}の読み込みに失敗しました: ${message}`,
     urlSystemFetchFailed: () => '同梱システムディスクの取得に失敗しました。',
+    sproutShareLoaded: ({ tags }) => `Sprout68k で作られた作品を読み込みました${tags}。`,
+    sproutShareFailed: ({ message }) => `共有リンクを開けませんでした: ${message}`,
     urlArchiveResumed: ({ label, count }) =>
       `${label}: 前回展開した${count}件のディスクイメージをライブラリから復元しました(再ダウンロードなし)。`,
     urlArchiveNoDiskImage: ({ label }) => `${label}: アーカイブ内にディスクイメージが見つかりませんでした。`,
@@ -505,7 +641,9 @@ const STRINGS: Record<Lang, Dict> = {
       `${label}: アーカイブ内に${kind === 'hdd' ? 'HDD' : 'FD'}用のディスクイメージが見つかりませんでした。`,
     urlArchiveNeedsSelection: () =>
       'アーカイブに複数のディスクイメージが含まれていたため、ライブラリを開きました。使用するイメージを選んでください(自動起動はしません)。',
-    audioMutedBanner: () => '自動再生の制限により音声が無効です。クリックまたはキー入力で音声が有効になります。',
+    urlLibSlotLabel: ({ index }) => `ライブラリ${index}`,
+    audioMutedBanner: () =>
+      '自動再生の制限により音声が無効です。画面のタップ(クリック)またはキー入力で音声が有効になります。',
 
     toolbarGamepad: () => 'ジョイスティック設定',
     gamepadDialogTitle: () => 'ジョイスティック設定',
@@ -577,6 +715,58 @@ const STRINGS: Record<Lang, Dict> = {
     gamepadPosDpadLeft: () => '十字左',
     gamepadPosDpadRight: () => '十字右',
     gamepadPosHome: () => 'Home',
+
+    toolbarInputPanel: () => '入力パネルを表示',
+    toolbarInputPanelHide: () => '入力パネルを隠す',
+    inputPanelSwitchKeyboard: () => '仮想キーボードに切替',
+    inputPanelSwitchPad: () => 'バーチャルパッドに切替',
+    inputPanelSwitchTrackpad: () => 'バーチャルトラックパッドに切替',
+    vpadProfileJoy2Button: () => 'ジョイスティック(2ボタン)',
+    vpadProfileCursorSpace: () => 'カーソルキー + スペース',
+    vpadProfileTenkey: () => 'テンキー',
+    vpadProfileJoy6Button: () => 'ジョイスティック(6ボタン)',
+    vpadEditAssignmentsMenuItem: () => '割当を編集…',
+
+    inputProfileEditorTitle: () => '割当編集',
+    inputProfileEditorDescription: () => 'バーチャルパッドの各部品に割り当てる入力(ジョイスティック/キーボード)を編集します。',
+    inputProfileSelectLabel: () => 'プロファイル',
+    inputProfileDuplicateBtn: () => '複製',
+    inputProfileRenameBtn: () => '名前を変更',
+    inputProfileDeleteBtn: () => '削除',
+    inputProfileBuiltinReadonlyNote: () => '組み込みプロファイルは編集できません。「複製」してから編集してください。',
+    inputProfileBindingsTitle: () => '割当',
+    inputProfileClearBindingBtn: () => 'この行の割当を解除',
+    inputProfileRowSelectedHint: () => '下のキーボード/ジョイスティックから割り当てる入力を選んでください。',
+    inputProfilePickerTitle: () => '割り当てる入力を選択',
+    inputProfileTabKeyboard: () => 'キーボード',
+    inputProfileTabJoystick: () => 'ジョイスティック',
+    inputProfileTrg3PlusNote: () => 'TRG3以降は、ポート1のパッド種別が2ボタンのままだと効きません。',
+    inputProfileUnassigned: () => 'なし',
+    inputProfileDuplicateLabel: ({ name }) => `${name} のコピー`,
+    inputProfileDuplicatePrompt: ({ name }) => `「${name}」を複製します。新しい名前を入力してください。`,
+    inputProfileRenamePrompt: () => '新しい名前を入力してください。',
+    inputProfileDeleteConfirm: ({ name }) => `「${name}」を削除します。よろしいですか?`,
+    inputProfileAutoDuplicatedToast: ({ name }) => `組み込みプロファイル「${name}」を複製しました`,
+    inputProfileSourceDpadUp: () => 'スティック上',
+    inputProfileSourceDpadDown: () => 'スティック下',
+    inputProfileSourceDpadLeft: () => 'スティック左',
+    inputProfileSourceDpadRight: () => 'スティック右',
+    inputProfileSourceOpt: ({ n }) => `補助${n}`,
+    inputProfileAddKeyBtn: () => 'キーを追加',
+    inputProfileAddKeyCancelBtn: () => 'キャンセル',
+    inputProfileAddKeyWaitingHint: () => 'キーを押してください(Escで中止)',
+    inputProfileRemoveRowBtn: () => '削除',
+    toolbarHostKey: () => 'キーボード割当',
+    hostKeyDialogTitle: () => 'キーボード割当',
+    hostKeyDialogDescription: () =>
+      'ジョイスティックを持っていなくても、物理キーボードでジョイスティック専用ソフトを遊べるようにする機能です。テンキー専用ソフト向けのキー変換にも使えます。',
+    hostKeyEnableLabel: () => 'キーボード割当を有効にする',
+    hostKeyProfileSelectLabel: () => 'プロファイル',
+    hostKeyBindingsTitle: () => '割当内容',
+    hostKeyDisableTypingNote: () => '有効にすると、割り当てたキーは通常の文字入力として働かなくなります。',
+    hostKeyProfileArrowsJoy: () => '矢印キー -> ジョイスティック(2ボタン)',
+    hostKeyProfileArrowsJoy6: () => '矢印キー -> ジョイスティック(6ボタン)',
+    hostKeyProfileTenkey: () => '矢印キー -> テンキー',
   },
   en: {
     title: () => 'WebX68k - X68000 Emulator',
@@ -597,6 +787,7 @@ const STRINGS: Record<Lang, Dict> = {
     toolbarSaveState: () => 'Save State',
     toolbarLoadState: () => 'Load State',
     toolbarScreenshot: () => 'Screenshot',
+    toolbarSpeedLabel: () => 'Speed',
     statusScreenshotSaved: () => 'Screenshot saved.',
     stateSaved: () => 'State saved.',
     stateLoaded: () => 'State loaded.',
@@ -608,6 +799,8 @@ const STRINGS: Record<Lang, Dict> = {
     mouseResynced: () => 'Mouse position re-synced.',
     mouseTrackUnavailable: () => 'Mouse tracking is unavailable for this software. Right double-click to capture instead.',
     mouseCaptureFailed: () => 'Could not capture the mouse.',
+    audioUnavailable: () =>
+      'Audio could not be initialized, so the machine started without sound. Open the page over https or localhost to get audio.',
     toolbarMouseCapture: () => 'Capture mouse (right double-click)',
     toolbarMouseRelease: () => 'Release mouse (Esc)',
     toolbarMouseResync: () => 'Re-sync mouse',
@@ -642,6 +835,8 @@ const STRINGS: Record<Lang, Dict> = {
     slotInsert: () => 'Insert disk',
     slotEject: () => 'Eject disk',
     slotLockedWhileRunning: () => 'The HDD cannot be swapped while running (reload the page first)',
+    slotEjectConfirmRunning: () =>
+      'Eject the disk while the machine is running? Software reading the disk may freeze.\n(To swap disks, just insert the next disk without ejecting.)',
     diskLampLabel: ({ drive }) => `${drive} access lamp`,
     slotInsertFromLibrary: () => 'Insert from library',
     slotInsertFromLibraryTitle: ({ drive }) => `Insert into ${drive}`,
@@ -666,13 +861,18 @@ const STRINGS: Record<Lang, Dict> = {
     settingsMachineResetNote: () => 'Reset is required for changes to take effect.',
     settingsCpuSpeedLabel: () => 'CPU Speed',
     settingsRamSizeLabel: () => 'RAM',
+    settingsSpeedTitle: () => 'Emulation Speed',
+    settingsSpeedNote: () =>
+      'The multiplier used when the toolbar speed button is turned on. Applied instantly, no reset needed, and not saved.',
+    settingsSpeedLabel: () => 'Multiplier when the speed button is on',
+    settingsSpeedActualPrefix: () => 'Actual',
     settingsClose: () => 'Close',
     biosStatusUser: () => 'Configured',
     biosStatusBundled: () => 'Using bundled ROM (replaceable)',
     biosStatusNone: () => 'Not set',
     libraryDialogTitle: () => 'Disk Library',
     libraryDialogDescription: () =>
-      'Disk images you have inserted are saved in your browser. Choose a drive (FDD1 / FDD2 / HDD) to insert one from here.',
+      'Disk images you have inserted are saved in your browser. Choose a drive (FDD0 / FDD1 / HDD) to insert one from here.',
     libraryDialogClose: () => 'Close',
     libraryBadgeBundled: () => 'Bundled',
     libraryBadgeHdd: () => 'HDD',
@@ -698,7 +898,7 @@ const STRINGS: Record<Lang, Dict> = {
 
     fmDialogTitle: () => 'File Transfer',
     fmDialogNote: () =>
-      'Transfer files between this PC and disk images in FDD1/FDD2/HDD or the library. File names are automatically converted to 8.3 format. Writing to a running FDD slot is treated as reinserting the disk. The HDD is read-only while the emulator is running.',
+      'Transfer files between this PC and disk images in FDD0/FDD1/HDD or the library. File names are automatically converted to 8.3 format. Writing to a running FDD slot is treated as reinserting the disk. The HDD is read-only while the emulator is running.',
     fmHostPaneTitle: () => 'Host (this PC)',
     fmDiskPaneTitle: () => 'Disk Image',
     fmSelectFilesBtn: () => 'Select Files',
@@ -746,8 +946,26 @@ const STRINGS: Record<Lang, Dict> = {
     urlFetchFailedNetwork: ({ url }) =>
       `Failed to fetch the disk image: ${url}\n(the origin may not support CORS)`,
     urlFetchFailedHttp: ({ url, status }) => `Failed to fetch the disk image: ${url} (HTTP ${status})`,
+    urlFetchFailedOneDrive: ({ url }) =>
+      `Failed to fetch the disk image: ${url}\nOneDrive share links can't be used due to OneDrive's own restrictions. Please use Google Drive or Dropbox instead.`,
+    urlFetchFailedNeedsProxy: ({ url }) =>
+      `Failed to fetch the disk image: ${url}\nThis source can only be fetched through the relay server, but this build has no relay (VITE_DISK_PROXY) configured. If you're hosting this yourself, set VITE_DISK_PROXY (see the README for details).`,
+    urlFetchFailedProxy: ({ url, reason }) => `Failed to fetch the disk image: ${url}\n${reason}`,
+    urlFetchFailedHtmlPage: ({ url }) =>
+      `Failed to fetch the disk image: ${url}\nThe fetch returned a web page instead of a disk image. Check that the share link is public ("Anyone with the link"), or drag and drop the downloaded file onto the screen instead.`,
+    urlProxyReasonBadUrl: () => 'The relay server could not parse the URL.',
+    urlProxyReasonOriginNotAllowed: () => 'The relay server does not allow requests from this site.',
+    urlProxyReasonHostNotAllowed: () => 'The relay server does not allow forwarding to this source.',
+    urlProxyReasonTooLarge: () => 'The file exceeds the relay server\'s size limit.',
+    urlProxyReasonRateLimited: () => 'The relay server rate limit was reached. Please try again later.',
+    urlProxyReasonUpstreamFailed: () => 'The relay server failed to fetch from the source.',
+    urlProxyReasonRedirectNotAllowed: () =>
+      'The source tried to redirect to another site (e.g. a login page), so the request was blocked. Check that sharing is set to "Anyone with the link" and that you copied the full share link.',
+    urlProxyReasonUnknown: ({ status }) => `The relay server returned an error (HTTP ${status}).`,
     urlLoadFailedToast: ({ label, message }) => `Failed to load ${label}: ${message}`,
     urlSystemFetchFailed: () => 'Failed to fetch the bundled system disk.',
+    sproutShareLoaded: ({ tags }) => `Loaded a program made with Sprout68k${tags}.`,
+    sproutShareFailed: ({ message }) => `Could not open the shared link: ${message}`,
     urlArchiveResumed: ({ label, count }) =>
       `${label}: Restored ${count} previously extracted disk image(s) from the library (no re-download).`,
     urlArchiveNoDiskImage: ({ label }) => `${label}: No disk image was found inside the archive.`,
@@ -755,7 +973,9 @@ const STRINGS: Record<Lang, Dict> = {
       `${label}: The archive doesn't contain a ${kind === 'hdd' ? 'HDD' : 'FD'} disk image.`,
     urlArchiveNeedsSelection: () =>
       'The archive contains multiple disk images, so the library was opened. Please choose which image to use (auto-boot is skipped).',
-    audioMutedBanner: () => 'Audio is muted due to autoplay restrictions. Click or press a key to enable sound.',
+    urlLibSlotLabel: ({ index }) => `Library ${index}`,
+    audioMutedBanner: () =>
+      'Audio is muted due to autoplay restrictions. Tap or click the screen, or press a key, to enable sound.',
 
     toolbarGamepad: () => 'Joystick Settings',
     gamepadDialogTitle: () => 'Joystick Settings',
@@ -827,6 +1047,58 @@ const STRINGS: Record<Lang, Dict> = {
     gamepadPosDpadLeft: () => 'D-Pad Left',
     gamepadPosDpadRight: () => 'D-Pad Right',
     gamepadPosHome: () => 'Home',
+
+    toolbarInputPanel: () => 'Show input panel',
+    toolbarInputPanelHide: () => 'Hide input panel',
+    inputPanelSwitchKeyboard: () => 'Switch to virtual keyboard',
+    inputPanelSwitchPad: () => 'Switch to virtual pad',
+    inputPanelSwitchTrackpad: () => 'Switch to virtual trackpad',
+    vpadProfileJoy2Button: () => 'Joystick (2 buttons)',
+    vpadProfileCursorSpace: () => 'Cursor keys + Space',
+    vpadProfileTenkey: () => 'Tenkey',
+    vpadProfileJoy6Button: () => 'Joystick (6 buttons)',
+    vpadEditAssignmentsMenuItem: () => 'Edit assignments…',
+
+    inputProfileEditorTitle: () => 'Edit Assignments',
+    inputProfileEditorDescription: () => 'Edit which input (joystick/keyboard) each virtual pad part sends.',
+    inputProfileSelectLabel: () => 'Profile',
+    inputProfileDuplicateBtn: () => 'Duplicate',
+    inputProfileRenameBtn: () => 'Rename',
+    inputProfileDeleteBtn: () => 'Delete',
+    inputProfileBuiltinReadonlyNote: () => 'Built-in profiles cannot be edited. Duplicate it first.',
+    inputProfileBindingsTitle: () => 'Assignments',
+    inputProfileClearBindingBtn: () => 'Clear this assignment',
+    inputProfileRowSelectedHint: () => 'Pick an input below (keyboard/joystick) to assign.',
+    inputProfilePickerTitle: () => 'Pick an input to assign',
+    inputProfileTabKeyboard: () => 'Keyboard',
+    inputProfileTabJoystick: () => 'Joystick',
+    inputProfileTrg3PlusNote: () => "TRG3 and above won't work while port 1's pad type stays 2-button.",
+    inputProfileUnassigned: () => 'None',
+    inputProfileDuplicateLabel: ({ name }) => `${name} copy`,
+    inputProfileDuplicatePrompt: ({ name }) => `Duplicating "${name}". Enter a new name.`,
+    inputProfileRenamePrompt: () => 'Enter a new name.',
+    inputProfileDeleteConfirm: ({ name }) => `Delete "${name}"?`,
+    inputProfileAutoDuplicatedToast: ({ name }) => `Duplicated built-in profile "${name}"`,
+    inputProfileSourceDpadUp: () => 'Stick Up',
+    inputProfileSourceDpadDown: () => 'Stick Down',
+    inputProfileSourceDpadLeft: () => 'Stick Left',
+    inputProfileSourceDpadRight: () => 'Stick Right',
+    inputProfileSourceOpt: ({ n }) => `Aux ${n}`,
+    inputProfileAddKeyBtn: () => 'Add Key',
+    inputProfileAddKeyCancelBtn: () => 'Cancel',
+    inputProfileAddKeyWaitingHint: () => 'Press a key (Esc to cancel)',
+    inputProfileRemoveRowBtn: () => 'Remove',
+    toolbarHostKey: () => 'Keyboard Assignment',
+    hostKeyDialogTitle: () => 'Keyboard Assignment',
+    hostKeyDialogDescription: () =>
+      "Lets you play joystick-only software with the physical keyboard even without a joystick. Also useful for remapping keys for numpad-only software.",
+    hostKeyEnableLabel: () => 'Enable keyboard assignment',
+    hostKeyProfileSelectLabel: () => 'Profile',
+    hostKeyBindingsTitle: () => 'Assignments',
+    hostKeyDisableTypingNote: () => 'When enabled, assigned keys will no longer work as normal text input.',
+    hostKeyProfileArrowsJoy: () => 'Arrows -> Joystick (2 Buttons)',
+    hostKeyProfileArrowsJoy6: () => 'Arrows -> Joystick (6 Buttons)',
+    hostKeyProfileTenkey: () => 'Arrows -> Numpad',
   },
 };
 

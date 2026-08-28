@@ -24,7 +24,9 @@ import {
   retroIdFor,
   saveGamepadStore,
   snapshotPad,
+  sourceKey,
   type GamepadStore,
+  X68000Z_STANDARD_PRESET,
 } from '../src/gamepad';
 import { SharedKeyInput } from '../src/virtual-keyboard';
 
@@ -667,6 +669,72 @@ describe('GamepadManager.keysForPad(kind:key バインディングの出力)', (
   });
 });
 
+// バーチャルパッド(タッチ)は Gamepad オブジェクトを持たないため、forEachActiveSource() を経由せず
+// 「今アクティブな Source 群」を直接渡す bitsForSources()/keysForSources() を使う。偽の Gamepad を
+// 合成する方式は採らない(AxisCalibration が無意味に走るため)。
+describe('GamepadManager.bitsForSources/keysForSources(Gamepadオブジェクトに依存しないAPI、バーチャルパッド向け)', () => {
+  it('bitsForSources() は kind:touch の Source を含む集合からその割当どおりのビットを立てる', () => {
+    const mgr = new GamepadManager([], 0.5);
+    mgr.addBinding({ kind: 'touch', id: 'vpad-trg1' }, { kind: 'joy', target: 'TRG1' });
+    mgr.addBinding({ kind: 'touch', id: 'vpad-up' }, { kind: 'joy', target: 'UP' });
+    const bits = mgr.bitsForSources([{ kind: 'touch', id: 'vpad-trg1' }, { kind: 'touch', id: 'vpad-up' }]);
+    expect(bits).toBe((1 << RETRO_B) | (1 << RETRO_UP));
+  });
+
+  it('bitsForSources() はアクティブでない(渡されていない) Source のビットを立てない', () => {
+    const mgr = new GamepadManager([], 0.5);
+    mgr.addBinding({ kind: 'touch', id: 'vpad-trg1' }, { kind: 'joy', target: 'TRG1' });
+    mgr.addBinding({ kind: 'touch', id: 'vpad-trg2' }, { kind: 'joy', target: 'TRG2' });
+    const bits = mgr.bitsForSources([{ kind: 'touch', id: 'vpad-trg1' }]);
+    expect(bits).toBe(1 << RETRO_B);
+  });
+
+  it('bitsForSources() は button/axis の Source が混ざっていても computeBits と同じ結果になる', () => {
+    const mgr = new GamepadManager([], 0.5);
+    mgr.addBinding({ kind: 'button', index: 0 }, { kind: 'joy', target: 'TRG1' });
+    mgr.addBinding({ kind: 'axis', index: 0, dir: -1 }, { kind: 'joy', target: 'LEFT' });
+    // 軸は初回観測値がbaselineになる(gamepad.tsの軸較正セクション参照)ため、静止(0)を1回
+    // 観測させてから動かす: そうしないとbaseline自体が-1になり偏差なしと判定されてしまう。
+    mgr.bitsForPad(makeGamepad({ buttons: { 0: false }, axes: { 0: 0 } }));
+    const pad = makeGamepad({ buttons: { 0: true }, axes: { 0: -1 } });
+    expect(mgr.bitsForPad(pad)).toBe((1 << RETRO_B) | (1 << RETRO_LEFT));
+  });
+
+  it('keysForSources() は kind:key の retrok だけを返し、kind:joy の割当は無視する', () => {
+    const mgr = new GamepadManager([], 0.5);
+    mgr.addBinding({ kind: 'touch', id: 'vpad-a' }, { kind: 'key', retrok: 97 });
+    mgr.addBinding({ kind: 'touch', id: 'vpad-b' }, { kind: 'joy', target: 'TRG1' });
+    const keys = mgr.keysForSources([{ kind: 'touch', id: 'vpad-a' }, { kind: 'touch', id: 'vpad-b' }]);
+    expect(keys).toEqual(new Set([97]));
+  });
+
+  it('keysForSources() は渡されなかった Source の retrok を含めない', () => {
+    const mgr = new GamepadManager([], 0.5);
+    mgr.addBinding({ kind: 'touch', id: 'vpad-a' }, { kind: 'key', retrok: 97 });
+    expect(mgr.keysForSources([])).toEqual(new Set());
+  });
+});
+
+// sourceKey() は Map の内部キーであると同時に localStorage 保存形式(GamepadStore v2)の識別に
+// 間接的に関わる(bindings の逆引きテーブルのキー)。touch 種別を足すリファクタで button/axis の
+// 文字列表現が変わっていないことを回帰確認する(期待値はリファクタ前の実装からそのまま採取した文字列)。
+describe('sourceKey(互換性の回帰テスト): button/axisの文字列表現はリファクタ前後で変わらない', () => {
+  it('button は従来どおり b<index>', () => {
+    expect(sourceKey({ kind: 'button', index: 0 })).toBe('b0');
+    expect(sourceKey({ kind: 'button', index: 12 })).toBe('b12');
+  });
+
+  it('axis は従来どおり a<index><+|->', () => {
+    expect(sourceKey({ kind: 'axis', index: 0, dir: 1 })).toBe('a0+');
+    expect(sourceKey({ kind: 'axis', index: 0, dir: -1 })).toBe('a0-');
+    expect(sourceKey({ kind: 'axis', index: 1, dir: 1 })).toBe('a1+');
+  });
+
+  it('touch は button/axis と衝突しない t<id> prefix', () => {
+    expect(sourceKey({ kind: 'touch', id: 'vpad-trg1' })).toBe('tvpad-trg1');
+  });
+});
+
 // main.ts の syncGamepadKeys()/releaseGamepadKeys() 相当のロジック(SharedKeyInputへの
 // press/release差分配線と解放漏れ対策)。main.ts自体はDOM初期化を伴い直接importできないため、
 // 実際に使うのと同じ2つの部品(GamepadManager.keysForPad + SharedKeyInput)を組み合わせて検証する。
@@ -1207,21 +1275,23 @@ describe('軸較正(AxisCalibration・離れてから確定方式): 実機で確
   });
 });
 
-// 8BitDo M30/Micro 用プリセット(Vendor/Product ID一致で選ばれる既定バインディング)。
+// 実機確認済みnon-standardパッド用プリセット(Vendor/Product ID一致で選ばれる既定バインディング)。
 // 値は実機で確認済みのボタンindex(内部0始まり)対応表そのもの(推測ではない)。
 //
 // 誤爆対策(2026-08-08発覚): 旧実装は gamepad.id に'Micro'を含むかどうか(大文字小文字無視)で
 // 判定していたが、'Micro'は'Microsoft'の部分文字列のため 'Microsoft X-Box 360 pad' のような
 // Xboxコントローラのidでも誤爆してMicro用プリセットが選ばれてしまっていた。
 // 現在は Vendor/Product ID(gamepad.idに埋め込まれる `(Vendor: xxxx Product: yyyy)`)を
-// 最優先で見る。実機値: M30=2dc8:0651, Micro=2dc8:9020(ゲームパッドチェックサイトで実測)。
+// 最優先で見る。実機値: M30=2dc8:0651, Micro=2dc8:9020, X68000 Z=33dd:0013。
 const M30_ID = '8BitDo M30 gamepad (Vendor: 2dc8 Product: 0651)';
 const MICRO_ID = '8BitDo Micro gamepad (Vendor: 2dc8 Product: 9020)';
+const X68000Z_ID = 'X68000 Z JOYCARD(BLACK) (Vendor: 33dd Product: 0013)';
 
 describe('extractVendorProduct(gamepad.id からのVendor/Product抽出)', () => {
   it('Chromeが埋め込む "(Vendor: xxxx Product: yyyy)" 形式から小文字の vendor:product を取り出す', () => {
     expect(extractVendorProduct(M30_ID)).toBe('2dc8:0651');
     expect(extractVendorProduct(MICRO_ID)).toBe('2dc8:9020');
+    expect(extractVendorProduct(X68000Z_ID)).toBe('33dd:0013');
   });
 
   it('大文字小文字/桁の揺れを吸収する', () => {
@@ -1243,10 +1313,11 @@ describe('extractVendorProduct(gamepad.id からのVendor/Product抽出)', () =>
     expect(extractVendorProduct('2dc8-0651-8BitDo M30 gamepad')).toBe('2dc8:0651');
     expect(extractVendorProduct('2dc8-9020-8BitDo Micro gamepad')).toBe('2dc8:9020');
     expect(extractVendorProduct('2DC8-0651-8BitDo M30 gamepad')).toBe('2dc8:0651'); // 大文字小文字を吸収。
+    expect(extractVendorProduct('33dd-0013-X68000 Z JOYCARD(BLACK)')).toBe('33dd:0013');
   });
 });
 
-describe('knownPadPresetFor(8BitDo M30/MicroのVendor/Product一致プリセット)', () => {
+describe('knownPadPresetFor(実機確認済みパッドのVendor/Product一致プリセット)', () => {
   it('⑤ Vendor/Product一致するM30パッドはpadType===defaultでM30_STANDARD_PRESETが選ばれる(A→TRG1,B→TRG2)', () => {
     expect(knownPadPresetFor(M30_ID, 'default')).toBe(M30_STANDARD_PRESET);
   });
@@ -1290,6 +1361,28 @@ describe('knownPadPresetFor(8BitDo M30/MicroのVendor/Product一致プリセッ�
     expect(preset).toContainEqual({ source: { kind: 'button', index: 11 }, binding: { kind: 'joy', target: 'TRG6' } });
     expect(preset).toContainEqual({ source: { kind: 'button', index: 10 }, binding: { kind: 'joy', target: 'TRG7' } });
     expect(preset).toContainEqual({ source: { kind: 'button', index: 6 }, binding: { kind: 'joy', target: 'TRG8' } });
+  });
+
+  it('Vendor/Product一致するX68000 Zパッドは実機確認済み2ボタンプリセットが選ばれる', () => {
+    const preset = knownPadPresetFor(X68000Z_ID, 'default');
+    expect(preset).toBe(X68000Z_STANDARD_PRESET);
+    expect(preset).toEqual([
+      { source: { kind: 'axis', index: 0, dir: -1 }, binding: { kind: 'joy', target: 'LEFT' } },
+      { source: { kind: 'axis', index: 0, dir: 1 }, binding: { kind: 'joy', target: 'RIGHT' } },
+      { source: { kind: 'axis', index: 1, dir: -1 }, binding: { kind: 'joy', target: 'UP' } },
+      { source: { kind: 'axis', index: 1, dir: 1 }, binding: { kind: 'joy', target: 'DOWN' } },
+      { source: { kind: 'button', index: 2 }, binding: { kind: 'joy', target: 'TRG1' } },
+      { source: { kind: 'button', index: 1 }, binding: { kind: 'joy', target: 'TRG2' } },
+    ]);
+    expect(knownPadPresetFor(X68000Z_ID, 'cpsf-md')).toBe(X68000Z_STANDARD_PRESET);
+  });
+
+  it('defaultProfileForはmappingなしのX68000 Zパッドにも初回プリセットを適用する', () => {
+    const profile = defaultProfileFor({ mapping: '', id: X68000Z_ID }, 'default');
+    expect(profile.bindings).toEqual(X68000Z_STANDARD_PRESET.map((entry) => ({
+      source: entry.source,
+      binding: entry.binding,
+    })));
   });
 
   it('未知のパッドidはnull(呼び出し側がmapping===standardか否かでフォールバックする)', () => {

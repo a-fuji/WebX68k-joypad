@@ -292,7 +292,7 @@
             <h2>起動する</h2>
             <p>
               ページを開くと起動オーバーレイが表示され、「ディスク無しで起動」(内蔵IPL ROMメニューから起動)
-              と「システムディスクで起動」(同梱の <code>human302.xdf</code> をFDD1へ挿入してから起動)
+              と「システムディスクで起動」(同梱の <code>human302.xdf</code> をFDD0へ挿入してから起動)
               の2択が選べます。
             </p>
             <img src="./help/overlay.png" alt="起動オーバーレイ。ディスク無しで起動/システムディスクで起動の選択ボタンが並ぶ" />
@@ -305,23 +305,33 @@
             </p>
             <p>
               URLパラメータでディスクとオーバーレイの扱いを指定することもできます。
-              <code>?fd1=URL</code> / <code>?fd2=URL</code> でFDD1/FDD2へディスクイメージを、
+              <code>?fd1=URL</code> / <code>?fd2=URL</code> でFDD0/FDD1へディスクイメージを、
               <code>?hdd=URL</code> でHDDへイメージをセットした状態でページを開けます
               (URLはCORSが有効なオリジンから配信されている必要があります)。同じURLに再度
               アクセスした場合は再ダウンロードせず、ブラウザに保存済みのイメージ(編集内容含む)
-              から復帰します。<code>?system=1</code> は同梱システムディスクをFDD1へ
+              から復帰します。<code>?system=1</code> は同梱システムディスクをFDD0へ
               (<code>fd1</code> 指定時はそちらが優先)、<code>?run=1</code> はオーバーレイを
               出さずそのまま自動起動します(自動再生制限により音は最初のクリック/キー入力まで
               鳴りません)。指定URLがZIP/LZHアーカイブで複数枚のディスクを含む場合は、
               自動起動せずディスクライブラリを開いて選んでもらう形になります。
+              <code>?lib=URL</code>(<code>&amp;lib=URL2</code> のように複数指定可)は、種別
+              (FD/HDD)を問わずディスクライブラリへ登録するだけの共有リンク用パラメータです。
+              スロットへは自動挿入せず必ずライブラリを開き、指定時は <code>run=1</code> でも
+              自動起動しません。
             </p>
+            <div class="note-box">
+              <strong>注意:</strong> 音声再生には <code>AudioWorklet</code> が必要ですが、これは
+              https または localhost でのみ使えます。LAN の IP アドレス(<code>http://192.168.x.x:port/</code>
+              など)で開いた場合は音声が使えないため、その場合は<strong>無音のまま起動</strong>します
+              (以前は起動そのものが失敗していました)。
+            </div>
           </div>
           <div class="lang-en">
             <h2>Starting the emulator</h2>
             <p>
               A start overlay appears when you open the page, offering two choices:
               "Start Without a Disk" (boots from the built-in IPL ROM menu) or "Start with System Disk"
-              (inserts the bundled <code>human302.xdf</code> into FDD1 before starting).
+              (inserts the bundled <code>human302.xdf</code> into FDD0 before starting).
             </p>
             <img src="./help/overlay-en.png" alt="Start overlay showing Start Without a Disk / Start with System Disk choices" />
             <p>
@@ -333,16 +343,26 @@
             </p>
             <p>
               URL parameters can also control disk loading and the overlay: <code>?fd1=URL</code> /
-              <code>?fd2=URL</code> load a disk image into FDD1/FDD2, and <code>?hdd=URL</code> sets
+              <code>?fd2=URL</code> load a disk image into FDD0/FDD1, and <code>?hdd=URL</code> sets
               one into the HDD, all before the page finishes opening (the URL must be served from a
               CORS-enabled origin). Revisiting the same URL doesn't re-download it — the image
               already saved in the browser, including any edits, is reused. <code>?system=1</code>
-              loads the bundled system disk into FDD1 (unless <code>fd1</code> is also given, which
+              loads the bundled system disk into FDD0 (unless <code>fd1</code> is also given, which
               takes priority), and <code>?run=1</code> auto-boots without showing the overlay
               (playback starts muted until the first click or key press, due to autoplay
               restrictions). If the URL resolves to a ZIP/LZH archive containing multiple disks, it
               won't auto-boot — the Disk Library opens instead so you can pick.
+              <code>?lib=URL</code> (repeatable, e.g. <code>&amp;lib=URL2</code>) is a sharing-link
+              parameter that only registers images in the Disk Library, regardless of kind (FD/HDD).
+              It never auto-inserts into a slot — the Library always opens — and skips <code>run=1</code>
+              auto-boot whenever it's given.
             </p>
+            <div class="note-box">
+              <strong>Note:</strong> Audio playback needs <code>AudioWorklet</code>, which is only
+              available over https or localhost. Opening the page from a LAN IP address (e.g.
+              <code>http://192.168.x.x:port/</code>) means audio is unavailable, so it now
+              <strong>boots silently</strong> instead (it used to fail to boot at all).
+            </div>
           </div>
         </section>
 
@@ -394,7 +414,7 @@
           <div class="lang-ja">
             <h2>ディスクイメージを読み込む</h2>
             <p>
-              画面下部のFDD1/FDD2/HDDそれぞれのスロット行へファイルをドラッグ&ドロップするか、
+              画面下部のFDD0/FDD1/HDDそれぞれのスロット行へファイルをドラッグ&ドロップするか、
               「ディスク挿入」ボタンから選択して読み込ませます。ライブラリから挿入したり、
               ブランクディスクを新規作成したり、挿入中のディスクをダウンロードすることもできます。
             </p>
@@ -402,12 +422,12 @@
               ドロップできる場所はドライブ行以外にも2つあり、ドラッグ中は受け付け可能な場所が
               枠で強調表示されます。<strong>画面領域</strong>(エミュレータ画面の上)に落とすと、
               HDDイメージはHDDスロットへ(起動後でロック済みならメッセージが出ます)、FDイメージは
-              FDD1へ(FDD1が埋まっていてFDD2が空ならFDD2へ)入ります。複数枚入りアーカイブは
+              FDD0へ(FDD0が埋まっていてFDD1が空ならFDD1へ)入ります。複数枚入りアーカイブは
               スロットへは入らずライブラリへ登録してライブラリを開きます。<strong>ディスク
               ライブラリのダイアログ</strong>に落とした場合は、スロットには入れずライブラリへの
               登録だけを行います(挿入先はこれから選ぶ、という文脈のため)。
             </p>
-            <img src="./help/overview.png" alt="プレイヤー全体像。上部にツールバー、下部にFDD1/FDD2/HDDのスロット行" />
+            <img src="./help/overview.png" alt="プレイヤー全体像。上部にツールバー、下部にFDD0/FDD1/HDDのスロット行" />
             <ul>
               <li>FDD対応拡張子: <code>.xdf</code> <code>.dim</code> <code>.d88</code> <code>.hdm</code> <code>.img</code> <code>.2hd</code></li>
               <li>HDD対応拡張子: <code>.hdf</code> <code>.dup</code></li>
@@ -439,7 +459,7 @@
           <div class="lang-en">
             <h2>Loading disk images</h2>
             <p>
-              Drag & drop a file onto an FDD1/FDD2/HDD slot row at the bottom of the player, or
+              Drag & drop a file onto an FDD0/FDD1/HDD slot row at the bottom of the player, or
               use the "Insert Disk" button to pick one. You can also insert from the library,
               create a new blank disk, or download the currently inserted disk.
             </p>
@@ -448,13 +468,13 @@
               the drop-accepting area is highlighted with a border. Dropping onto the
               <strong>screen area</strong> (over the emulator display) sends a HDD image to the
               HDD slot (a message is shown if it's already locked after boot), and a FD image to
-              FDD1 (or FDD2 if FDD1 is occupied and FDD2 is free). An archive containing multiple
+              FDD0 (or FDD1 if FDD0 is occupied and FDD1 is free). An archive containing multiple
               images isn't inserted into a slot — it's registered to the library, which then
               opens. Dropping onto the <strong>Disk Library dialog</strong> only registers the
               file(s) into the library without inserting into any slot, since opening the library
               means you're about to choose a destination yourself.
             </p>
-            <img src="./help/overview-en.png" alt="Player overview with the toolbar on top and FDD1/FDD2/HDD slot rows below" />
+            <img src="./help/overview-en.png" alt="Player overview with the toolbar on top and FDD0/FDD1/HDD slot rows below" />
             <ul>
               <li>FDD extensions: <code>.xdf</code> <code>.dim</code> <code>.d88</code> <code>.hdm</code> <code>.img</code> <code>.2hd</code></li>
               <li>HDD extensions: <code>.hdf</code> <code>.dup</code></li>
@@ -492,13 +512,13 @@
             <p>
               「…」メニューの「ディスク」グループにある「ディスクライブラリ」から、これまでに挿入したディスクイメージの
               一覧を開けます。ブラウザ内に保存されたイメージから、挿入するドライブ
-              (FDD1 / FDD2 / HDD) を選んで再挿入できます。
+              (FDD0 / FDD1 / HDD) を選んで再挿入できます。
             </p>
             <img src="./help/library.png" alt="ディスクライブラリダイアログ" />
             <p>
               複数枚のディスクを含むZIP/LZHアーカイブを読み込んだ場合は、ここへ
               <strong>フォルダとしてまとめて登録</strong>されます。フォルダを開くと中のディスク
-              一覧に切り替わり、FDD1 / FDD2 それぞれへ挿入できるので、2ドライブ同時装填型の
+              一覧に切り替わり、FDD0 / FDD1 それぞれへ挿入できるので、2ドライブ同時装填型の
               ソフトはここで続けて両方を指定できます。URLパラメータ(<code>fd1</code>/
               <code>fd2</code>/<code>hdd</code>)経由でアーカイブを読み込んだ場合は、該当フォルダが
               展開・強調表示された状態でこのダイアログが自動的に開きます。
@@ -520,14 +540,14 @@
             <h2>Disk Library</h2>
             <p>
               "Disk Library" in the "…" menu's Disk group opens the list of disk images you have inserted
-              so far. Choose a drive (FDD1 / FDD2 / HDD) to re-insert an image saved in your
+              so far. Choose a drive (FDD0 / FDD1 / HDD) to re-insert an image saved in your
               browser.
             </p>
             <img src="./help/library-en.png" alt="Disk Library dialog" />
             <p>
               When you load a ZIP/LZH archive containing multiple disk images, it's registered here
               as a <strong>folder</strong>. Opening the folder switches to the list of disks inside,
-              and you can insert each one into FDD1 / FDD2 — so a title that expects both drives
+              and you can insert each one into FDD0 / FDD1 — so a title that expects both drives
               loaded at once can be set up here in two steps. If the archive was loaded via a URL
               parameter (<code>fd1</code>/<code>fd2</code>/<code>hdd</code>), this dialog opens
               automatically with that folder expanded and highlighted.
@@ -602,7 +622,7 @@
             <h2>ツールバーのボタン一覧</h2>
             <img src="./help/overview.png" alt="プレイヤー全体像。ツールバーのアイコンが並ぶ" />
             <p>
-              常時表示されているのは次の4つだけです。残りはすべて「…」ボタンのメニューに
+              常時表示されているのは次の5つだけです。残りはすべて「…」ボタンのメニューに
               まとまっています。
             </p>
             <table class="btn-table">
@@ -631,7 +651,7 @@
             <h2>Toolbar buttons</h2>
             <img src="./help/overview-en.png" alt="Player overview with the toolbar icons" />
             <p>
-              Only these 4 buttons are always visible. Everything else lives inside the
+              Only these 5 buttons are always visible. Everything else lives inside the
               "…" button's menu.
             </p>
             <table class="btn-table">
@@ -690,6 +710,15 @@
               これらのキーが無いキーボードも多いので、その場合も仮想キーボードが便利です。
             </div>
             <p>
+              キーを押しっぱなしにするとリピート入力されます(物理キーボード・仮想キーボード
+              とも対応)。リピートの開始時間・間隔はゲスト側の設定ユーティリティ
+              <strong>SWITCH.X</strong> の設定に従い、変更内容はブラウザ内に保存されるため
+              リロード後も引き継がれます。ただし<strong>キークリック音とキーボードLEDの
+              制御はホスト側で未対応</strong>です。また<strong>メモリ容量</strong>は
+              SWITCH.X で変更しても、常に設定ダイアログ(または <code>?ram=</code>)側の
+              値が優先されます。
+            </p>
+            <p>
               物理キーボード・仮想キーボード・(MCP経由の)自動操作は、それぞれ入力元ごとに
               押下状態を数えており、同じキーを複数の入力元から押しても、最後の入力元が
               離すまでキーは離れたとみなされません。またタブ切り替えなどで画面がフォーカスを
@@ -730,6 +759,11 @@
               マウスの感度設定は、ブラウザの localStorage キー
               <code>webx68k.mouseSensitivity</code> に保存されます。
             </p>
+            <div class="note-box">
+              <strong>注意:</strong> iOS Safari は Pointer Lock API に対応しておらず、
+              上記のキャプチャによるマウス操作ができません。タッチデバイスでマウスを操作するには、
+              後述の<strong>バーチャルトラックパッド</strong>(入力パネルの🖱)を使ってください。
+            </div>
           </div>
           <div class="lang-en">
             <h2>Keyboard and mouse</h2>
@@ -761,6 +795,15 @@
               PrintScreen, ScrollLock, and PageDown/PageUp respectively, but many keyboards lack
               those keys too, so the virtual keyboard is handy for them as well.
             </div>
+            <p>
+              Holding a key down repeats it (works for both the physical and virtual keyboard).
+              The repeat delay and interval follow the guest-side <strong>SWITCH.X</strong>
+              configuration utility, and changes you make there are saved in the browser, so
+              they persist across reloads. However, <strong>key-click sound and keyboard LED
+              control are not supported</strong> on the host side. Also, changing the
+              <strong>memory size</strong> in SWITCH.X has no lasting effect — the value from
+              the settings dialog (or <code>?ram=</code>) always takes priority.
+            </p>
             <p>
               The physical keyboard, virtual keyboard, and automated input (e.g. via MCP) each
               keep their own reference count of pressed keys per input source, so pressing the
@@ -804,6 +847,12 @@
               The mouse sensitivity setting is stored under the browser's localStorage key
               <code>webx68k.mouseSensitivity</code>.
             </p>
+            <div class="note-box">
+              <strong>Note:</strong> iOS Safari doesn't support the Pointer Lock API, so the
+              capture-based mouse control above isn't available there. To use the mouse on a
+              touch device, use the <strong>virtual trackpad</strong> (the 🖱 chip on the input
+              panel), described below.
+            </div>
           </div>
         </section>
 
@@ -895,6 +944,180 @@
           </div>
         </section>
 
+        <!-- 7.6 バーチャルパッド -->
+        <section class="help-card">
+          <div class="lang-ja">
+            <h2>バーチャルパッド(スマホでゲームを遊ぶ)</h2>
+            <p>
+              ツールバーの「入力パネル」ボタンを押すと、画面下に仮想キーボード・バーチャルパッド・
+              バーチャルトラックパッドのいずれかが表示されます(排他)。入力パネルが表示されている間は
+              ⌨/🎮/🖱の小さなチップが現れ、そこで表示を切り替えられます。方向入力は<strong>アナログスティック風</strong>
+              (固定ベース＋ノブ、8方向スナップ)で、円の端をちょんと押すだけで方向が出ます。
+            </p>
+            <img src="./help/virtualpad.png" alt="縦持ちで画面下にバーチャルパッドがパネル配置で表示された状態" />
+            <p>
+              各部品が何を送るかは<strong>プロファイル</strong>として持ちます。組み込みは
+              ジョイスティック(2ボタン) / カーソルキー + スペース / テンキー / ジョイスティック
+              (6ボタン)の4種類です。6ボタンは実機のメガドライブ6ボタンパッドに合わせ、上段
+              X/Y/Z・下段 A/B/C で右上がりに配置しています。🎮 のボタンを押すと、このプロファイル
+              選択メニューが開きます。
+            </p>
+            <p>
+              表示位置は<strong>実測値から自動で選ばれます</strong>(画面幅の決め打ちはしません)。
+            </p>
+            <ul>
+              <li><strong>パネル</strong> — 縦持ちのように画面下に余白があるとき、仮想キーボードと
+                同じ位置に帯として表示されます。画面は縮みません。</li>
+              <li><strong>左右</strong> — 横持ちのように画面の左右に余白があるとき、そこにスティックと
+                ボタンが表示され、ゲスト画面に指が被りません。</li>
+              <li><strong>重ねる</strong> — どちらの余白も足りないとき、画面に半透明で重ねて
+                表示されます。</li>
+            </ul>
+            <img src="./help/virtualpad-sides.png" alt="横持ちの疑似フルスクリーンで画面左右にスティックとボタンが配置された状態" />
+            <p>
+              🎮 のメニュー末尾にある「割当を編集…」から、パッドの12個の入力元(スティック上下左右 /
+              A・B・C / X・Y・Z / 補助1・2)へキーまたはジョイスティックのボタンを割り当てられます。
+              キー割当のピッカーは仮想キーボードと同じ配列で、割り当てると次の行へ自動で進みます。
+              組み込みプロファイルを編集しようとすると自動で複製が作られ、組み込み自体は
+              変わりません。
+            </p>
+            <img src="./help/vpad-editor.png" alt="バーチャルパッドの割当編集ダイアログ" />
+          </div>
+          <div class="lang-en">
+            <h2>Virtual pad (playing on a phone)</h2>
+            <p>
+              Pressing the toolbar's "Input Panel" button shows the virtual keyboard, the virtual
+              pad, or the virtual trackpad at the bottom of the screen (mutually exclusive). While a
+              panel is shown, small ⌨/🎮/🖱 chips appear so you can switch between them. Directional input is
+              <strong>analog-stick-style</strong> (a fixed base with a knob, snapping to 8
+              directions) — a light tap near the edge of the circle is enough to get a direction out.
+            </p>
+            <img src="./help/virtualpad-en.png" alt="Virtual pad shown as a docked panel below the screen in portrait" />
+            <p>
+              What each part sends is a <strong>profile</strong>. The built-ins are Joystick (2
+              Buttons) / Cursor Keys + Space / Tenkey / Joystick (6 Buttons). The 6-button layout
+              follows a real Mega Drive 6-button pad — X/Y/Z on the top row, A/B/C on the bottom,
+              both rising left to right. Pressing 🎮 opens this profile-select menu.
+            </p>
+            <p>
+              The pad's on-screen position is chosen automatically from <strong>measured</strong>
+              layout space (never a hardcoded screen-width breakpoint):
+            </p>
+            <ul>
+              <li><strong>Panel</strong> — when there's spare room below the screen (as in portrait),
+                shown as a docked strip in the same slot as the virtual keyboard. The screen is not
+                shrunk.</li>
+              <li><strong>Sides</strong> — when there's spare room on the left/right of the screen (as
+                in landscape), the stick and buttons go there so nothing covers the guest screen.</li>
+              <li><strong>Overlay</strong> — when neither kind of margin is big enough, the pad is
+                drawn semi-transparently on top of the screen.</li>
+            </ul>
+            <img src="./help/virtualpad-sides-en.png" alt="Virtual pad's stick and buttons placed in the left/right margins in pseudo-fullscreen landscape" />
+            <p>
+              "Edit assignments…" at the end of the 🎮 menu lets you bind each of the pad's 12 input
+              sources (stick up/down/left/right, A/B/C, X/Y/Z, Aux 1/2) to a key or a joystick
+              button. The key picker shares the virtual keyboard's layout, and assigning a key
+              automatically advances to the next row. Editing a built-in profile automatically
+              creates a copy — the built-in itself is never changed.
+            </p>
+            <img src="./help/vpad-editor-en.png" alt="Virtual pad's edit-assignments dialog" />
+          </div>
+        </section>
+
+        <!-- 7.65 バーチャルトラックパッド -->
+        <section class="help-card">
+          <div class="lang-ja">
+            <h2>バーチャルトラックパッド(タッチでマウス操作)</h2>
+            <p>
+              iOS Safari は Pointer Lock API に対応しておらず、通常のマウスキャプチャが
+              成立しません。その代わりとして、入力パネルの3種類目にバーチャルトラックパッドが
+              あります。ツールバーの「入力パネル」ボタンでパネルを開き、⌨/🎮/🖱 のチップから
+              🖱 を選ぶと表示されます。
+            </p>
+            <img src="./help/trackpad.png" alt="画面とツールバーの間にバーチャルトラックパッドの操作面が表示された状態" />
+            <p>
+              操作面は<strong>画面とツールバーの間の帯</strong>に置かれ、画面には重なりません
+              (操作中に指がゲスト画面を隠さないようにするためです)。1本指ドラッグでカーソルを
+              移動します(ノートPCのトラックパッドと同じ相対移動で、マウス感度設定が適用されます)。
+              タップは左クリック、2本指タップは右クリック、長押し(450ms)すると左ボタンを押した
+              ままドラッグできます。
+            </p>
+            <div class="note-box">
+              <strong>注意:</strong> X68000のマウスは左右2ボタンのみでホイールという概念が
+              無いため、2本指ドラッグ(ホイール相当)には対応していません。
+            </div>
+          </div>
+          <div class="lang-en">
+            <h2>Virtual trackpad (mouse control via touch)</h2>
+            <p>
+              iOS Safari doesn't support the Pointer Lock API, so the usual mouse-capture flow
+              doesn't work there. As a substitute, the input panel has a third kind: the virtual
+              trackpad. Open the input panel with the toolbar's "Input Panel" button, then pick 🖱
+              from the ⌨/🎮/🖱 chips.
+            </p>
+            <img src="./help/trackpad-en.png" alt="The virtual trackpad's surface shown in the strip between the screen and the toolbar" />
+            <p>
+              The surface sits in the <strong>strip between the screen and the toolbar</strong> and
+              never overlaps the screen (so your finger doesn't cover the guest display while
+              you're using it). A one-finger drag moves the cursor (relative movement, just like a
+              laptop trackpad, with the mouse sensitivity setting applied). A tap is a left click, a
+              two-finger tap is a right click, and a long press (450ms) holds the left button down
+              so you can drag.
+            </p>
+            <div class="note-box">
+              <strong>Note:</strong> The X68000 mouse only has left/right buttons and no concept of
+              a wheel, so a two-finger drag (which would be a wheel gesture) isn't supported.
+            </div>
+          </div>
+        </section>
+
+        <!-- 7.7 物理キーボード→ジョイスティック割当 -->
+        <section class="help-card">
+          <div class="lang-ja">
+            <h2>物理キーボードにジョイスティックを割り当てる</h2>
+            <p>
+              ゲームパッドを持っていない PC ユーザーが、ジョイスティック専用ソフトをキーボードで
+              遊べるようにする機能です。「…」メニューの「入力」グループにある「キーボード割当」
+              から有効にします。<strong>既定では無効</strong>で、普段の文字入力の邪魔をしません。
+            </p>
+            <img src="./help/hostkey.png" alt="キーボード割当ダイアログ" />
+            <p>
+              組み込みプロファイルは3種類です: 矢印キー -&gt; ジョイスティック(2ボタン) / 矢印キー
+              -&gt; ジョイスティック(6ボタン)(CPSF-MD 用) / 矢印キー -&gt; テンキー。最後のものは、
+              テンキーの無いノートPCでテンキー専用ソフトを遊ぶ用途にも使えます。
+            </p>
+            <div class="note-box">
+              <strong>注意:</strong> 有効にすると、割り当てたキーは通常の文字入力としては
+              働かなくなります。「キーを追加」を押してから割り当てたい物理キーを押すと、その
+              キーが入力元として登録され、ジョイスティックのボタンまたはキーボードのキーを
+              割り当てられます。組み込みプロファイルを編集しようとすると自動で複製が作られ、
+              組み込み自体は変わりません。
+            </div>
+          </div>
+          <div class="lang-en">
+            <h2>Mapping the physical keyboard to a joystick</h2>
+            <p>
+              For PC users without a gamepad who want to play joystick-only software, a physical key
+              can be mapped to a joystick input. Enable it from "Keyboard Assignment" in the "…"
+              menu's Input group. <strong>It is disabled by default</strong>, so it never gets in the
+              way of normal typing.
+            </p>
+            <img src="./help/hostkey-en.png" alt="Keyboard Assignment dialog" />
+            <p>
+              Three built-in profiles are included: Arrows -&gt; Joystick (2 Buttons), Arrows -&gt;
+              Joystick (6 Buttons) (for CPSF-MD-style software), and Arrows -&gt; Numpad — the last
+              one also doubles as a way to play numpad-only software on a laptop with no numpad.
+            </p>
+            <div class="note-box">
+              <strong>Note:</strong> Once enabled, any key you've mapped stops working as a regular
+              character key. Press "Add Key" and then press the physical key you want to register; it's
+              added as a new input source that you can bind to a joystick button or a keyboard key.
+              Editing a built-in profile automatically creates a copy for you to edit — the built-in
+              itself is never changed.
+            </div>
+          </div>
+        </section>
+
         <!-- 8. ステート保存と続きから -->
         <section class="help-card">
           <div class="lang-ja">
@@ -904,7 +1127,7 @@
               gzip圧縮して保存・復元できます。
             </p>
             <p>
-              保存時には、そのときのディスク構成(FDD1/FDD2/HDDに何が挿入されていたか)も
+              保存時には、そのときのディスク構成(FDD0/FDD1/HDDに何が挿入されていたか)も
               一緒に記録されます。復元時に現在のディスク構成と異なる場合は確認ダイアログが
               表示され、キャンセルすれば復元を中止できます。
             </p>
@@ -922,7 +1145,7 @@
               state to/from IndexedDB, gzip-compressed.
             </p>
             <p>
-              The disk configuration at save time (what was inserted in FDD1/FDD2/HDD) is recorded
+              The disk configuration at save time (what was inserted in FDD0/FDD1/HDD) is recorded
               alongside the state. If it differs from the current configuration at load time, a
               confirmation dialog appears; canceling it aborts the restore.
             </p>
@@ -1043,6 +1266,44 @@
               You can also configure CPU speed (10 / 16 / 25 / 33(OC) / 66(OC) / 100(OC) MHz) and
               RAM size (1–12MB) as part of the machine configuration.
             </p>
+          </div>
+        </section>
+
+        <!-- 9.5 ホーム画面に追加(PWA) -->
+        <section class="help-card">
+          <div class="lang-ja">
+            <h2>ホーム画面に追加する(iPhone)</h2>
+            <p>
+              iPhone では Web ページからブラウザの URL バーを消す手段がありません。WebX68k を
+              ホーム画面に追加し、そこから起動すると URL バーの無い状態で使えます(共有メニューの
+              「ホーム画面に追加」から)。Android は「フルスクリーン」ボタンのネイティブ全画面で
+              既に URL バーを消せます。
+            </p>
+            <div class="note-box">
+              <strong>確定:</strong> ホーム画面アプリと通常のブラウザ(Safari/Chrome)とでは、
+              保存済みディスク・ステート・BIOS(IndexedDB)が共有されません(iOSではホーム画面
+              アプリ・Safari・Chromeがそれぞれ独立したストレージを持つため。実機で確認済み)。
+              どちらか一方に決めて使うのが無難です。ホーム画面版で遊ぶ場合は、ディスクの登録も
+              ホーム画面版から行う必要があります。これは iOS 側の仕様であり、アプリ側では回避
+              できません。
+            </div>
+          </div>
+          <div class="lang-en">
+            <h2>Add to Home Screen (iPhone)</h2>
+            <p>
+              On iPhone, there is no way for a web page to hide the browser's URL bar. Adding WebX68k
+              to the Home Screen (via the share menu's "Add to Home Screen") and launching it from
+              there runs it without the URL bar. On Android, the "Fullscreen" button's native
+              fullscreen already hides it.
+            </p>
+            <div class="note-box">
+              <strong>Confirmed:</strong> saved disks, state, and BIOS (IndexedDB) are not shared
+              between the Home Screen app and a regular browser (Safari/Chrome) — on iOS, the Home
+              Screen app, Safari, and Chrome each have their own independent storage (confirmed on a
+              real device). It's best to pick one and stick with it; if you play from the Home Screen
+              app, you also need to register disks from that same app. This is an iOS platform
+              limitation that cannot be worked around from the app side.
+            </div>
           </div>
         </section>
 
@@ -1175,7 +1436,7 @@
         // ツールバーのボタン一覧テーブルを生成する。
         // アイコンのpath dは index.html のツールバーボタン定義と同一。
 
-        // 常設(4個): リセット / フルスクリーン / 仮想キーボード / スクリーンショット。
+        // 常設(5個): リセット / フルスクリーン / 仮想キーボード / スクリーンショット / 速度変更。
         var PERMANENT_BUTTONS = [
           {
             icon: 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5',
@@ -1195,25 +1456,32 @@
             ja: 'フルスクリーン',
             en: 'Fullscreen',
             descJa:
-              '画面全体をフルスクリーン表示します(画面モード変更にも追従してアスペクト比を保ちます)。' +
+              'ツールバーを含むカード全体をフルスクリーン表示するため、全画面のままリセットや' +
+              '入力パネルの切替が操作できます(画面モード変更にも追従してアスペクト比を保ちます)。' +
               'もう一度押すか、Escキーで解除します。マウスキャプチャ中にEscキーを押すと、キャプチャと' +
-              'フルスクリーンが同時に解除されます。',
+              'フルスクリーンが同時に解除されます。iPhoneはFullscreen APIが&lt;video&gt;要素にしか無いため、' +
+              'ページ側のUIを畳む疑似フルスクリーンで代替します(この場合もツールバーは表示されたままです)。',
             descEn:
-              'Shows the screen in fullscreen, keeping the aspect ratio even when the screen mode' +
-              ' changes. Press again, or press Esc, to exit. While the mouse is captured, pressing' +
-              ' Esc releases both the capture and fullscreen at the same time.',
+              'Puts the whole card — toolbar included — into fullscreen, so Reset and switching the' +
+              ' input panel stay usable while fullscreen (it keeps the aspect ratio even when the' +
+              ' screen mode changes). Press again, or press Esc, to exit. While the mouse is captured,' +
+              ' pressing Esc releases both the capture and fullscreen at the same time. On iPhone, the' +
+              ' Fullscreen API only supports &lt;video&gt; elements, so a page-side pseudo-fullscreen is' +
+              ' used instead (the toolbar stays visible there too).',
           },
           {
             icon: 'M3 6h18v12H3z M6 9h1 M10 9h1 M14 9h1 M18 9h1 M6 12h1 M10 12h1 M14 12h1 M18 12h1 M7 15h10',
-            ja: '仮想キーボード',
-            en: 'Virtual Keyboard',
+            ja: '入力パネル',
+            en: 'Input Panel',
             descJa:
-              '画面下に仮想キーボードを表示/非表示します。タッチ環境向け。物理キーボードに無い' +
-              ' XF1-5 などの X68000 固有キーもここから入力できます。',
+              '画面下に入力パネル(仮想キーボード・バーチャルパッド・バーチャルトラックパッドの' +
+              'いずれか)を表示/非表示します。パネル表示中に現れる⌨/🎮/🖱の小さなチップでどれを' +
+              '出すか切り替えられ、最後に選んだ側が次回このボタンで開きます。3種類は同時には出せません。',
             descEn:
-              'Shows/hides an on-screen keyboard at the bottom of the screen, for touch devices. It' +
-              ' also lets you enter X68000-specific keys like XF1-5 that the physical keyboard has no' +
-              ' counterpart for.',
+              'Shows/hides the input panel (the virtual keyboard, the virtual pad, or the virtual' +
+              ' trackpad) at the bottom of the screen. While a panel is showing, small ⌨/🎮/🖱 chips' +
+              ' let you switch which one, and this button reopens whichever you picked last. The' +
+              ' three are mutually exclusive.',
           },
           {
             icon: 'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z M12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
@@ -1221,6 +1489,31 @@
             en: 'Screenshot',
             descJa: '現在の画面をPNG画像としてダウンロードします。',
             descEn: 'Downloads the current display as a PNG image.',
+          },
+          {
+            icon: 'M2 6l7 6-7 6z M11 6l7 6-7 6z M18 6l4 6-4 6z',
+            ja: '速度変更',
+            en: 'Speed',
+            descJa:
+              'ON/OFFのトグルボタンです。OFF(既定)は等倍の100%で動作し、ONにすると設定パネルで' +
+              '選んだ倍率で走ります(選択肢は25%/50%/75%/150%/200%/300%/400%、既定200%)。' +
+              'ON中はボタンに現在の倍率がバッジ表示されます。リセット不要でトグル操作の' +
+              'その場から即時に反映され、音声もテープの早送り/スローのようにピッチが変わります' +
+              '(BGMも含めて速度に追従します)。設定は保存されず、起動時・リセット時は必ずOFF' +
+              '(100%)から始まります。実際に出せる速度は端末の処理能力次第で、設定パネルには' +
+              '実測の速度が表示されます。マシン構成の「CPU速度」(実機のクロックを変える設定で' +
+              'リセットが必要)とは別物です。',
+            descEn:
+              'A toggle button. OFF (the default) runs at 100% speed; ON runs at whatever multiplier' +
+              ' is chosen in the settings panel (25% / 50% / 75% / 150% / 200% / 300% / 400%, default' +
+              ' 200%). While ON, the button shows a badge with the current multiplier. The change' +
+              ' takes effect immediately from the toggle itself — no reset needed — and audio pitch' +
+              ' shifts along with it, like a tape running fast or slow (BGM speeds up too). The' +
+              ' setting is not saved, so playback always starts at OFF (100%) on boot and after a' +
+              ' reset. How fast it can actually go depends on your device, and the settings panel' +
+              ' shows the measured speed you\'re actually getting. This is separate from the machine' +
+              ' configuration\'s "CPU speed" setting, which changes the emulated clock and needs a' +
+              ' reset.',
           },
         ];
 
@@ -1275,6 +1568,21 @@
             groupEn: 'Input',
             descJa: '接続中のゲームパッドの割当を確認・編集するダイアログを開きます。設定はパッドごとにブラウザへ保存されます。',
             descEn: 'Opens a dialog to check and edit the bindings of connected gamepads. Settings are saved to the browser per pad.',
+          },
+          {
+            icon: 'M3 7h18v10H3z M6 10h1 M9 10h1 M12 10h1 M15 10h1 M18 10h1 M6 13h10 M17 13h1',
+            ja: 'キーボード割当',
+            en: 'Keyboard Assignment',
+            groupJa: '入力',
+            groupEn: 'Input',
+            descJa:
+              '物理キーボードのキーをジョイスティック入力へ割り当てる機能を有効/無効にし、' +
+              '組み込みプロファイルを選ぶダイアログを開きます。既定は無効。ゲームパッドを' +
+              '持っていなくてもジョイスティック専用ソフトをキーボードで遊べます。',
+            descEn:
+              'Opens a dialog to enable/disable mapping physical keyboard keys to joystick input and' +
+              ' pick a built-in profile. Disabled by default. Lets you play joystick-only software' +
+              ' from the keyboard even without a gamepad.',
           },
           {
             icon: 'M4 16h13l3-3V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1z M4 20h13a3 3 0 0 0 3-3 M8 9h6v4H8z',

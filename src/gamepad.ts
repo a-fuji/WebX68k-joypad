@@ -141,11 +141,27 @@ export const TARGET_TO_RETRO_ID: Record<JoyTarget, number> = RETRO_ID_MAPS.defau
  */
 export type Binding = { kind: 'joy'; target: JoyTarget } | { kind: 'key'; retrok: number };
 
-/** 物理入力側。軸はデッドゾーンを超えた方向(dir)ごとに別の Source として扱う。 */
-export type Source = { kind: 'button'; index: number } | { kind: 'axis'; index: number; dir: 1 | -1 };
+/**
+ * 物理入力側。軸はデッドゾーンを超えた方向(dir)ごとに別の Source として扱う。
+ * kind:'touch' はバーチャルパッド(画面上のタッチ操作)用。Gamepad オブジェクトを持たないため、
+ * 偽の Gamepad を合成せず GamepadManager.bitsForSources()/keysForSources() へ直接 Source を渡す形にする
+ * (AxisCalibration はハードウェア軸の較正のための仕組みであり、タッチには無関係・無意味なため)。
+ * id はバーチャルパッドの画面部品ID(呼び出し側が決める、UI上で一意であればよい)。
+ */
+export type Source =
+  | { kind: 'button'; index: number }
+  | { kind: 'axis'; index: number; dir: 1 | -1 }
+  | { kind: 'touch'; id: string };
 
-function sourceKey(source: Source): string {
-  return source.kind === 'button' ? `b${source.index}` : `a${source.index}${source.dir > 0 ? '+' : '-'}`;
+/**
+ * Source を Map のキーにするための文字列化。button/axis のキー文字列は localStorage 互換のため
+ * 絶対に変えないこと(GamepadStore v2 の保存形式に含まれる)。touch は既存の 'b'/'a' prefix と
+ * 衝突しない 't' prefix にする。
+ */
+export function sourceKey(source: Source): string {
+  if (source.kind === 'button') return `b${source.index}`;
+  if (source.kind === 'axis') return `a${source.index}${source.dir > 0 ? '+' : '-'}`;
+  return `t${source.id}`;
 }
 
 /**
@@ -407,15 +423,17 @@ function emptyStore(): GamepadStore {
   return { version: 2, pads: {}, portPads: [null, null], joyType: ['default', 'default'] };
 }
 
-function isSource(v: unknown): v is Source {
+export function isSource(v: unknown): v is Source {
   if (typeof v !== 'object' || v === null) return false;
   const o = v as Record<string, unknown>;
   if (o.kind === 'button') return typeof o.index === 'number';
   if (o.kind === 'axis') return typeof o.index === 'number' && (o.dir === 1 || o.dir === -1);
+  if (o.kind === 'touch') return typeof o.id === 'string';
   return false;
 }
 
-function isBinding(v: unknown): v is Binding {
+/** Binding の構造検証。input-profile.ts の InputBindings 検証からも共有される(二重実装を避けるため export)。 */
+export function isBinding(v: unknown): v is Binding {
   if (typeof v !== 'object' || v === null) return false;
   const o = v as Record<string, unknown>;
   if (o.kind === 'joy') return typeof o.target === 'string' && (ALL_JOY_TARGETS as readonly string[]).includes(o.target);
@@ -506,11 +524,11 @@ export function blankProfile(deadzone: number = DEFAULT_DEADZONE): GamepadProfil
   return { deadzone, bindings: [] };
 }
 
-// --- 8BitDo M30 / Micro 用の既知プリセット ---
+// --- 実機確認済み non-standard パッド用の既知プリセット ---
 //
-// 実機(D-inputモード)で判明したボタン/軸の対応(内部index、0始まり)。表示は1始まりだが、
-// ここでの値は内部indexそのもの。gamepad.id に 'M30'/'Micro' を含むかどうか(大文字小文字無視)で
-// 判定する。standard 申告でない可能性が高いパッドのため、mapping==='standard' かどうかに関わらず
+// 実機(D-inputモード等)で判明したボタン/軸の対応(内部index、0始まり)。表示は1始まりだが、
+// ここでの値は内部indexそのもの。gamepad.id のVendor/Product IDを優先して機種判定する。
+// standard 申告でない可能性が高いパッドのため、mapping==='standard' かどうかに関わらず
 // このプリセットを優先して適用する(knownPadPresetFor が null を返す場合だけ、従来の
 // mapping==='standard' ? XINPUT_PRESET : 全未割当、へフォールバックする)。
 
@@ -575,6 +593,18 @@ export const MICRO_CPSF_SFC_PRESET: ReadonlyArray<{ source: Source; binding: Bin
 ];
 
 /**
+ * ZUIKI X68000 Z JOYCARD(BLACK) の標準(2ボタン)プリセット。
+ * Chrome系ブラウザでの実機値(2026-08-09): Vendor 33dd / Product 0013、mapping=''、
+ * buttons=12、axes=2。BEOWULF(BWR1.XDF)でタイトル決定・移動までゲスト側E2E確認済み。
+ * UI表示の「ボタン3/2」は内部index 2/1に対応する。
+ */
+export const X68000Z_STANDARD_PRESET: ReadonlyArray<{ source: Source; binding: Binding }> = [
+  ...DPAD_AXIS_BINDINGS,
+  joyBtn(2, 'TRG1'),
+  joyBtn(1, 'TRG2'),
+];
+
+/**
  * gamepad.id から USB Vendor/Product ID を抽出する純粋関数。
  *
  * ブラウザによって gamepad.id の書式が異なるため、両方を試す:
@@ -598,14 +628,18 @@ export function extractVendorProduct(padId: string): string | null {
  * 実機(ゲームパッドチェックサイトで実測、2026-08-08)で確定させた値:
  * - 8BitDo M30 gamepad: Vendor 2dc8 / Product 0651
  * - 8BitDo Micro gamepad: Vendor 2dc8 / Product 9020
+ * - ZUIKI X68000 Z JOYCARD(BLACK): Vendor 33dd / Product 0013
  */
-const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, 'm30' | 'micro'> = {
+type KnownPadKind = 'm30' | 'micro' | 'x68000z';
+
+const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, KnownPadKind> = {
   '2dc8:0651': 'm30',
   '2dc8:9020': 'micro',
+  '33dd:0013': 'x68000z',
 };
 
 /**
- * gamepad.id から既知パッド種別('m30'/'micro')を判定する、唯一の情報源。
+ * gamepad.id から既知パッド種別を判定する、唯一の情報源。
  * knownPadPresetFor()(プリセット選択)がこれを使う(判定ロジックの二重実装を避けるため)。
  * 軸の静止値は固定値テーブルを持たず、パッド種別に関わらず動的な較正(AxisCalibration)で
  * 決める設計に変更したため、静止値の固定はここには存在しない(2026-08-08 参照)。
@@ -617,7 +651,7 @@ const VENDOR_PRODUCT_TO_KNOWN_PAD: Record<string, 'm30' | 'micro'> = {
  * 誤爆しない 'm30' のみをフォールバックとして残し、'micro' 系は vendor/product が
  * 取れた場合に限定する。
  */
-function knownPadKindFor(padId: string): 'm30' | 'micro' | null {
+function knownPadKindFor(padId: string): KnownPadKind | null {
   const vendorProduct = extractVendorProduct(padId);
   const known = vendorProduct ? VENDOR_PRODUCT_TO_KNOWN_PAD[vendorProduct] : undefined;
   if (known !== undefined) return known ?? null; // vendor/productは取れたが未知のペア: 誤爆を避けるため文字列フォールバックに落とさない。
@@ -642,12 +676,14 @@ export function knownPadPresetFor(padId: string, padType: PadType): ReadonlyArra
   const kind = knownPadKindFor(padId);
   if (kind === 'm30') return padType === 'cpsf-md' ? M30_CPSF_MD_PRESET : M30_STANDARD_PRESET;
   if (kind === 'micro') return padType === 'cpsf-sfc' ? MICRO_CPSF_SFC_PRESET : MICRO_STANDARD_PRESET;
+  // 実機が標準2ボタン仕様なので、誤って8ボタン種別が選ばれていても安全な2ボタン割当を返す。
+  if (kind === 'x68000z') return X68000Z_STANDARD_PRESET;
   return null;
 }
 
 /**
  * 保存済みプロファイルが無いパッドに対する既定値を決める、唯一の情報源。
- * 1. gamepad.id が既知パッド(M30/Micro)にマッチすれば、mapping の申告に関わらずそのプリセットを使う
+ * 1. gamepad.id が既知パッド(M30/Micro/X68000 Z)にマッチすれば、mapping の申告に関わらずそのプリセットを使う
  *    (これらは standard 申告でない可能性が高く、mapping 頼みだと全未割当のまま始まってしまうため)。
  * 2. マッチしなければ従来どおり: mapping === 'standard' のときだけ XINPUT_PRESET、
  *    そうでなければ全未割当で始める(index の意味がパッドごとに違うため、推測で埋めない)。
@@ -724,6 +760,7 @@ export function sourcesEqual(a: Source, b: Source): boolean {
   if (a.kind !== b.kind) return false;
   if (a.kind === 'button' && b.kind === 'button') return a.index === b.index;
   if (a.kind === 'axis' && b.kind === 'axis') return a.index === b.index && a.dir === b.dir;
+  if (a.kind === 'touch' && b.kind === 'touch') return a.id === b.id;
   return false;
 }
 
@@ -955,23 +992,44 @@ export class GamepadManager {
    * 連打しない=呼び出し側で同じ retrok が続けて入っていれば無視される前提)。
    */
   keysForPad(pad: Gamepad): Set<number> {
+    const sources: Source[] = [];
+    this.forEachActiveSource(pad, (source) => sources.push(source));
+    return this.keysForSources(sources);
+  }
+
+  /**
+   * 今アクティブな Source 群から RetroPad ID ビットマスクを求める。
+   * Gamepad オブジェクトに依存しないため、バーチャルパッド(タッチ、kind:'touch' の Source)を
+   * 含む任意の Source 集合から直接呼べる(computeBits() はこれを Gamepad から集めた Source 群で
+   * 呼ぶだけの薄いラッパー)。
+   */
+  bitsForSources(sources: Iterable<Source>, padType: PadType = 'default'): number {
+    let bits = 0;
+    for (const source of sources) bits |= this.bitsFor(source, padType);
+    return bits;
+  }
+
+  /**
+   * 今アクティブな Source 群から kind:'key' の retrok 集合を求める。
+   * keysForPad() 同様、Gamepad オブジェクトに依存しないため、バーチャルパッドの Source 集合から
+   * 直接呼べる。
+   */
+  keysForSources(sources: Iterable<Source>): Set<number> {
     const keys = new Set<number>();
-    this.forEachActiveSource(pad, (source) => {
+    for (const source of sources) {
       const list = this.bindings.get(sourceKey(source));
-      if (!list) return;
+      if (!list) continue;
       for (const binding of list) {
         if (binding.kind === 'key') keys.add(binding.retrok);
       }
-    });
+    }
     return keys;
   }
 
   private computeBits(pad: Gamepad, padType: PadType): number {
-    let bits = 0;
-    this.forEachActiveSource(pad, (source) => {
-      bits |= this.bitsFor(source, padType);
-    });
-    return bits;
+    const sources: Source[] = [];
+    this.forEachActiveSource(pad, (source) => sources.push(source));
+    return this.bitsForSources(sources, padType);
   }
 
   /**

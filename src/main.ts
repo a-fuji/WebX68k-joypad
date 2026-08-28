@@ -1,5 +1,6 @@
 import './style.css';
 import { AudioEngine } from './audio';
+import { computeFrameBudget } from './frameBudget';
 import {
   createFormattedFd,
   createFormattedHdd,
@@ -14,6 +15,7 @@ import {
   type FatEntry,
 } from './api/fat';
 import { loadBiosFile, saveBiosFile } from './bios-store';
+import { loadSramFile, saveSramFile } from './sram-store';
 import {
   classifyDiskBytes,
   classifyDiskKind,
@@ -38,9 +40,29 @@ import {
   type LibraryNode,
 } from './api/library';
 import { buildFileManagerDialog, type FmTarget } from './filemanager';
+import type { TouchMouseButton } from './touch-mouse';
+import { createDiskPersistence } from './disk-persist';
 import { Bridge, resolveBridgeUrl, type BridgeHost } from './bridge';
 import { RETROK, charToKey, codeToRetrok } from './keyboard';
 import { LibretroHost } from './libretro-host';
+import { parseAspectModeParam, parseCpuSpeedParam, parseRamSizeParam } from './url-params';
+import {
+  hostMatches,
+  looksLikeHtml,
+  PROXY_CAPABLE_HOSTS,
+  rewriteDropboxUrl,
+  rewriteGithubBlobUrl,
+  shouldPreferProxy,
+  urlHostname,
+} from './disk-fetch';
+import {
+  createResampleState,
+  DEFAULT_SPEED_STEP,
+  parseSpeedStep,
+  resampleSpeed,
+  resetResampleState,
+  type SpeedStep,
+} from './speed';
 import {
   assignPorts,
   defaultProfileFor,
@@ -56,14 +78,64 @@ import {
   type Source,
 } from './gamepad';
 import { buildGamepadDialog } from './gamepad-ui';
+import { buildInputProfileEditor, type InputSourceDef } from './input-profile-ui';
+import { buildHostKeyDialog } from './hostkey-ui';
 import { createVirtualKeyboard, SharedKeyInput } from './virtual-keyboard';
+import { isRepeatableKey, KeyRepeater } from './key-repeat';
+import {
+  createVirtualPad,
+  readSafeAreaInsets,
+  resolveLandscapeInsets,
+  screenAngle,
+  vpadSideBoxesFor,
+  type VpadPlacement,
+  type VpadSideBoxes,
+} from './virtual-pad';
+import { createVirtualTrackpad, type VirtualTrackpad } from './virtual-trackpad';
+// Sprout68k の共有リンク(#p1=)を開くための復号と .xdf 組み立て。
+// **送信側(Sprout68k)とまったく同じ正典**を tools/fetch-sprout-runtime.mjs が持ってくる。
+import {
+  DEFAULT_DISK, assembleXdf, decodeShareFragment, packUserPayload, tagLabel, unpackUserPayload,
+} from './sprout-share.mts';
+import {
+  activeProfile,
+  BUILTIN_CURSOR_SPACE_ID,
+  BUILTIN_HOSTKEY_ARROWS_JOY_ID,
+  BUILTIN_HOSTKEY_ARROWS_JOY6_ID,
+  BUILTIN_HOSTKEY_TENKEY_ID,
+  BUILTIN_JOY_2BUTTON_ID,
+  BUILTIN_JOY_6BUTTON_ID,
+  BUILTIN_TENKEY_ID,
+  HOSTKEY_STORAGE_KEY,
+  joyBitsForPressedCodes,
+  loadInputProfileStore,
+  resolveHostKeyBinding,
+  saveInputProfileStore,
+  setActiveProfile,
+  VPAD_BTN_A,
+  VPAD_BTN_B,
+  VPAD_BTN_C,
+  VPAD_BTN_D,
+  VPAD_BTN_E,
+  VPAD_BTN_F,
+  VPAD_BTN_OPT1,
+  VPAD_BTN_OPT2,
+  VPAD_DPAD_DOWN,
+  VPAD_DPAD_LEFT,
+  VPAD_DPAD_RIGHT,
+  VPAD_DPAD_UP,
+  VPAD_STORAGE_KEY,
+  type InputProfile,
+  type InputProfileStore,
+} from './input-profile';
 import {
   getState,
   saveState as putState,
   type StateDiskConfig,
 } from './state-store';
 import { describeError, getLang, langSelfName, setLang, t } from './strings';
-import { getTargetSize, resolveAspectMode, type AspectMode } from './aspect';
+import { fitDeviceScale, getTargetSize, resolveAspectMode, type AspectMode } from './aspect';
+import { isIOS } from './platform';
 
 const canvas = document.getElementById('screen') as HTMLCanvasElement;
 const bootOverlay = document.getElementById('boot-overlay') as HTMLDivElement;
@@ -71,6 +143,8 @@ const btnBootPlain = document.getElementById('btn-boot-plain') as HTMLButtonElem
 const btnBootSystem = document.getElementById('btn-boot-system') as HTMLButtonElement;
 const btnReset = document.getElementById('btn-reset') as HTMLButtonElement;
 const btnScreenshot = document.getElementById('btn-screenshot') as HTMLButtonElement;
+const btnSpeed = document.getElementById('btn-speed') as HTMLButtonElement;
+const btnSpeedBadge = document.getElementById('btn-speed-badge') as HTMLSpanElement;
 const btnMouseCapture = document.getElementById('btn-mouse-capture') as HTMLButtonElement;
 const btnMouseResync = document.getElementById('btn-mouse-resync') as HTMLButtonElement;
 const btnFullscreen = document.getElementById('btn-fullscreen') as HTMLButtonElement;
@@ -78,6 +152,12 @@ const btnVirtualKeyboard = document.getElementById('btn-virtual-keyboard') as HT
 const btnAspect = document.getElementById('btn-aspect') as HTMLButtonElement;
 const btnToolbarOverflow = document.getElementById('btn-toolbar-overflow') as HTMLButtonElement;
 const virtualKeyboardPanel = document.getElementById('virtual-keyboard') as HTMLDivElement;
+const virtualPadPanel = document.getElementById('virtual-pad') as HTMLDivElement;
+const virtualTrackpadPanel = document.getElementById('virtual-trackpad') as HTMLDivElement;
+const inputPanelSwitchEl = document.getElementById('input-panel-switch') as HTMLDivElement;
+const btnPanelKeyboard = document.getElementById('btn-panel-keyboard') as HTMLButtonElement;
+const btnPanelPad = document.getElementById('btn-panel-pad') as HTMLButtonElement;
+const btnPanelTrackpad = document.getElementById('btn-panel-trackpad') as HTMLButtonElement;
 const stageEl = document.querySelector('.stage') as HTMLDivElement;
 // .stage を囲む領域確保用ラッパ(style.css の .stage-frame 参照)。4:3切替でレイアウトが
 // 動かないよう、rescale() が常に「4:3時のサイズ」をここへインラインで指定する。
@@ -87,11 +167,17 @@ const mainEl = document.querySelector('main') as HTMLElement;
 const consoleCardEl = document.querySelector('.console-card') as HTMLElement;
 const consoleFooterEl = document.querySelector('.console-footer') as HTMLElement;
 const pageHeaderEl = document.querySelector('header.app-header') as HTMLElement | null;
+// ページ最下部の著作権表示フッタ。バーチャルパッドをパネルモードにできるかどうかの
+// 縦の余り(rescale() 内)を測るときに、これも「画面に既に確保されている領域」として引く。
+const pageFooterEl = document.querySelector('footer.app-footer') as HTMLElement | null;
 const btnSaveState = document.getElementById('btn-save-state') as HTMLButtonElement;
 const btnLoadState = document.getElementById('btn-load-state') as HTMLButtonElement;
 const toastEl = document.getElementById('toast') as HTMLDivElement;
 const btnGamepad = document.getElementById('btn-gamepad') as HTMLButtonElement;
 const gamepadRoot = document.getElementById('gamepad-root') as HTMLDivElement;
+const inputProfileRoot = document.getElementById('input-profile-root') as HTMLDivElement;
+const btnHostKey = document.getElementById('btn-hostkey') as HTMLButtonElement;
+const hostkeyRoot = document.getElementById('hostkey-root') as HTMLDivElement;
 const btnSettings = document.getElementById('btn-settings') as HTMLButtonElement;
 const btnDiskLibrary = document.getElementById('btn-disk-library') as HTMLButtonElement;
 const btnFileManager = document.getElementById('btn-file-manager') as HTMLButtonElement;
@@ -113,16 +199,19 @@ const slotPopupMenu = document.getElementById('slot-popup-menu') as HTMLDivEleme
 const overflowSubmenu = document.getElementById('overflow-submenu') as HTMLDivElement;
 const cfgCpuSpeed = document.getElementById('cfg-cpuspeed') as HTMLSelectElement;
 const cfgRamSize = document.getElementById('cfg-ramsize') as HTMLSelectElement;
+const cfgSpeed = document.getElementById('cfg-speed') as HTMLSelectElement;
+const speedActualEl = document.getElementById('speed-actual') as HTMLSpanElement;
 
-// WebNP2 のドライブ行に合わせた FDD1 / FDD2 / HDD の3スロット構成(表示ラベルのみ1始まり。
-// コア内部のドライブindexは 0/1 のまま、要素IDも従来通り fdd0/fdd1 を使う)。
+// WebNP2 のドライブ行に合わせた FDD0 / FDD1 / HDD の3スロット構成(実機のFDD呼称
+// FDD0/FDD1に合わせ、表示ラベルもコア内部のドライブindex 0/1 と一致させている。
+// 要素IDも従来通り fdd0/fdd1 を使う)。
 type SlotId = 'fdd0' | 'fdd1' | 'hdd';
 const SLOT_IDS: SlotId[] = ['fdd0', 'fdd1', 'hdd'];
 
-/** スロットの表示用ドライブ名(FDD1/FDD2/HDD)。 */
+/** スロットの表示用ドライブ名(FDD0/FDD1/HDD)。 */
 function slotDisplayName(slot: SlotId): string {
-  if (slot === 'fdd0') return t('fdSlotLabel', { drive: 1 });
-  if (slot === 'fdd1') return t('fdSlotLabel', { drive: 2 });
+  if (slot === 'fdd0') return t('fdSlotLabel', { drive: 0 });
+  if (slot === 'fdd1') return t('fdSlotLabel', { drive: 1 });
   return t('hddSlotLabel');
 }
 
@@ -158,6 +247,22 @@ const slotElements: Record<SlotId, SlotElements> = {
   hdd: slotEls('hdd'),
 };
 
+// iOS の Chrome ではファイル選択ダイアログが accept 属性の拡張子を UTI(Uniform Type
+// Identifier)へ変換して候補を絞る。.xdf/.hdf/.dup/.hdm/.2hd/.dim のような拡張子は
+// UTI が登録されておらず、候補から丸ごと消えて .zip だけが残ってしまう(ホーム画面に
+// 追加したWKWebView版では発生しない、Chrome/Safariのタブだけの制約。実機で確認済み)。
+// 単体ファイルの選択は読み込み後に拡張子で内容を検証している(docs/DESIGN.md「ディスク
+// イメージの形式判定(拡張子 vs 内容ベース)」節)ため、accept はダイアログの絞り込み
+// (利便性)にすぎず、外しても無関係なファイルを受け入れてしまう心配はない。
+// デスクトップでは候補が絞られたほうが便利なので、iOS のときだけ外す。
+if (isIOS()) {
+  for (const key of Object.keys(slotElements) as SlotId[]) {
+    slotElements[key].input.removeAttribute('accept');
+  }
+  biosIplInput.removeAttribute('accept');
+  biosCgInput.removeAttribute('accept');
+}
+
 interface PendingDisk {
   name: string;
   data: Uint8Array;
@@ -190,6 +295,29 @@ function loadMachineConfig(): { cpuSpeed: string; ramSize: string } {
 }
 
 let { cpuSpeed, ramSize } = loadMachineConfig();
+
+// ?cpu=<10|16|25|33|66|100> : 起動時のみ CPU クロックを上書きする(共有URLで推奨環境を再現するため)。
+// 意図的に localStorage には保存しない。共有リンクを開いただけで利用者の既定設定が
+// 書き換わってしまうと、リンクを踏むたびに意図せず設定が上書きされる事故になるため。
+const cpuParamRaw = new URLSearchParams(location.search).get('cpu');
+const urlCpuSpeed = parseCpuSpeedParam(cpuParamRaw);
+if (cpuParamRaw !== null && urlCpuSpeed === null) {
+  console.warn('?cpu= の値が不正です(10/16/25/33/66/100 のいずれか、または "16Mhz" 形式で指定してください)');
+} else if (urlCpuSpeed !== null) {
+  cpuSpeed = urlCpuSpeed;
+}
+
+// ?ram=<1〜12> : 起動時のみ RAM サイズを上書きする(共有URLで推奨環境を再現するため)。
+// 意図的に localStorage には保存しない。共有リンクを開いただけで利用者の既定設定が
+// 書き換わってしまうと、リンクを踏むたびに意図せず設定が上書きされる事故になるため。
+const ramParamRaw = new URLSearchParams(location.search).get('ram');
+const urlRamSize = parseRamSizeParam(ramParamRaw);
+if (ramParamRaw !== null && urlRamSize === null) {
+  console.warn('?ram= の値が不正です(1〜12の整数、または "12MB" 形式で指定してください)');
+} else if (urlRamSize !== null) {
+  ramSize = urlRamSize;
+}
+
 cfgCpuSpeed.value = cpuSpeed;
 cfgRamSize.value = ramSize;
 
@@ -201,6 +329,98 @@ cfgRamSize.addEventListener('change', () => {
   ramSize = cfgRamSize.value;
   localStorage.setItem(RAM_SIZE_KEY, ramSize);
 });
+
+// --- エミュレーション速度倍率 ---
+// px68k_cpuspeed(上のマシン構成、コアのCPUクロック設定でリセットが要る)とは別物。
+// こちらはホスト側のフレーム供給ペースを変えるだけで実行中に即時反映され、あえて
+// localStorage には保存しない(共有目的の設定ではなく、常に起動時はOFF(100%)から
+// 始まってほしいため)。
+//
+// 状態の出どころは selectedSpeed(設定モーダルのセレクト値) と speedEnabled(ツールバーの
+// 速度ボタンのON/OFF)の2つだけにし、実効倍率(speedMultiplier)は必ずこの2つから導出する。
+// 実効値を書き込む場所を複数に増やすと、片方だけ更新し忘れてボタン表示と実際の速度が
+// 食い違う事故につながる。
+let selectedSpeed: SpeedStep = DEFAULT_SPEED_STEP;
+let speedEnabled = false;
+// 実効倍率は「ボタンOFF時の1」を含むため SpeedStep(=SPEED_STEPS の要素型、1を含まない)とは
+// 別の型になる。
+let speedMultiplier: SpeedStep | 1 = 1;
+// コアの音声出力(1エミュフレームぶんのサンプル)を速度倍率に合わせて可変レートリサンプルする
+// ための状態。チャンクをまたいで位相を持ち越す必要があるためモジュールスコープに置く。
+const audioResampleState = createResampleState();
+
+/** selectedSpeed/speedEnabled から実効倍率(speedMultiplier)を再計算する唯一の場所。 */
+function recomputeSpeedMultiplier(): void {
+  speedMultiplier = speedEnabled ? selectedSpeed : 1;
+}
+
+/** 速度・状態の切り替わりでフレーム供給と音声リサンプラの持ち越し状態をリセットする。 */
+function resetSpeedState(): void {
+  accumulator = 0;
+  resetResampleState(audioResampleState);
+  audio?.flush();
+}
+
+/** #btn-speed の見た目(押し込み状態・バッジ・ツールチップ)を現在の状態から一括更新する。 */
+function updateSpeedButtonUi(): void {
+  btnSpeed.classList.toggle('active', speedEnabled);
+  btnSpeed.setAttribute('aria-pressed', String(speedEnabled));
+  if (speedEnabled) {
+    const pct = `${Math.round(selectedSpeed * 100)}%`;
+    btnSpeedBadge.textContent = pct;
+    btnSpeedBadge.hidden = false;
+    const label = `${t('toolbarSpeedLabel')} (${pct})`;
+    btnSpeed.title = label;
+    btnSpeed.setAttribute('aria-label', label);
+  } else {
+    btnSpeedBadge.hidden = true;
+    btnSpeed.title = t('toolbarSpeedLabel');
+    btnSpeed.setAttribute('aria-label', t('toolbarSpeedLabel'));
+  }
+}
+
+cfgSpeed.value = String(selectedSpeed);
+cfgSpeed.addEventListener('change', () => {
+  selectedSpeed = parseSpeedStep(cfgSpeed.value);
+  if (speedEnabled) {
+    recomputeSpeedMultiplier();
+    resetSpeedState();
+  }
+  updateSpeedButtonUi();
+});
+
+btnSpeed.addEventListener('click', () => {
+  speedEnabled = !speedEnabled;
+  recomputeSpeedMultiplier();
+  resetSpeedState();
+  updateSpeedButtonUi();
+});
+
+// 実測速度表示(約500msごと): 直近区間で実際に走ったエミュフレーム数 ÷ (fps × 経過秒)。
+// 端末性能で頭打ちになったことが見えるように、設定した倍率どおりに出ていない場合に気づける。
+const SPEED_MEASURE_INTERVAL_MS = 500;
+let speedMeasureFrameCount = 0;
+let speedMeasureLastAt = 0;
+
+function updateSpeedActualDisplay(now: number): void {
+  if (!running) {
+    speedActualEl.textContent = '';
+    return;
+  }
+  if (speedMeasureLastAt === 0) {
+    speedMeasureLastAt = now;
+    speedMeasureFrameCount = 0;
+    return;
+  }
+  const elapsedMs = now - speedMeasureLastAt;
+  if (elapsedMs < SPEED_MEASURE_INTERVAL_MS) return;
+  const fps = host?.avInfo?.fps ?? 60;
+  const expectedFrames = fps * (elapsedMs / 1000);
+  const pct = expectedFrames > 0 ? Math.round((speedMeasureFrameCount / expectedFrames) * 100) : 0;
+  speedActualEl.textContent = `${t('settingsSpeedActualPrefix')} ${pct}%`;
+  speedMeasureFrameCount = 0;
+  speedMeasureLastAt = now;
+}
 
 let audio: AudioEngine | null = null;
 let host: LibretroHost | null = null;
@@ -392,6 +612,9 @@ const gamepadDialog = buildGamepadDialog(gamepadRoot, {
   setPadType: (port, padType) => {
     gamepadStore.joyType[port] = padType;
     saveGamepadStore(gamepadStore);
+    // バーチャルパッドの送り先は常にポート0(表示上のポート1)。TRG3..TRG8のビット位置が
+    // padTypeで変わるため、設定ダイアログでの変更にも追従させる(docs/DESIGN.md参照)。
+    if (port === 0) virtualPad.setPadType(padType);
   },
   isCoreRunning: () => running,
 });
@@ -414,41 +637,293 @@ document.addEventListener('visibilitychange', () => {
 // 物理・仮想・ブリッジ入力を入力元ごとに保持し、同じキーの片側だけが先に離れても
 // コア側の押下状態が消えないよう集約する。
 const sharedKeyInput = new SharedKeyInput((retrok, down) => host?.setKey(retrok, down));
+// 物理・仮想キーボードで同じインスタンスを共有し、押下状態を保ったままmakeだけを注入する。
+const keyRepeater = new KeyRepeater((retrok) => host?.sendKeyMake(retrok));
 const virtualKeyboard = createVirtualKeyboard(
   virtualKeyboardPanel,
   sharedKeyInput,
-  (visible) => {
-    btnVirtualKeyboard.classList.toggle('active', visible);
-    btnVirtualKeyboard.setAttribute('aria-pressed', visible ? 'true' : 'false');
-    btnVirtualKeyboard.title = visible ? t('toolbarVirtualKeyboardHide') : t('toolbarVirtualKeyboard');
-    btnVirtualKeyboard.setAttribute('aria-label', btnVirtualKeyboard.title);
+  (_visible) => {
     // 仮想キーボードの表示/非表示でパネル高が変わり、画面に使える縦幅も変わるため再計算する。
     // このコールバックは virtual-keyboard.ts の refreshLayout() が rAF 内(パネル実測後)で
     // 呼んでくれるので、ここで呼ぶ rescale() も実測済みの高さを見て走る。
+    syncInputPanelUi();
     rescale();
   },
+  keyRepeater,
 );
-btnVirtualKeyboard.addEventListener('click', () => virtualKeyboard.toggle());
+
+// --- バーチャルパッド(オンスクリーンパッド)+ 入力パネル(仮想キーボード/パッド)切り替え ---
+// docs/DESIGN.md「バーチャルパッド」節・「切り替えUI(案C採用)」参照。
+// ツールバーの btn-virtual-keyboard は「入力パネル」トグル(押すと最後に選んだ側が開く/
+// 両方閉じる)に役割変更し、どちらを出すかは stage 右上のチップ(⌨/🎮)で切り替える。
+const virtualPad = createVirtualPad(virtualPadPanel, sharedKeyInput);
+
+// --- バーチャルパッドの配置(パネルモード/オーバーレイモード/サイドモード)---
+// 判定・reparentの詳細は rescale() 内の applyVpadPlacement() を参照。判定順は
+// 「panel → sides → overlay」: 縦の余りが十分あればパネル(console-card内の帯として
+// 画面を潰さず表示)、無くても左右のデッドスペースが十分あればサイド(左にスティック・
+// 右にボタンを振り分け、画面の外側だけを使う)、どちらも無ければ従来通りオーバーレイ
+// (stageに重ねる。画面を削らない代わりに指が被る)。
+const VPAD_PANEL_MIN_HEIGHT = 160;
+const VPAD_PANEL_MAX_HEIGHT = 260;
+// 左右の余白がこれ未満ならサイドモードにしない(部品が縮みすぎて押しにくくなるため)。
+// 横持ちフルスクリーンの実測(812x375で左右194px)より十分小さい値にしてあり、
+// 画面幅の決め打ちにはしていない(実測した余白そのものと比較するだけ)。
+const VPAD_SIDES_MIN_WIDTH = 140;
+// #virtual-pad の初期DOM位置(index.html: .stage内、#toastの直前)。オーバーレイモードへ
+// 戻すときの再挿入先として使う(挿入順そのものは見た目に影響しない。全部品absolute配置のため)。
+let vpadPlacement: VpadPlacement = 'overlay';
+
+/**
+ * バーチャルパッドの置き場所を確定させる。モードが変わったときだけ reparent し
+ * (毎フレームreparentしない)、パネルモードの帯の高さは呼び出し側(rescale())が実測した
+ * 余りをそのまま反映する。sides の左右ボックスは placement が変わらない呼び出しでも
+ * 毎回 virtualPad.setPlacement() へ渡し直す(ビューポートサイズの変化に追従するため。
+ * virtual-pad.ts の setPlacement() 側がボックスだけの更新を安全に処理する)。
+ * かつてはネイティブフルスクリーン中に強制的に overlay へ倒していたが、フルスクリーン
+ * 対象がページ全体(documentElement)になり、body 直下へ出しても描画対象の中に留まる
+ * ようになったため不要になった。通常どおり呼び出し側の判定(余り高さ・左右余白)に従う。
+ */
+function applyVpadPlacement(next: VpadPlacement, panelHeight: number, sidesBoxes: VpadSideBoxes): void {
+  virtualPadPanel.style.height = next === 'panel' ? `${Math.round(panelHeight)}px` : '';
+  const changed = next !== vpadPlacement;
+  if (changed) vpadPlacement = next;
+  virtualPad.setPlacement(next, sidesBoxes);
+  if (changed) {
+    if (next === 'panel') {
+      // #virtual-keyboard の兄弟として、その直前(= .console-footer より前)に置く。
+      consoleCardEl.insertBefore(virtualPadPanel, virtualKeyboardPanel);
+    } else if (next === 'sides') {
+      // 左右のデッドスペースにまたがって重ねるため、.console-card の外(document.body直下)へ
+      // 出す。position:fixed;inset:0(style.css の .vpad-sides)でビューポート全体を覆うが、
+      // コンテナ自体は pointer-events:none にしてあるのでツールバー等のタップは素通りする
+      // (style.css の .virtual-pad.vpad-overlay, .virtual-pad.vpad-sides 参照)。
+      document.body.appendChild(virtualPadPanel);
+    } else {
+      // .stage 内の元の位置(#toast の直前)へ戻す。
+      stageEl.insertBefore(virtualPadPanel, toastEl);
+    }
+  }
+  virtualPad.refreshLayout();
+}
+
+const INPUT_PANEL_STORAGE_KEY = 'webx68k.inputPanel';
+type InputPanelKind = 'keyboard' | 'pad' | 'trackpad';
+
+/** 保存が無い初回だけ、粗いポインタ(タッチ主体の端末)ならパッド優先で始める。 */
+function defaultInputPanelKind(): InputPanelKind {
+  return window.matchMedia('(pointer: coarse)').matches ? 'pad' : 'keyboard';
+}
+
+function loadInputPanelPref(): InputPanelKind {
+  const v = localStorage.getItem(INPUT_PANEL_STORAGE_KEY);
+  return v === 'keyboard' || v === 'pad' || v === 'trackpad' ? v : defaultInputPanelKind();
+}
+
+function saveInputPanelPref(kind: InputPanelKind): void {
+  localStorage.setItem(INPUT_PANEL_STORAGE_KEY, kind);
+}
+
+let inputPanelPref: InputPanelKind = loadInputPanelPref();
+
+let vpadStore: InputProfileStore = loadInputProfileStore(VPAD_STORAGE_KEY);
+
+/** 組み込みプロファイルは strings.ts 経由の翻訳済みラベルへ差し替えて表示する(label自体は内部識別用)。 */
+function vpadProfileLabel(profile: InputProfile): string {
+  switch (profile.id) {
+    case BUILTIN_JOY_2BUTTON_ID:
+      return t('vpadProfileJoy2Button');
+    case BUILTIN_CURSOR_SPACE_ID:
+      return t('vpadProfileCursorSpace');
+    case BUILTIN_TENKEY_ID:
+      return t('vpadProfileTenkey');
+    case BUILTIN_JOY_6BUTTON_ID:
+      return t('vpadProfileJoy6Button');
+    default:
+      return profile.label;
+  }
+}
+
+function applyActiveVpadProfile(): void {
+  const profile = activeProfile(vpadStore) ?? vpadStore.profiles[0] ?? null;
+  if (profile) virtualPad.setProfile(profile);
+}
+
+applyActiveVpadProfile();
+
+// バーチャルパッドの割当編集ダイアログ。編集対象の入力元一覧(画面部品ID)はここで組み立てて渡す
+// (input-profile-ui.ts 自体はバーチャルパッド固有の知識を持たず、将来ホストキー再割り当てにも
+// 使い回せるようにするため)。label は言語切替のたびに applyDocumentStrings() 側で貼り直す
+// (配列そのものはここで1回だけ作り、以後は同じオブジェクトの label を書き換える)。
+const vpadSourceDefs: InputSourceDef[] = [
+  { id: VPAD_DPAD_UP, label: t('inputProfileSourceDpadUp') },
+  { id: VPAD_DPAD_DOWN, label: t('inputProfileSourceDpadDown') },
+  { id: VPAD_DPAD_LEFT, label: t('inputProfileSourceDpadLeft') },
+  { id: VPAD_DPAD_RIGHT, label: t('inputProfileSourceDpadRight') },
+  { id: VPAD_BTN_A, label: 'A' },
+  { id: VPAD_BTN_B, label: 'B' },
+  { id: VPAD_BTN_C, label: 'C' },
+  { id: VPAD_BTN_D, label: 'X' },
+  { id: VPAD_BTN_E, label: 'Y' },
+  { id: VPAD_BTN_F, label: 'Z' },
+  { id: VPAD_BTN_OPT1, label: t('inputProfileSourceOpt', { n: 1 }) },
+  { id: VPAD_BTN_OPT2, label: t('inputProfileSourceOpt', { n: 2 }) },
+];
+
+function refreshVpadSourceLabels(): void {
+  vpadSourceDefs[0].label = t('inputProfileSourceDpadUp');
+  vpadSourceDefs[1].label = t('inputProfileSourceDpadDown');
+  vpadSourceDefs[2].label = t('inputProfileSourceDpadLeft');
+  vpadSourceDefs[3].label = t('inputProfileSourceDpadRight');
+  vpadSourceDefs[10].label = t('inputProfileSourceOpt', { n: 1 });
+  vpadSourceDefs[11].label = t('inputProfileSourceOpt', { n: 2 });
+}
+
+const inputProfileEditor = buildInputProfileEditor(
+  inputProfileRoot,
+  { kind: 'fixed', sources: vpadSourceDefs },
+  {
+    getStore: () => vpadStore,
+    applyStore: (store) => {
+      vpadStore = store;
+      saveInputProfileStore(VPAD_STORAGE_KEY, vpadStore);
+      applyActiveVpadProfile();
+    },
+    labelFor: (profile) => vpadProfileLabel(profile),
+    getPadType: () => gamepadStore.joyType[0],
+  },
+  (message) => showToast(message),
+);
+
+// --- ホストキー(物理キーボード再割り当て)。vpadStore と同じ流儀(input-profile.ts の器を共有)。
+let hostKeyStore: InputProfileStore = loadInputProfileStore(HOSTKEY_STORAGE_KEY);
+
+/** 組み込みプロファイルは strings.ts 経由の翻訳済みラベルへ差し替えて表示する(vpadProfileLabel と同じ流儀)。 */
+function hostKeyProfileLabel(profile: InputProfile): string {
+  switch (profile.id) {
+    case BUILTIN_HOSTKEY_ARROWS_JOY_ID:
+      return t('hostKeyProfileArrowsJoy');
+    case BUILTIN_HOSTKEY_ARROWS_JOY6_ID:
+      return t('hostKeyProfileArrowsJoy6');
+    case BUILTIN_HOSTKEY_TENKEY_ID:
+      return t('hostKeyProfileTenkey');
+    default:
+      return profile.label;
+  }
+}
+
+const hostKeyDialog = buildHostKeyDialog(
+  hostkeyRoot,
+  {
+    getStore: () => hostKeyStore,
+    applyStore: (store) => {
+      hostKeyStore = store;
+      saveInputProfileStore(HOSTKEY_STORAGE_KEY, hostKeyStore);
+    },
+    labelFor: (profile) => hostKeyProfileLabel(profile),
+    getPadType: () => gamepadStore.joyType[0],
+  },
+  (message) => showToast(message),
+);
+btnHostKey.addEventListener('click', () => hostKeyDialog.open());
+
+/** ツールバーボタンの見た目・チップの表示/非表示をまとめて同期する(3パネル共通の唯一の情報源)。 */
+function syncInputPanelUi(): void {
+  const anyVisible = virtualKeyboard.isVisible() || virtualPad.isVisible() || virtualTrackpad.isVisible();
+  btnVirtualKeyboard.classList.toggle('active', anyVisible);
+  btnVirtualKeyboard.setAttribute('aria-pressed', anyVisible ? 'true' : 'false');
+  btnVirtualKeyboard.title = anyVisible ? t('toolbarInputPanelHide') : t('toolbarInputPanel');
+  btnVirtualKeyboard.setAttribute('aria-label', btnVirtualKeyboard.title);
+
+  inputPanelSwitchEl.classList.toggle('hidden', !anyVisible);
+  btnPanelKeyboard.setAttribute('aria-pressed', virtualKeyboard.isVisible() ? 'true' : 'false');
+  btnPanelPad.setAttribute('aria-pressed', virtualPad.isVisible() ? 'true' : 'false');
+  btnPanelTrackpad.setAttribute('aria-pressed', virtualTrackpad.isVisible() ? 'true' : 'false');
+}
+
+/** 3パネルすべてを閉じる。閉じる側は必ず releaseAll() を呼び、押しっぱなしの固着を防ぐ。 */
+function closeInputPanels(): void {
+  if (virtualKeyboard.isVisible()) {
+    virtualKeyboard.setVisible(false);
+    virtualKeyboard.releaseAll();
+  }
+  if (virtualPad.isVisible()) {
+    virtualPad.setVisible(false); // 内部で releaseAllInternal() を呼ぶ(virtual-pad.ts 参照)。
+  }
+  if (virtualTrackpad.isVisible()) {
+    virtualTrackpad.setVisible(false); // 内部で reset()+strokeEnd() を呼ぶ(virtual-trackpad.ts 参照)。
+  }
+  syncInputPanelUi();
+  rescale();
+}
+
+/** 指定した1種類だけを開く(残り2種は必ず閉じて releaseAll() する)。選んだ種類を既定として保存する。 */
+function openInputPanel(kind: InputPanelKind): void {
+  if (virtualKeyboard.isVisible() && kind !== 'keyboard') {
+    virtualKeyboard.setVisible(false);
+    virtualKeyboard.releaseAll();
+  }
+  if (virtualPad.isVisible() && kind !== 'pad') virtualPad.setVisible(false);
+  if (virtualTrackpad.isVisible() && kind !== 'trackpad') virtualTrackpad.setVisible(false);
+
+  if (kind === 'keyboard') virtualKeyboard.setVisible(true);
+  else if (kind === 'pad') virtualPad.setVisible(true);
+  else virtualTrackpad.setVisible(true);
+
+  inputPanelPref = kind;
+  saveInputPanelPref(kind);
+  syncInputPanelUi();
+  rescale();
+}
+
+btnVirtualKeyboard.addEventListener('click', () => {
+  if (virtualKeyboard.isVisible() || virtualPad.isVisible() || virtualTrackpad.isVisible()) closeInputPanels();
+  else openInputPanel(inputPanelPref);
+});
+btnPanelKeyboard.addEventListener('click', () => openInputPanel('keyboard'));
+// 🎮 は状態で役割が変わる: 他のパネル表示中はパッドへの即切替(ゲーム中に素早く出す用途を
+// 優先しメニューは出さない)、バーチャルパッドが既に表示中ならプロファイル選択メニューを開く。
+btnPanelPad.addEventListener('click', (e) => {
+  if (virtualPad.isVisible()) {
+    e.stopPropagation();
+    if (!slotPopupMenu.classList.contains('hidden')) {
+      closeSlotPopupMenu();
+      return;
+    }
+    renderVpadProfileMenu(btnPanelPad);
+  } else {
+    openInputPanel('pad');
+  }
+});
+btnPanelTrackpad.addEventListener('click', () => openInputPanel('trackpad'));
 
 // 同梱ROM/ディスク(public/system/)のパス。ユーザーが独自ファイルを設定した場合はそちらを優先する。
 // GitHub Pages のプロジェクトページ(https://<user>.github.io/WebX68k/)配下でも解決できるよう、
 // ルート絶対パスではなくドキュメント相対で指定すること(絶対パスだと /system/... を見に行き404になる)。
-const BUNDLED_IPL_URL = './system/iplrom.dat';
-const BUNDLED_CG_URL = './system/cgrom.dat';
-const BUNDLED_DISK_URL = './system/human302.xdf';
+// ?v=<buildId> はキャッシュバスティング用。BUNDLED_DISK_NAME/BUNDLED_DISK_SOURCE_KEY は
+// 別定数(このURLをそのまま使っていない)なので、クエリを足してもディスクライブラリの
+// 表示名やIndexedDBのキーには混ざらない(fetchBytes() で取得する時にだけ使われる)。
+const BUNDLED_IPL_URL = `./system/iplrom.dat?v=${__BUILD_ID__}`;
+const BUNDLED_CG_URL = `./system/cgrom.dat?v=${__BUILD_ID__}`;
+const BUNDLED_DISK_URL = `./system/human302.xdf?v=${__BUILD_ID__}`;
 const BUNDLED_DISK_NAME = 'human302.xdf';
 // 同梱ディスクはIndexedDBには保存せず、ディスクライブラリの先頭に固定表示する(削除不可)。
 const BUNDLED_DISK_SOURCE_KEY = 'bundled:human302';
 
 // --- URLパラメータ(WebNP2 に準拠。fd1/fd2/hdd でディスクURL指定、run=1で自動起動)。---
-// system=1: 同梱システムディスク(human302.xdf)をFDD1として使う(WebNP2の freedos=1 相当)。
+// system=1: 同梱システムディスク(human302.xdf)をFDD0として使う(WebNP2の freedos=1 相当)。
 // fd1 が同時指定されていれば fd1 を優先する。
 const urlParams = new URLSearchParams(location.search);
 const urlFd1 = urlParams.get('fd1') ?? undefined;
 const urlFd2 = urlParams.get('fd2') ?? undefined;
 const urlHdd = urlParams.get('hdd') ?? undefined;
 const urlRun = urlParams.get('run') === '1';
+// vpad=1: タッチ端末向けにバーチャルパッドを起動時から表示する。
+const urlVpad = urlParams.get('vpad') === '1';
 const urlSystem = urlParams.get('system') === '1';
+// lib=<url>: 複数指定可(ディスクライブラリへ登録するだけの共有リンク用)。
+// カンマ区切りにしないのはURL自体にカンマが含まれ得るため。複数指定は getAll で受け取る。
+const urlLib = urlParams.getAll('lib').filter((v) => v !== '');
 
 function setBiosStatus(el: HTMLSpanElement, state: 'user' | 'bundled' | 'none'): void {
   if (state === 'user') {
@@ -485,24 +960,43 @@ async function fetchBytes(url: string): Promise<Uint8Array | null> {
   }
 }
 
-/**
- * 進捗コールバック付きでURLからバイト列を取得する(WebNP2 の fetchWithProgress に準拠)。
- * fetch自体が失敗した場合(典型的にはCORS未対応オリジン)とHTTPステータスが失敗の場合とで
- * メッセージを分け、CORSが原因である可能性を利用者に伝える。
- */
-async function fetchBytesWithProgress(
-  url: string,
+// 中継サービスのベースURL(空文字なら中継しない=直接fetchのみ)。ビルド時に環境変数
+// VITE_DISK_PROXY から注入される(リポジトリ内の既定は空。詳細は .github/workflows/deploy.yml 参照)。
+const DISK_PROXY_BASE = (import.meta.env.VITE_DISK_PROXY ?? '').trim().replace(/\/+$/, '');
+
+// OneDriveの共有リンクは実測で中継しても取得できないことが判明しているため、中継を試さず
+// 即座に案内を出すためのホスト一覧。
+const ONEDRIVE_HOSTS = ['1drv.ms', 'onedrive.live.com', 'sharepoint.com'];
+// PROXY_CAPABLE_HOSTS / urlHostname / hostMatches / looksLikeHtml / shouldPreferProxy は
+// ./disk-fetch (単体テスト可能な純粋関数) からimportする。
+
+/** 中継サーバのエラーJSON(`{"error":"host_not_allowed"}` 等)をHTTPステータスとあわせて利用者向け理由文言に変換する。 */
+function describeProxyError(status: number, code: string | undefined): string {
+  switch (code) {
+    case 'bad_url':
+      return t('urlProxyReasonBadUrl');
+    case 'origin_not_allowed':
+      return t('urlProxyReasonOriginNotAllowed');
+    case 'host_not_allowed':
+      return t('urlProxyReasonHostNotAllowed');
+    case 'too_large':
+      return t('urlProxyReasonTooLarge');
+    case 'rate_limited':
+      return t('urlProxyReasonRateLimited');
+    case 'upstream_failed':
+      return t('urlProxyReasonUpstreamFailed');
+    case 'redirect_not_allowed':
+      return t('urlProxyReasonRedirectNotAllowed');
+    default:
+      return t('urlProxyReasonUnknown', { status });
+  }
+}
+
+/** fetch結果(成功時のResponse)をストリームで読み進め、進捗コールバックを呼びながらバイト列に組み立てる。 */
+async function readResponseWithProgress(
+  response: Response,
   onProgress: (loaded: number, total: number | null) => void,
 ): Promise<Uint8Array> {
-  let response: Response;
-  try {
-    response = await fetch(url);
-  } catch {
-    throw new Error(t('urlFetchFailedNetwork', { url }));
-  }
-  if (!response.ok) {
-    throw new Error(t('urlFetchFailedHttp', { url, status: response.status }));
-  }
   const totalHeader = response.headers.get('content-length');
   const total = totalHeader ? Number(totalHeader) : null;
 
@@ -533,6 +1027,105 @@ async function fetchBytesWithProgress(
   return result;
 }
 
+/**
+ * 進捗コールバック付きでURLからバイト列を取得する(WebNP2 の fetchWithProgress に準拠)。
+ *
+ * 通常はまず指定URLへ直接fetchする(GitHub raw のようにCORS対応済みのURLに無駄な中継を挟まない
+ * ため)。ただし Google Drive の共有URLは、直接fetchしても生のファイルは絶対に返らず
+ * 共有ページのHTMLが(CORSエラーにもならず)200で返ってくることが実測で判明している
+ * (2026-08-13 curl実測: Googleが Origin をechoした access-control-allow-origin を付けて返す)。
+ * そのため中継(VITE_DISK_PROXY)が設定されている場合、このホスト(`PROXY_ONLY_HOSTS`)は
+ * 直接fetchを試さず最初から中継を使う(`shouldPreferProxy`)。
+ * Dropboxは中継優先(skipDirect)対象から外れ、`rewriteDropboxUrl` でホスト名を
+ * `dl.dropboxusercontent.com` に置換したうえで直接取得を試みる(2026-08-18、FMSoundでの
+ * ブラウザ実測の移植。WebX68kのディスクイメージURLでの実リンク実測は未実施)。中継に渡すURLは
+ * 利用者が入力した元のURL(`fetchUrl`、置換前)のままにする(中継はサーバ側から取得するため
+ * 置換不要で、元の共有URLで実績があるため)。
+ *
+ * 直接fetchを試した場合でも、取得結果が `looksLikeHtml` でHTMLに見えるときはディスクイメージ
+ * ではないとみなし、中継が設定されていればそちらで再取得を試みる(対象外ホストにも効く保険)。
+ * 中継経由でもHTMLだった場合、あるいは中継が未設定の場合は専用のエラーで案内する。
+ *
+ * それ以外の失敗(直接取得の失敗)は、中継が設定されていればそちらで再取得を試みる。
+ * ただしOneDriveの共有リンクは実測で中継しても取得できないため中継を試さず即座に専用の
+ * 案内を出し、中継が未設定の場合はGoogle Drive/Dropboxのみ「直接取得できません」と案内する
+ * (それ以外は従来どおりCORS未対応の可能性を伝える)。
+ */
+async function fetchBytesWithProgress(
+  url: string,
+  onProgress: (loaded: number, total: number | null) => void,
+): Promise<Uint8Array> {
+  const hostname = urlHostname(url);
+  if (hostMatches(hostname, ONEDRIVE_HOSTS)) {
+    throw new Error(t('urlFetchFailedOneDrive', { url }));
+  }
+
+  // raw.githubusercontent.com は CORS 対応なので、中継を通さず直接取得できる。
+  // github.com の 302 には ACAO が無いためブラウザの直fetchが失敗する。2026-08-14
+  // (Release asset の URL は rewriteGithubBlobUrl 内で除外され書き換わらない)
+  const fetchUrl = rewriteGithubBlobUrl(url);
+
+  const hasProxy = DISK_PROXY_BASE !== '';
+  const preferProxy = shouldPreferProxy(url, hasProxy);
+
+  let directError: Error | null = null;
+  let directWasHtml = false;
+  if (!preferProxy) {
+    // Dropboxの共有URLはホスト名だけ置換して直接取得を試みる(中継に渡すfetchUrlは
+    // 元のまま)。Dropbox以外のホストは何も変わらない。
+    const directUrl = rewriteDropboxUrl(fetchUrl);
+    try {
+      const response = await fetch(directUrl);
+      if (!response.ok) {
+        throw new Error(t('urlFetchFailedHttp', { url, status: response.status }));
+      }
+      const contentType = response.headers.get('content-type');
+      const bytes = await readResponseWithProgress(response, onProgress);
+      if (!looksLikeHtml(bytes, contentType)) {
+        return bytes;
+      }
+      directWasHtml = true;
+    } catch (err) {
+      directError = err instanceof Error && err.message ? err : new Error(t('urlFetchFailedNetwork', { url }));
+    }
+  }
+
+  if (!hasProxy) {
+    if (directWasHtml) {
+      throw new Error(t('urlFetchFailedHtmlPage', { url }));
+    }
+    if (hostMatches(hostname, PROXY_CAPABLE_HOSTS)) {
+      throw new Error(t('urlFetchFailedNeedsProxy', { url }));
+    }
+    throw directError ?? new Error(t('urlFetchFailedNetwork', { url }));
+  }
+
+  const proxyUrl = `${DISK_PROXY_BASE}/fetch?url=${encodeURIComponent(fetchUrl)}`;
+  let proxyResponse: Response;
+  try {
+    proxyResponse = await fetch(proxyUrl);
+  } catch {
+    if (directWasHtml) throw new Error(t('urlFetchFailedHtmlPage', { url }));
+    throw directError ?? new Error(t('urlFetchFailedNetwork', { url }));
+  }
+  if (!proxyResponse.ok) {
+    let code: string | undefined;
+    try {
+      const body = (await proxyResponse.clone().json()) as { error?: string };
+      code = body.error;
+    } catch {
+      // 中継側がJSONを返さなかった場合はステータスのみで案内する。
+    }
+    throw new Error(t('urlFetchFailedProxy', { url, reason: describeProxyError(proxyResponse.status, code) }));
+  }
+  const proxyContentType = proxyResponse.headers.get('content-type');
+  const proxyBytes = await readResponseWithProgress(proxyResponse, onProgress);
+  if (looksLikeHtml(proxyBytes, proxyContentType)) {
+    throw new Error(t('urlFetchFailedHtmlPage', { url }));
+  }
+  return proxyBytes;
+}
+
 /** URLの末尾ファイル名を、クエリ/フラグメントを除いた部分から取り出す(配布URLの拡張子判定に使う)。 */
 function urlFileNameGuess(url: string, label: string): string {
   const path = url.split('#')[0].split('?')[0];
@@ -551,34 +1144,54 @@ type UrlSlotOutcome =
   | { kind: 'group'; groupId: string }
   | { kind: 'error' };
 
+/** `?lib=` 経由のディスク解決結果。スロットへの自動挿入はしないため名前/バイト列は持たず、ライブラリを開く材料のみ返す。 */
+type UrlLibOutcome = { kind: 'single'; sourceKey: string } | { kind: 'group'; groupId: string } | { kind: 'error' };
+
 /**
- * URLパラメータ由来のディスクイメージを用意する(WebNP2 の resolveImage に準拠)。
- * 取得結果がZIP/LZHアーカイブの場合は展開し、D&D/ファイル選択と同じ枚数分岐
- * (1枚ならそのままスロットへ、複数枚ならライブラリへ登録して選ばせる)を適用する。
- * アーカイブの展開・ライブラリ登録は同じURLの再訪時は再ダウンロードせず復帰する
- * (グループIDに `arcurl:<url>` を使い、展開済みのレコードがライブラリにあればそれを使う)。
- * 取得やスロットとの不一致で処理できない場合はここでトースト/アラートを出したうえで
- * { kind: 'error' } を返す(呼び出し側は他スロットの処理を継続できる)。
+ * `resolveUrlToLibrary` の戻り値。`fromArchive` は disks がアーカイブ展開由来かどうかを示す
+ * (`resolveUrlSlotContent` が種別チェックを行うかどうかの分岐に使う。非アーカイブの単体ディスクは
+ * 従来どおり種別チェックなしで直接スロットへ入れられる必要があるため区別が要る)。
  */
-async function resolveUrlSlotContent(url: string, label: string, slot: SlotId): Promise<UrlSlotOutcome> {
+type UrlLibraryResult = { disks: RegisteredDisk[]; fromArchive: boolean } | { kind: 'error' };
+
+/**
+ * URL由来のディスクイメージを取得し、ディスクライブラリ(IndexedDB)へ登録する共通処理
+ * (WebNP2 の resolveImage に準拠)。スロットの種別(fd/hdd)は一切見ない。
+ * 取得結果がZIP/LZHアーカイブの場合は展開し、中の全ディスクをライブラリへ登録する。
+ * アーカイブの展開・登録は同じURLの再訪時は再ダウンロードせず復帰する
+ * (グループIDに `arcurl:<url>` を使い、展開済みのレコードがライブラリにあればそれを使う)。
+ * 非アーカイブの単体ディスクも同様に、既に保存済み(sourceKey===url)なら再ダウンロードしない。
+ *
+ * 戻り値は登録済みディスクの配列と、それがアーカイブ展開由来かどうか
+ * (0件ならアーカイブ内にディスクイメージが無かったことを示す)。
+ * 取得自体に失敗した場合はここでトーストを出したうえで `{ kind: 'error' }` を返す
+ * (呼び出し側は他スロット/他URLの処理を継続できる)。
+ */
+async function resolveUrlToLibrary(url: string, label: string): Promise<UrlLibraryResult> {
   const groupId = `arcurl:${url}`;
-  const requiredKind = requiredKindForSlot(slot);
 
   // 展開済みのアーカイブ由来グループ(前回このURLを展開済み)があれば再ダウンロードせず復帰する。
+  // ただしバグ(HTML閲覧ページをディスクイメージとして誤保存してしまう不具合)を踏んで保存された
+  // 壊れたレコードは復帰の対象にしない(復帰させると修正後も壊れたHTMLが永久に復帰し続けるため)。
   const stored = await listDisks();
   const resumedDisks = stored
-    .filter((d) => d.sourceKey.startsWith(`${groupId}/`))
+    .filter((d) => d.sourceKey.startsWith(`${groupId}/`) && !looksLikeHtml(d.bytes))
     .map((d): RegisteredDisk => ({ name: d.name, sourceKey: d.sourceKey, data: d.bytes, kind: classifyDiskKind(d.name) ?? 'fd' }));
   if (resumedDisks.length > 0) {
     showToast(t('urlArchiveResumed', { label, count: resumedDisks.length }));
-    return finishArchiveDisks(resumedDisks, label, requiredKind, groupId);
+    return { disks: resumedDisks, fromArchive: true };
   }
 
   // 非アーカイブの単体ディスクとして既に保存済みなら(従来どおり sourceKey===url)、そちらを使う。
+  // 同様にHTMLに見える壊れたレコードは復帰させず、下の再取得処理へフォールスルーする
+  // (再取得に成功すれば同じsourceKeyへ上書き保存され、壊れたレコードは自然に修復される)。
   const plainStored = await getDisk(url);
-  if (plainStored) {
+  if (plainStored && !looksLikeHtml(plainStored.bytes)) {
     showToast(t('urlDiskResumed', { label, name: plainStored.name }));
-    return { kind: 'single', name: plainStored.name, bytes: plainStored.bytes, sourceKey: url };
+    return {
+      disks: [{ name: plainStored.name, sourceKey: url, data: plainStored.bytes, kind: classifyDiskKind(plainStored.name) ?? 'fd' }],
+      fromArchive: false,
+    };
   }
 
   const name = urlFileNameGuess(url, label);
@@ -606,11 +1219,47 @@ async function resolveUrlSlotContent(url: string, label: string, slot: SlotId): 
   const archiveName = resolveArchiveFileName(name, bytes);
   if (archiveName) {
     const disks = await registerArchiveBytesToLibrary(archiveName, bytes, groupId, name);
-    return finishArchiveDisks(disks, label, requiredKind, groupId);
+    return { disks, fromArchive: true };
   }
 
   await saveDisk({ sourceKey: url, name, bytes, savedAt: Date.now() });
-  return { kind: 'single', name, bytes, sourceKey: url };
+  return { disks: [{ name, sourceKey: url, data: bytes, kind: classifyDiskKind(name) ?? 'fd' }], fromArchive: false };
+}
+
+/**
+ * URLパラメータ由来のディスクイメージをスロット(fd1/fd2/hdd)向けに解決する。
+ * `resolveUrlToLibrary` で取得・ライブラリ登録したうえで、アーカイブ展開由来(`fromArchive`)の
+ * 場合のみ `finishArchiveDisks` によるスロットの種別一致チェックと枚数分岐(1枚ならそのまま
+ * スロットへ、複数枚ならライブラリを開いて選ばせる)を適用する。非アーカイブの単体ディスクは
+ * 従来どおり種別チェックなしでそのままスロットへ入れる(旧実装の挙動を維持するための分岐)。
+ */
+async function resolveUrlSlotContent(url: string, label: string, slot: SlotId): Promise<UrlSlotOutcome> {
+  const groupId = `arcurl:${url}`;
+  const requiredKind = requiredKindForSlot(slot);
+  const result = await resolveUrlToLibrary(url, label);
+  if ('kind' in result) return { kind: 'error' };
+  if (!result.fromArchive) {
+    const only = result.disks[0];
+    return { kind: 'single', name: only.name, bytes: only.data, sourceKey: only.sourceKey };
+  }
+  return finishArchiveDisks(result.disks, label, requiredKind, groupId);
+}
+
+/**
+ * `?lib=` パラメータ由来のディスクイメージをライブラリへ登録する(スロットへの自動挿入はしない)。
+ * 種別(hdd/fd)のチェックは行わない(HDD/FD混在のzipもそのまま登録できるようにする。
+ * スロットへ挿入する時点で既存のチェックが効くので安全性は変わらない)。
+ */
+async function resolveUrlLibContent(url: string, label: string): Promise<UrlLibOutcome> {
+  const groupId = `arcurl:${url}`;
+  const result = await resolveUrlToLibrary(url, label);
+  if ('kind' in result) return { kind: 'error' };
+  if (result.disks.length === 0) {
+    showToast(t('urlArchiveNoDiskImage', { label }), 8000);
+    return { kind: 'error' };
+  }
+  if (result.disks.length === 1) return { kind: 'single', sourceKey: result.disks[0].sourceKey };
+  return { kind: 'group', groupId };
 }
 
 /**
@@ -814,9 +1463,16 @@ async function insertDiskBytes(
   }
 }
 
-function ejectSlot(slot: SlotId): void {
+function ejectSlot(slot: SlotId, confirmIfRunning = true): void {
   if (isSlotLocked(slot)) {
     alert(t('slotLockedWhileRunning'));
+    return;
+  }
+  // 実行中の排出は、ディスクを読んでいるゲストがそのままフリーズする事故に直結する
+  // (特にタッチ操作ではドライブ行の誤タップが起きやすい)。ディスク交換は排出を経ずに
+  // 挿入(ホットスワップ)でできるため、実行中にこのボタンが必要な場面は稀 — 確認を挟む。
+  // MCPブリッジ経由(明示的な操作)は confirmIfRunning=false で従来どおり即排出する。
+  if (confirmIfRunning && host && running && slots[slot] && !confirm(t('slotEjectConfirmRunning'))) {
     return;
   }
   // 抜く前にゲストの書き込みを回収する(吸い出しは同期なので、ここを抜ける時点で取得済み)。
@@ -1028,9 +1684,9 @@ async function handleDroppedFileForLibrary(file: File): Promise<void> {
  * 画面(stage)へのD&Dで、ディスクの種別(hdd/fd)から投入先スロットを決める。
  * - HDDイメージ: 常にHDDスロットへ(起動中でロック済みの場合は insertDiskBytes 内の
  *   isSlotLocked チェックが既存のロック時メッセージを出す)。
- * - FDイメージ: FDD1が空ならFDD1へ。FDD1が埋まっていてFDD2が空なら、2ドライブ運用の
- *   利便性を優先してFDD2へ入れる(WebNP2には無い挙動だがドライブ行が2本あるWebX68k独自の配慮)。
- *   両方埋まっている/両方空の場合はFDD1をデフォルトの投入先とする
+ * - FDイメージ: FDD0が空ならFDD0へ。FDD0が埋まっていてFDD1が空なら、2ドライブ運用の
+ *   利便性を優先してFDD1へ入れる(WebNP2には無い挙動だがドライブ行が2本あるWebX68k独自の配慮)。
+ *   両方埋まっている/両方空の場合はFDD0をデフォルトの投入先とする
  *   (ドライブ行へ直接ドロップしたときと同じ「常に決め打ちのスロットへ入る」既定動作に合わせる)。
  */
 function resolveStageDropSlot(kind: 'hdd' | 'fd'): SlotId {
@@ -1136,7 +1792,7 @@ function buildLibraryRow(entry: LibraryRowEntry, inGroup = false): HTMLElement {
   const actions = document.createElement('div');
   actions.className = 'library-item-actions';
 
-  // 挿入先ドライブを選べるようにする: HDDイメージはHDDへのみ、FDイメージはFDD1/FDD2へ挿入可能。
+  // 挿入先ドライブを選べるようにする: HDDイメージはHDDへのみ、FDイメージはFDD0/FDD1へ挿入可能。
   const insertTargets: SlotId[] = kind === 'hdd' ? ['hdd'] : ['fdd0', 'fdd1'];
   for (const target of insertTargets) {
     const insertBtn = document.createElement('button');
@@ -1539,6 +2195,36 @@ async function openSlotLibraryMenu(slot: SlotId, anchorEl: HTMLButtonElement): P
   renderSlotLibraryMenu(slot, anchorEl, nodes);
 }
 
+/**
+ * バーチャルパッドのプロファイル選択メニュー(旧 #vpad-profile <select> の置き換え)。
+ * 組み込み4種を単一階層で並べ、現在有効なプロファイルの行に checked(チェックマーク)を付ける。
+ * 選択すると setActiveProfile() → saveInputProfileStore() → virtualPad.setProfile() の順に適用してから閉じる。
+ */
+function renderVpadProfileMenu(anchorEl: HTMLButtonElement): void {
+  slotPopupMenu.textContent = '';
+  const current = vpadStore.activeId;
+  for (const profile of vpadStore.profiles) {
+    const row = menuRow(vpadProfileLabel(profile), undefined, '', { checked: profile.id === current });
+    onActivate(row, () => {
+      closeSlotPopupMenu();
+      vpadStore = setActiveProfile(vpadStore, profile.id);
+      saveInputProfileStore(VPAD_STORAGE_KEY, vpadStore);
+      applyActiveVpadProfile();
+    });
+    slotPopupMenu.append(row);
+  }
+  const separator = document.createElement('div');
+  separator.className = 'vpad-menu-separator';
+  slotPopupMenu.append(separator);
+  const editRow = menuRow(t('vpadEditAssignmentsMenuItem'));
+  onActivate(editRow, () => {
+    closeSlotPopupMenu();
+    inputProfileEditor.open();
+  });
+  slotPopupMenu.append(editRow);
+  positionSlotPopupMenu(anchorEl);
+}
+
 // --- ツールバー「…」オーバーフローメニュー ---
 // 上の #slot-popup-menu / menuRow() / positionSlotPopupMenu() / closeSlotPopupMenu() をそのまま
 // 再利用し、階層は「グループ一覧(第1階層)→ グループ内の項目(第2階層、← 戻るで戻れる)」の
@@ -1576,7 +2262,7 @@ const OVERFLOW_GROUP_ORDER: OverflowGroupId[] = ['display', 'input', 'disk', 'st
 
 const OVERFLOW_GROUPS: Record<OverflowGroupId, OverflowGroup> = {
   display: { title: () => t('toolbarGroupDisplay'), actions: [btnAspect] },
-  input: { title: () => t('toolbarGroupInput'), actions: [btnMouseCapture, btnMouseResync, btnGamepad] },
+  input: { title: () => t('toolbarGroupInput'), actions: [btnMouseCapture, btnMouseResync, btnGamepad, btnHostKey] },
   disk: { title: () => t('toolbarGroupDisk'), actions: [btnDiskLibrary, btnFileManager] },
   state: { title: () => t('toolbarGroupState'), actions: [btnSaveState, btnLoadState] },
 };
@@ -1835,7 +2521,22 @@ function sanitizeFileName(name: string): string {
  * 同時搭載できるようにしている。
  */
 async function bootCore(): Promise<void> {
-  host = new LibretroHost(canvas, (samples) => audio!.push(samples));
+  // 起動時・リセット時は必ず速度ボタンをOFF(実効100%)に戻す。状態を保存しない設計のため、
+  // ここで揃えておかないとリセット直後だけ前回のON状態が残ってしまう。
+  speedEnabled = false;
+  recomputeSpeedMultiplier();
+  updateSpeedButtonUi();
+  // audio は null になりうる(AudioWorklet が使えない環境。呼び出し元の起動処理を参照)。
+  // ここを `audio!` にしていると、無音で起動したときにコアからの最初の音声コールバックで
+  // 例外になり、フレームループごと巻き込んで画面が真っ黒のまま止まる。
+  // 音の行き先が無いときはサンプルを捨てるだけでよい。
+  host = new LibretroHost(canvas, (samples) => {
+    // k===1 はバイパスして元の配列をそのまま渡す(従来と同一の経路)。
+    // それ以外は速度倍率ぶん可変レートでリサンプルし、テープ早送りのようにピッチを変える。
+    const out =
+      speedMultiplier === 1 ? samples : resampleSpeed(samples, speedMultiplier, audioResampleState);
+    audio?.push(out);
+  });
   // X68000 は画面モード変更で実行中に canvas の実解像度(width/height)が変わる。
   // ウィンドウ表示のリスケールは実解像度基準で倍率を決めるため、変わった直後に再計算させる。
   host.onResolutionChanged = () => rescale();
@@ -1847,6 +2548,22 @@ async function bootCore(): Promise<void> {
   // マウスを有効化する。px68k は MouseSW が立っていないと Mouse_Event() を丸ごと無視するため、
   // このオプション("Mouse")が Mouse_StartCapture(1) を呼ぶまでマウス入力は一切通らない。
   host.setCoreOption('px68k_joy_mouse', 'Mouse');
+  // 速度倍率ボタンを機能させるために必須。px68k-libretro は libretro.c の retro_run() 内で
+  // `Config.NoWaitMode || Timer_GetCount()` を満たさない限り WinX68k_Exec()(実際にゲストを
+  // 1フレーム進める処理)を呼ばない。Timer_GetCount() は実時間の経過を積算し、1フレームぶん
+  // 溜まったときだけ1を返すため、無効のままだと retro_run() を何倍の頻度で呼んでもゲストは
+  // 実時間どおりの回数しか進まない(速度倍率が効かない=見た目の速度が変わらない)。
+  // 'enabled' にすると `||` の短絡で Timer_GetCount() 自体が呼ばれなくなり、retro_run() 1回
+  // につき必ず1フレーム進む。つまり「進行のペースを決める時計」がコア内部から、上の loop()
+  // (音声キューの滞留量でフレーム供給ペースを自動調整する側)へ移る。loop() は実質
+  // AudioContext の 44100Hz に同期しているので、これで速度ボタンの倍率がそのままゲストの
+  // 体感速度に反映される。
+  // px68k_audio_desync_hack は代わりに有効化しないこと。あちらは溜まりすぎた音声サンプルを
+  // 単純に間引いて捨てる実装で、こちらの可変レートリサンプラ(resampleSpeed)と機能が衝突する。
+  // また、この設定はコアの update_variables() が起動直後の1回目の retro_run() でしか読まない
+  // (ホスト側がRETRO_ENVIRONMENT_SET_VARIABLE_UPDATEに対応していないため)。速度ボタンの
+  // ON/OFFに連動させる余地は無く、起動時に固定で 'enabled' にしておく。
+  host.setCoreOption('px68k_no_wait_mode', 'enabled');
   // ジョイスティックのパッド種別(2ボタン/CPSF-MD/CPSF-SFC)。gamepadStore.joyType(設定ダイアログの
   // パッド種別セレクタ、localStorage永続化)がそのまま唯一の情報源。この設定は update_variables()
   // が firstcall(起動直後の1回目のretro_run)でしか読まないため、変更を反映するには
@@ -1854,11 +2571,48 @@ async function bootCore(): Promise<void> {
   // 書き換えても次に読み込まれるのは次回起動時。
   host.setCoreOption('px68k_joytype1', PAD_TYPE_CORE_OPTION_VALUE[gamepadStore.joyType[0]]);
   host.setCoreOption('px68k_joytype2', PAD_TYPE_CORE_OPTION_VALUE[gamepadStore.joyType[1]]);
-  await host.init(biosIplBytes!, biosCgBytes!);
+  // バーチャルパッドの送り先は常にポート0(表示上のポート1)。TRG3..TRG8のビット位置は
+  // そのポートのpadTypeに依存するため、コア起動時点の値を渡しておく(設定ダイアログで
+  // 変更されたときは setPadType コールバック側で追従させる)。
+  virtualPad.setPadType(gamepadStore.joyType[0]);
+  // リロード後もSWITCH.Xの設定(起動ドライブ・キーリピート等)が残るよう、前回保存したSRAMを
+  // retro_load_game()より前に渡す(無ければ未初期化のままIPLが既定値を書く=初回起動相当)。
+  const savedSram = await loadSramFile();
+  await host.init(biosIplBytes!, biosCgBytes!, savedSram ?? undefined);
+  host.startSramAutosave((bytes) => {
+    saveSramFile(bytes).catch((err) => console.warn('SRAMの保存に失敗しました', err));
+  });
+  // SWITCH.Xでの設定変更をKeyRepeaterへ追従させるためのSRAM監視状態。
+  // 毎フレーム読むのは無駄なので60フレーム(約1秒)おきに間引く。bootCore()呼び出し
+  // ごと(コア再起動ごと)にローカル変数として作り直されるので、古いコアの値を
+  // 次のコアへ引きずることはない。
+  let keyRepeatPollFrameCount = 0;
+  let lastKeyRepeatConfig: { delayMs: number; intervalMs: number } | null = null;
   host.onPoll = () => {
+    keyRepeatPollFrameCount++;
+    if (keyRepeatPollFrameCount >= 60) {
+      keyRepeatPollFrameCount = 0;
+      // SRAMが未初期化・古いコア等でnullのときはKeyRepeaterの既定値のまま据え置く
+      // (readKeyRepeatConfig()のコメント参照)。
+      const config = host!.readKeyRepeatConfig();
+      if (
+        config &&
+        (lastKeyRepeatConfig === null ||
+          config.delayMs !== lastKeyRepeatConfig.delayMs ||
+          config.intervalMs !== lastKeyRepeatConfig.intervalMs)
+      ) {
+        lastKeyRepeatConfig = config;
+        keyRepeater.setTiming(config.delayMs, config.intervalMs);
+        console.log(
+          `キーリピート設定を SRAM から取得: 開始 ${config.delayMs}ms / 間隔 ${config.intervalMs}ms`,
+        );
+      }
+    }
     const pads = gamepadsByPort();
     const [bits0, bits1] = pollBitsByPort(pads);
-    host!.setJoyState(0, bits0);
+    // 物理パッド・バーチャルパッド・ホストキー(物理キーボード再割り当て)が同じポート(0)に
+    // 乗りうるため、ビットマスクはORで合成する(docs/DESIGN.md「joy出力の合成」参照)。
+    host!.setJoyState(0, bits0 | virtualPad.getJoyBits() | hostKeyJoyBits());
     host!.setJoyState(1, bits1);
     syncGamepadKeys(pads);
   };
@@ -1892,6 +2646,9 @@ async function bootCore(): Promise<void> {
   running = true;
   lastFrameTime = 0;
   accumulator = 0;
+  resetResampleState(audioResampleState);
+  speedMeasureLastAt = 0;
+  speedMeasureFrameCount = 0;
   // running が立ってから更新する(HDD行のロック状態がここで確定する)
   updateSlotControls();
   resetAccessLamps();
@@ -1900,14 +2657,13 @@ async function bootCore(): Promise<void> {
 
 /** 実行中のコアを破棄して作り直す */
 async function restartCore(): Promise<void> {
-  // 載せ直すと slots[].data から書き直すことになるので、その前にゲストの書き込みを回収する
-  // (設定変更でCPU速度を変えただけでセーブデータが消える、という事故を防ぐ)。
-  flushAllSlots();
-  running = false;
-  cancelScheduled();
-  host?.dispose();
-  host = null;
-  await bootCore();
+  await diskPersistence.restartWithFlush(async () => {
+    running = false;
+    cancelScheduled();
+    host?.dispose();
+    host = null;
+    await bootCore();
+  });
 }
 
 // ドライブ行の挿入ボタン・ライブラリ/ブランクボタン・D&D配線(WebNP2 の FDスロット行と同じ流儀)。
@@ -1962,7 +2718,7 @@ for (const slot of SLOT_IDS) {
 }
 
 // 画面(stage、canvasを含む領域)へのD&D配線。WebNP2 の stage D&D(dragenterカウンタ方式)を移植し、
-// 投入先の決定だけ resolveStageDropSlot 経由で WebX68k のスロット構成(FDD1/FDD2/HDD)に合わせる。
+// 投入先の決定だけ resolveStageDropSlot 経由で WebX68k のスロット構成(FDD0/FDD1/HDD)に合わせる。
 // 起動前・起動中どちらでも受け付ける(insertDiskBytes/hotSwapFdd が両方を扱えるため)。
 {
   let stageDropDepth = 0;
@@ -2043,12 +2799,15 @@ function applyDocumentStrings(): void {
   btnReset.setAttribute('aria-label', t('toolbarReset'));
   btnScreenshot.title = t('toolbarScreenshot');
   btnScreenshot.setAttribute('aria-label', t('toolbarScreenshot'));
+  updateSpeedButtonUi();
   btnMouseCapture.setAttribute('aria-label', t('toolbarMouseCapture'));
   btnMouseResync.setAttribute('aria-label', t('toolbarMouseResync'));
   updateMouseControls();
   updateFullscreenControl();
-  btnVirtualKeyboard.title = virtualKeyboard.isVisible() ? t('toolbarVirtualKeyboardHide') : t('toolbarVirtualKeyboard');
-  btnVirtualKeyboard.setAttribute('aria-label', btnVirtualKeyboard.title);
+  syncInputPanelUi();
+  btnPanelKeyboard.setAttribute('aria-label', t('inputPanelSwitchKeyboard'));
+  btnPanelPad.setAttribute('aria-label', t('inputPanelSwitchPad'));
+  btnPanelTrackpad.setAttribute('aria-label', t('inputPanelSwitchTrackpad'));
   updateAspectControl();
   btnSaveState.title = t('toolbarSaveState');
   btnSaveState.setAttribute('aria-label', t('toolbarSaveState'));
@@ -2057,6 +2816,11 @@ function applyDocumentStrings(): void {
   btnGamepad.title = t('toolbarGamepad');
   btnGamepad.setAttribute('aria-label', t('toolbarGamepad'));
   gamepadDialog.applyStrings();
+  refreshVpadSourceLabels();
+  inputProfileEditor.applyStrings();
+  btnHostKey.title = t('toolbarHostKey');
+  btnHostKey.setAttribute('aria-label', t('toolbarHostKey'));
+  hostKeyDialog.applyStrings();
   btnSettings.title = t('toolbarSettings');
   btnSettings.setAttribute('aria-label', t('toolbarSettings'));
   btnDiskLibrary.title = t('toolbarDiskLibrary');
@@ -2107,6 +2871,9 @@ function applyDocumentStrings(): void {
   document.getElementById('settings-machine-reset-note')!.textContent = t('settingsMachineResetNote');
   document.getElementById('settings-cpuspeed-label')!.textContent = t('settingsCpuSpeedLabel');
   document.getElementById('settings-ramsize-label')!.textContent = t('settingsRamSizeLabel');
+  document.getElementById('settings-speed-title')!.textContent = t('settingsSpeedTitle');
+  document.getElementById('settings-speed-note')!.textContent = t('settingsSpeedNote');
+  document.getElementById('settings-speed-label')!.textContent = t('settingsSpeedLabel');
   settingsCloseBtn.textContent = t('settingsClose');
   setBiosStatus(biosIplStatus, biosIplState);
   setBiosStatus(biosCgStatus, biosCgState);
@@ -2127,24 +2894,73 @@ btnLang.addEventListener('click', () => {
 // キーボード入力: canvas にフォーカスがある間だけ捕捉する
 canvas.tabIndex = 0;
 const physicalPressed = new Set<string>();
+// ホストキー(物理キーボード再割り当て)で横取り中の e.code -> press時点で確定した割当。
+// keyup側は「今のhostKeyStore/アクティブプロファイル」で再解決せず、必ずこのMapに記録された
+// press時点の割当を使って release する(押している最中にプロファイルが切り替わっても、
+// sharedKeyInput.press/releaseのretrokが噛み合わなくなる=固着する事故を防ぐため)。
+const hostKeyPressed = new Map<string, Binding>();
 window.addEventListener('keydown', (e) => {
   if (document.activeElement !== canvas || !host) return;
+  // 自前のKeyRepeaterで刻むため、ブラウザ/OS由来のオートリピートはゲストへ渡さない。
+  if (e.repeat) {
+    e.preventDefault();
+    return;
+  }
+  // ホストキー割当(ジョイスティック等への横取り)経路はここで早期returnするため、
+  // 以降のkeyRepeater.start()に到達しない = 連打(リピート)対象にならない。
+  const hostBinding = resolveHostKeyBinding(hostKeyStore, e.code);
+  if (hostBinding) {
+    hostKeyPressed.set(e.code, hostBinding);
+    if (hostBinding.kind === 'key') sharedKeyInput.press(`physical:${e.code}`, hostBinding.retrok);
+    e.preventDefault();
+    return;
+  }
   const code = codeToRetrok(e.code);
   if (code === RETROK.UNKNOWN) return;
   const firstPress = !physicalPressed.has(e.code);
   physicalPressed.add(e.code);
   sharedKeyInput.press(`physical:${e.code}`, code);
+  // 自前タイマ(KeyRepeater)で刻み、OSごとに異なるキーリピート間隔設定へ依存させない。
+  if (firstPress && isRepeatableKey(code)) keyRepeater.start(`physical:${e.code}`, code);
   if (firstPress && code === RETROK.BROWSER_REFRESH) virtualKeyboard.togglePhysicalKanaLock();
   e.preventDefault();
 });
 window.addEventListener('keyup', (e) => {
+  const hostBinding = hostKeyPressed.get(e.code);
+  if (hostBinding) {
+    hostKeyPressed.delete(e.code);
+    if (hostBinding.kind === 'key') sharedKeyInput.release(`physical:${e.code}`, hostBinding.retrok);
+    e.preventDefault();
+    return;
+  }
   if (!physicalPressed.delete(e.code)) return;
   const code = codeToRetrok(e.code);
   if (code === RETROK.UNKNOWN) return;
+  keyRepeater.stop(`physical:${e.code}`);
   sharedKeyInput.release(`physical:${e.code}`, code);
   e.preventDefault();
 });
-window.addEventListener('blur', () => physicalPressed.clear());
+/** ホストキー由来の押下記録を全解除する(blur時。押しっぱなし固着の予防、physicalPressed.clear()と同じ思想)。 */
+function clearHostKeyPressed(): void {
+  for (const [code, binding] of hostKeyPressed) {
+    if (binding.kind === 'key') sharedKeyInput.release(`physical:${code}`, binding.retrok);
+  }
+  hostKeyPressed.clear();
+}
+window.addEventListener('blur', () => {
+  keyRepeater.stopAll();
+  physicalPressed.clear();
+  clearHostKeyPressed();
+});
+/**
+ * ホストキー由来のjoyビットマスク(ポート0、host.onPollからOR合成する)。padTypeは
+ * gamepadStore.joyType[0](TRG3..TRG8のビット位置がパッド種別で変わるため、バーチャルパッドと
+ * 同じ考え方)。押している最中に割当が変わっても hostKeyPressed に記録済みの押下時点の割当を
+ * そのまま使う(固着防止、resolveHostKeyBinding/joyBitsForPressedCodesのコメント参照)。
+ */
+function hostKeyJoyBits(): number {
+  return joyBitsForPressedCodes(hostKeyPressed.keys(), (code) => hostKeyPressed.get(code), gamepadStore.joyType[0]);
+}
 // --- マウス入力 ---
 // X68000 のマウスは SCC 経由で相対移動量(-128..127)を送る方式で、カーソル位置はゲストが
 // 自前で管理する。そのため WebNP2 と同じく2つのモードを用意する。
@@ -2210,6 +3026,15 @@ function sendAmountFor(distance: number): number {
     else break;
   }
   return distance < 0 ? -send : send;
+}
+
+/** sendAmountFor() が返した送信量が実際に動かす見込みのドット数(加速テーブルの逆方向)。 */
+function predictedMoveFor(send: number): number {
+  const abs = Math.abs(send);
+  for (const [candidate, move] of MOUSE_ACCEL_TABLE) {
+    if (candidate === abs) return send < 0 ? -move : move;
+  }
+  return 0;
 }
 
 /** ホスト側カーソルの canvas 内相対位置(0..1)。実際の目標座標はゲストの可動範囲から毎フレーム決める。 */
@@ -2394,6 +3219,85 @@ window.addEventListener('mouseup', (e) => {
   else if (e.button === 2) host.setMouseButton('right', false);
 });
 
+// --- バーチャルトラックパッド --------------------------------------------------
+// iOS Safari は Pointer Lock 非対応でキャプチャモードが成立しない。バーチャルトラックパッド
+// (入力パネルの第3の種類、virtual-trackpad.ts)はその代替として、専用の操作面での指の
+// 相対移動をマウス移動量へ変換する。ジェスチャの解釈(タップ/2本指タップ/長押しドラッグ)は
+// touch-mouse.ts の純ロジックが受け持ち、ここは CSSピクセル→ゲストのドット数への換算
+// (加速テーブルの逆引き含む)と、クリックパルスのタイミング制御だけを行う。
+/** クリックパルスの押下時間(ms)。コアは retro_run() 中に1回しかボタンを読まないため、数フレームぶん保持する。 */
+const TOUCH_CLICK_PULSE_MS = 100;
+/** 連続タップ(ダブルクリック)の押下間隔(ms)。間隔ゼロだと押しっぱなしと区別できない。 */
+const TOUCH_CLICK_GAP_MS = 60;
+/** クリック待ち行列。tap が来たら積み、フレームループ(stepTouchTrackpad)からパルスにして流す。 */
+const touchClickQueue: TouchMouseButton[] = [];
+let touchClickBusy = false;
+/**
+ * 指のCSSピクセル移動量→ゲストのドット数への換算倍率。canvas の表示倍率
+ * (canvas.width / canvas.clientWidth)は使わない。トラックパッドは canvas と無関係な
+ * 専用の操作面であり、モバイルでは canvas の表示倍率が2倍を超えることがあって、これを
+ * そのまま使うと1イベントぶんの移動量が IOCS の加速域(16以上で最大7.5倍)に入って
+ * カーソルが飛ぶ(stepMouseTrackingのコメント参照)。固定倍率にすることでこの問題を
+ * 構造的に避ける。
+ */
+const TRACKPAD_SCALE = 1.5;
+/** トラックパッド操作中の加速逆補正で生じる送信残差(ドット)。指を離したら捨てる。 */
+let touchPadResidX = 0;
+let touchPadResidY = 0;
+
+function pumpTouchClickQueue(): void {
+  if (touchClickBusy) return;
+  const button = touchClickQueue.shift();
+  if (button === undefined) return;
+  touchClickBusy = true;
+  host?.setMouseButton(button, true);
+  window.setTimeout(() => {
+    host?.setMouseButton(button, false);
+    window.setTimeout(() => {
+      touchClickBusy = false;
+      pumpTouchClickQueue();
+    }, TOUCH_CLICK_GAP_MS);
+  }, TOUCH_CLICK_PULSE_MS);
+}
+
+/** virtual-trackpad.ts からの相対移動(CSSピクセル)をゲストのドット数へ換算して送る。 */
+function trackpadMoveBy(dx: number, dy: number): void {
+  if (!host) return;
+  // キャプチャモードの mousemove と同じ考え方(感度倍率)だが、換算倍率は canvas 表示倍率
+  // ではなく TRACKPAD_SCALE 固定(上記コメント参照)。
+  touchPadResidX += dx * TRACKPAD_SCALE * mouseSensitivity;
+  touchPadResidY += dy * TRACKPAD_SCALE * mouseSensitivity;
+  const sendX = sendAmountFor(touchPadResidX);
+  const sendY = sendAmountFor(touchPadResidY);
+  // 古い絶対位置の目標(マウスの追従モード側)が残っていると閉ループが相対移動と
+  // 綱引きするので捨てる。
+  hasDesiredRatio = false;
+  if (sendX === 0 && sendY === 0) return;
+  touchPadResidX -= predictedMoveFor(sendX);
+  touchPadResidY -= predictedMoveFor(sendY);
+  host.addMouseDelta(sendX, sendY);
+}
+
+/** ストローク終了(全指離れた/キャンセル/パネルを閉じた)の通知。次のストロークへ残差を持ち越さない。 */
+function trackpadStrokeEnd(): void {
+  touchPadResidX = 0;
+  touchPadResidY = 0;
+}
+
+const virtualTrackpad: VirtualTrackpad = createVirtualTrackpad(virtualTrackpadPanel, {
+  moveBy: trackpadMoveBy,
+  buttonDown: (button) => host?.setMouseButton(button, true),
+  buttonUp: (button) => host?.setMouseButton(button, false),
+  tap: (button) => touchClickQueue.push(button),
+  strokeEnd: trackpadStrokeEnd,
+});
+
+/** フレームループから毎フレーム呼ぶ(長押し判定はvirtual-trackpad.tsのstep()、クリックパルスはここ)。 */
+function stepTouchTrackpad(): void {
+  virtualTrackpad.step(performance.now());
+  if (touchClickQueue.length > 0) pumpTouchClickQueue();
+}
+
 /** マウス関連ボタンの活性・表示状態を現在のモードに合わせる。 */
 function updateMouseControls(): void {
   const captured = isMouseCaptured();
@@ -2414,13 +3318,25 @@ btnMouseResync.addEventListener('click', () => {
 });
 
 /**
- * フルスクリーン化の対象は canvas ではなく .stage(黒背景+canvas を中央寄せする箱)。
- * 理由は style.css 側の .stage:fullscreen 系ルールのコメントを参照。
- * アスペクト比の維持自体は CSS (:fullscreen 時の #screen の object-fit:contain) に
- * 任せており、ここでは要素の全画面化/解除のトグルだけを行う。
+ * フルスクリーン化の対象はページ全体(document.documentElement)。
+ *
+ * ネイティブ全画面はその部分木の外にある要素を一切描画しない。かつては .stage を
+ * 対象にしていてツールバーが消え、次に .console-card へ移してツールバーは残ったが、
+ * バーチャルパッドは sides配置のとき document.body 直下へ出す(左右のデッドスペースへ
+ * またがるため)ので、カード対象では必ず対象の外に出てパッドが消えていた
+ * (WebNP2 の Android 実機で発覚、2026-08-20。iPhone は Fullscreen API 自体が無く
+ * 疑似フルスクリーンへ倒れるのでこの経路を踏まない)。
+ * ページ全体を対象にすれば、どこへ reparent しても消えない。
+ * アスペクト比の維持・サイズ決定は rescale() (JS側)が getTargetSize() 経由で行う
+ * (旧 object-fit:contain の CSS 任せはやめた)。
  */
-function isStageFullscreen(): boolean {
-  return document.fullscreenElement === stageEl || (document as any).webkitFullscreenElement === stageEl;
+const fullscreenRootEl = document.documentElement;
+
+function isNativeFullscreen(): boolean {
+  return (
+    document.fullscreenElement === fullscreenRootEl ||
+    (document as any).webkitFullscreenElement === fullscreenRootEl
+  );
 }
 
 /**
@@ -2440,22 +3356,62 @@ function nativeFullscreenSupported(el: HTMLElement): boolean {
   return hasMethod && enabled;
 }
 
-/** 現在ページ側のクロームを畳んで疑似フルスクリーン中かどうか。 */
+/**
+ * 現在ページ側のクロームを畳んで疑似フルスクリーン中かどうか。
+ * 見た目を決めるCSSセレクタ自体は body.immersive に一本化したため、この関数は
+ * 「Fullscreen API が無いので CSS で代替している」という内部状態の識別にのみ使う
+ * (fullscreenchangeが飛んでこない経路なので、ボタンの3分岐ラベル判定に必要)。
+ */
 function isPseudoFullscreen(): boolean {
   return document.body.classList.contains('pseudo-fullscreen');
 }
 
+/**
+ * ネイティブ全画面(.console-card)・疑似フルスクリーンのどちらかで「没入モード」中かどうか。
+ * body.immersive クラスの有無をそのまま見る単一の判定にすることで、ネイティブ/疑似の
+ * 違いをスケール計算(rescale())や表示切り替えの分岐から追い出す。
+ */
+function isImmersive(): boolean {
+  return document.body.classList.contains('immersive');
+}
+
+/**
+ * requestFullscreen() を呼んでから「通らなかった」と見なすまでの待ち時間(ms)。
+ * 実際の全画面遷移は数十msで fullscreenchange が飛ぶので、これより十分短い。
+ */
+const FULLSCREEN_FALLBACK_MS = 400;
+
 function setFullscreen(makeFullscreen: boolean): void {
   if (makeFullscreen) {
-    if (isStageFullscreen()) return;
+    if (isNativeFullscreen()) return;
     const req =
-      stageEl.requestFullscreen?.bind(stageEl) ??
-      (stageEl as any).webkitRequestFullscreen?.bind(stageEl);
-    void Promise.resolve(req?.()).catch(() => {
-      // 一部環境(iOS Safari 等)は canvas 以外の任意要素の requestFullscreen に対応していない。
-      // フルスクリーン非対応環境向けの代替UIは用意していないため、ここでは失敗を静かに無視する。
-    });
-  } else if (isStageFullscreen()) {
+      fullscreenRootEl.requestFullscreen?.bind(fullscreenRootEl) ??
+      (fullscreenRootEl as any).webkitRequestFullscreen?.bind(fullscreenRootEl);
+    // requestFullscreen は「メソッドが生えていて document.fullscreenEnabled も true」でも
+    // 実行時に通らないことがある(埋め込み webview 等)。nativeFullscreenSupported() のような
+    // 静的な能力判定だけでは足りない。以前はここで失敗を黙って無視していたため、
+    // そういう環境では全画面ボタンを押しても「何も起きない」状態になっていた。
+    //
+    // 通らない形は2種類あり、両方を拾う必要がある(どちらも実測):
+    //  1. Promise が reject される(ユーザー操作起点でない等) -> catch で拾う
+    //  2. Promise が resolve も reject もされないまま放置される -> catch では拾えないので
+    //     タイムアウトで拾う(この挙動を埋め込みブラウザで実測した)
+    // どちらの場合も、代替として用意してある疑似フルスクリーンへ倒す。
+    let settled = false;
+    void Promise.resolve(req?.()).then(
+      () => {
+        settled = true;
+      },
+      () => {
+        settled = true;
+        togglePseudoFullscreen(true);
+      },
+    );
+    window.setTimeout(() => {
+      if (settled || isNativeFullscreen() || isPseudoFullscreen()) return;
+      togglePseudoFullscreen(true);
+    }, FULLSCREEN_FALLBACK_MS);
+  } else if (isNativeFullscreen()) {
     const exit = document.exitFullscreen?.bind(document) ?? (document as any).webkitExitFullscreen?.bind(document);
     void Promise.resolve(exit?.());
   }
@@ -2463,7 +3419,7 @@ function setFullscreen(makeFullscreen: boolean): void {
 
 /** フルスクリーンボタンの見た目(トグル状態)を実際の全画面状態に追従させる。マウスキャプチャボタンと同じ流儀。 */
 function updateFullscreenControl(): void {
-  const nativeFs = isStageFullscreen();
+  const nativeFs = isNativeFullscreen();
   const pseudoFs = isPseudoFullscreen();
   btnFullscreen.classList.toggle('active', nativeFs || pseudoFs);
   // 疑似フルスクリーンは Esc では抜けられない(nativeFullscreenSupported() の
@@ -2480,17 +3436,31 @@ function updateFullscreenControl(): void {
   btnFullscreen.setAttribute('aria-pressed', nativeFs || pseudoFs ? 'true' : 'false');
 }
 
+/**
+ * 疑似フルスクリーンを切り替える(ネイティブが使えない/拒否された場合の代替)。
+ * ページ側のクロームを畳んで実行画面へ面積を明け渡す。解除操作のため .toolbar は残す。
+ */
+function togglePseudoFullscreen(on?: boolean): void {
+  document.body.classList.toggle('pseudo-fullscreen', on);
+  document.body.classList.toggle('immersive', isPseudoFullscreen() || isNativeFullscreen());
+  updateFullscreenControl();
+  rescale();
+}
+
 btnFullscreen.addEventListener('click', () => {
-  if (nativeFullscreenSupported(stageEl)) {
-    setFullscreen(!isStageFullscreen());
+  // 疑似フルスクリーン中は(ネイティブが使える環境かどうかに関わらず)まずそちらを解除する。
+  // ネイティブが拒否されて疑似へ倒れた状態から抜けられなくなるのを防ぐ。
+  if (isPseudoFullscreen()) {
+    togglePseudoFullscreen(false);
+    return;
+  }
+  if (nativeFullscreenSupported(fullscreenRootEl)) {
+    setFullscreen(!isNativeFullscreen());
     return;
   }
   // iPhone の WebKit は <video> 以外の Fullscreen API を持たないため、ネイティブ版は
-  // 無反応になる。ページ側のクロームを畳んで画面を最大化する疑似フルスクリーンで
-  // 代替する(解除操作のため .toolbar は残す)。
-  document.body.classList.toggle('pseudo-fullscreen');
-  updateFullscreenControl();
-  rescale();
+  // 無反応になる。疑似フルスクリーンで代替する。
+  togglePseudoFullscreen();
 });
 document.addEventListener('fullscreenchange', updateFullscreenControl);
 document.addEventListener('webkitfullscreenchange', updateFullscreenControl);
@@ -2524,6 +3494,17 @@ function loadAspectMode(): AspectMode {
 
 let aspectMode: AspectMode = loadAspectMode();
 
+// ?aspect=<4:3|native> : 起動時のみ表示縦横比モードを上書きする(共有URLで推奨環境を再現するため)。
+// 意図的に localStorage には保存しない。共有リンクを開いただけで利用者の既定設定が
+// 書き換わってしまうと、リンクを踏むたびに意図せず設定が上書きされる事故になるため。
+const aspectParamRaw = new URLSearchParams(location.search).get('aspect');
+const urlAspectMode = parseAspectModeParam(aspectParamRaw);
+if (aspectParamRaw !== null && urlAspectMode === null) {
+  console.warn('?aspect= の値が不正です("4:3" または "native" で指定してください)');
+} else if (urlAspectMode !== null) {
+  aspectMode = urlAspectMode;
+}
+
 /** アスペクト比ボタンの見た目(トグル状態)を現在のモードに合わせる。フルスクリーンボタンと同じ流儀。 */
 function updateAspectControl(): void {
   const is43 = aspectMode === '4:3';
@@ -2531,8 +3512,9 @@ function updateAspectControl(): void {
   btnAspect.setAttribute('aria-pressed', is43 ? 'true' : 'false');
   btnAspect.title = is43 ? t('toolbarAspect43') : t('toolbarAspectNative');
   btnAspect.setAttribute('aria-label', btnAspect.title);
-  // ネイティブフルスクリーンは JS を経由せず CSS (.stage.aspect-4-3:fullscreen #screen、
-  // style.css 参照) だけで4:3化するため、モードを stage 要素にクラスとして反映しておく。
+  // 4:3化そのものは(フルスクリーン中も含めて)rescale() が getTargetSize() 経由で計算する。
+  // ここで stage 要素に付けるクラスは、4:3時だけ image-rendering を補間ありに切り替える
+  // 表示用ルール(.stage.aspect-4-3 #screen、style.css 参照)のためのもの。
   stageEl.classList.toggle('aspect-4-3', is43);
 }
 
@@ -2547,11 +3529,11 @@ updateAspectControl();
 
 /**
  * canvas の表示倍率(等倍〜整数倍、収まらない場合は端数の縮小)を実測して決める。
- * フルスクリーン中は CSS 側(.stage:fullscreen #screen の object-fit:contain、
- * style.css の該当コメント参照)に表示サイズを任せているため、ここでインラインの
- * width/height を触ると「スタイルシートよりインラインが強い」性質でフルスクリーンの
- * CSS ルールが効かなくなってしまう。フルスクリーン中は何もしない
- * (fullscreenchange 側で入る/抜けるタイミングにインラインスタイルの付け外しをしている)。
+ * かつてはフルスクリーン中は CSS 側(.stage:fullscreen #screen の object-fit:contain)に
+ * 表示サイズを丸投げして早期returnしていたが、フルスクリーン対象が .stage から
+ * .console-card に変わり、中の stage サイズを決めるCSSルールが無くなったため、
+ * ネイティブ全画面中もここでサイズを決める必要がある。よって早期returnは廃止し、
+ * 没入モード判定(isImmersive())は下の scale 計算の分岐にのみ残す。
  */
 /**
  * getComputedStyle() から取り出した長さ値を安全に数値化する。
@@ -2566,8 +3548,6 @@ function parseLengthOrZero(value: string): number {
 }
 
 function rescale(): void {
-  if (isStageFullscreen()) return;
-
   const nativeWidth = canvas.width || FALLBACK_NATIVE_WIDTH;
   const nativeHeight = canvas.height || FALLBACK_NATIVE_HEIGHT;
   // 4:3モードでは実解像度(nativeWidth x nativeHeight)そのものではなく、そこから導いた
@@ -2619,15 +3599,26 @@ function rescale(): void {
   // (WebNP2側)特有の懸念であり、WebX68k の rescale() は resize 等のイベント発火のたびに
   // 1パスだけ計算して終わる(自分自身の呼び直しをトリガーする仕組みを持たない)ため、
   // この収縮ループは原理的に起こらない。よってここでは単純に幅・高さ両方の fit を使う。
-  // 疑似フルスクリーン中は整数倍への丸めと MAX_SCALE の上限を外し、fit をそのまま使って
-  // 画面いっぱいに拡大する(下限 0.3 は維持)。ネイティブのフルスクリーンは
-  // .stage:fullscreen #screen の object-fit:contain で整数倍に丸めず連続的に最大化して
-  // いるため、その代替である疑似フルスクリーンも同じ見え方に揃えるのが狙い。
-  const scale = isPseudoFullscreen()
+  // 没入モード中(ネイティブ全画面 or 疑似フルスクリーン、isImmersive() 参照)は整数倍への
+  // 丸めと MAX_SCALE の上限を外し、fit をそのまま使って画面いっぱいに拡大する
+  // (下限 0.3 は維持)。ネイティブ全画面も疑似フルスクリーンも同じ「画面を最大限使う」
+  // 見え方に揃えるのが狙いで、フルスクリーン対象が .console-card になった今はどちらも
+  // このJS計算がサイズを決める(旧 object-fit:contain へ丸投げする経路は無くなった)。
+  const rawScale = isImmersive()
     ? Math.max(0.3, fit)
     : fit >= 1
       ? Math.min(MAX_SCALE, Math.floor(fit))
       : Math.max(0.3, Math.min(1, fit));
+  // 端数倍のときは物理ピクセル整数倍へ寄せる(寄せられなければ補間へ落とす)。
+  // 非没入かつ fit>=1 の経路は既にCSS整数倍なので触らない(DPRが整数の環境では物理も整数倍)。
+  // 没入モードは fit をそのまま使う設計なので、1倍以上でも端数倍になるのが常態であり、
+  // ここを通さないと最近傍のまま端数倍になって1ドット幅の線が周期的に間引かれる。
+  const fractional = isImmersive() || fit < 1;
+  const fitted = fractional ? fitDeviceScale(rawScale, window.devicePixelRatio) : { scale: rawScale, smooth: false };
+  const scale = fitted.scale;
+  // 補間へ落とす指定。4:3モード側は .stage.aspect-4-3 #screen で常に auto にしてあるので、
+  // このクラスが効くのはドット等倍モードのときだけ。
+  canvas.classList.toggle('smooth-scaled', fitted.smooth);
 
   const w = Math.round(target.width * scale);
   const h = Math.round(target.height * scale);
@@ -2657,6 +3648,60 @@ function rescale(): void {
   canvas.style.height = `${h}px`;
   stageFrameEl.style.width = `${frameW}px`;
   stageFrameEl.style.height = `${frameH}px`;
+
+  // --- バーチャルパッドの配置決定 ---
+  // 手順(このファイル冒頭の指示コメントの順序を守る。逆にすると自己参照して発振する):
+  // 1. ここまでの w/h/frameH は「パッドのパネル高さを0とした」stageサイズであり、
+  //    パッドの有無で変化しない(=パッドを出しても画面が縮まないことがこの時点で保証される)。
+  // 2. その結果(frameH)から縦の余りを実測する。既存のreservedHeight計算と同じ実測要素
+  //    (ヘッダー/console-footer/仮想キーボード)に加え、ページ最下部のフッタも引く。
+  //    パネルモードにすると console-card 内の子要素が1つ増える分の gap も見込んで引いておく
+  //    (このgapは今回のパッド用に新しく必要になるもので、上の gapsInCard には含まれていない)。
+  const leftover =
+    window.innerHeight -
+    (pageHeaderEl?.getBoundingClientRect().height ?? 0) -
+    frameH -
+    consoleFooterEl.getBoundingClientRect().height -
+    (kbdVisible ? virtualKeyboardPanel.getBoundingClientRect().height : 0) -
+    (pageFooterEl?.getBoundingClientRect().height ?? 0) -
+    mainPaddingV -
+    gapsInCard -
+    cardGap -
+    4;
+  // 3. 縦の余りが足りない場合に備え、左右の余白も実測しておく(sides判定用)。
+  //    横持ちで4:3維持のため画面が縦に制限されると、画面の左右に余白が生まれる。
+  //
+  //    基準は **.stage** の矩形にすること(.console-card ではない)。
+  //    ネイティブ全画面では .console-card が 100vw/100vh に広げられるため、
+  //    カード基準で測ると左右の余白が常に 0 になり、**sides 配置が絶対に発動しなくなる**
+  //    (Android の横持ち全画面という一番効かせたい場面で効かない、という状態だった)。
+  //    .stage 基準なら、ウィンドウ表示でも全画面でも「画面の横に空いている幅」を同じ式で測れる。
+  //    左右で幅が違う場合は狭い方で判定する(狭い側に部品がはみ出すのを避けるため)。
+  const stageRect = stageEl.getBoundingClientRect();
+  // ボックスの縦範囲は .stage の上端〜下端に合わせる(画面と同じ高さの帯にすると
+  // 指の位置が自然になるため)。ただし切り欠き/ホームインジケータの下は使わない:
+  // index.html の viewport は viewport-fit=cover なので、スタンドアロン表示や
+  // Android の全画面ではビューポートが切り欠きの下まで広がり、x:0〜innerWidth の
+  // ままボックスを取ると外縁の部品(左のスティック/右端のボタン)が隠れる。
+  const sidesBoxes: VpadSideBoxes = vpadSideBoxesFor(
+    { x: stageRect.left, y: stageRect.top, w: stageRect.width, h: stageRect.height },
+    { width: window.innerWidth, height: window.innerHeight },
+    resolveLandscapeInsets(readSafeAreaInsets(), screenAngle()),
+  );
+  // 4. 判定順は panel → sides → overlay。
+  //    - 縦の余り >= VPAD_PANEL_MIN_HEIGHT ならパネルモード(帯の高さは余りと
+  //      VPAD_PANEL_MAX_HEIGHT の小さい方)。
+  //    - そうでなくても左右の余白が両方とも VPAD_SIDES_MIN_WIDTH 以上あればサイドモード。
+  //    - どちらでもなければ従来通りオーバーレイモード。
+  // sides にするかどうかは、セーフエリアを引いた後の実際のボックス幅で決める
+  // (切り欠きに食われて狭くなった側で判定しないと、部品が縮みすぎたまま sides になる)。
+  const sidesMargin = Math.min(sidesBoxes.left.w, sidesBoxes.right.w);
+  const nextVpadPlacement: VpadPlacement =
+    leftover >= VPAD_PANEL_MIN_HEIGHT ? 'panel' : sidesMargin >= VPAD_SIDES_MIN_WIDTH ? 'sides' : 'overlay';
+  const vpadPanelHeight = Math.min(Math.max(leftover, 0), VPAD_PANEL_MAX_HEIGHT);
+  // 5. モードが変わったときだけ reparent する(applyVpadPlacement内部で判定)。sidesBoxes は
+  //    モード不変でも毎回渡す(ビューポートサイズの変化に追従させるため)。
+  applyVpadPlacement(nextVpadPlacement, vpadPanelHeight, sidesBoxes);
 }
 
 // visualViewport の resize は購読しない: ピンチズーム操作でも発火するため、ここで再フィット
@@ -2664,26 +3709,19 @@ function rescale(): void {
 window.addEventListener('resize', rescale);
 window.addEventListener('orientationchange', rescale);
 
-// フルスクリーンの出入りに合わせてインラインスタイルを付け外しする。
-// canvas.style.width/height を設定したままだと、インラインスタイルはスタイルシートの
-// セレクタより強いため、フルスクリーン用ルール(.stage:fullscreen #screen の
-// width:100%/height:100%/object-fit:contain)が効かなくなりフルスクリーンが壊れる。
-document.addEventListener('fullscreenchange', () => {
-  if (isStageFullscreen()) {
-    canvas.style.width = '';
-    canvas.style.height = '';
-  } else {
-    rescale();
-  }
-});
-document.addEventListener('webkitfullscreenchange', () => {
-  if (isStageFullscreen()) {
-    canvas.style.width = '';
-    canvas.style.height = '';
-  } else {
-    rescale();
-  }
-});
+// ネイティブ全画面の出入りに合わせて body.immersive を付け外し、rescale() を呼び直す。
+// かつては canvas.style.width/height の付け外しと、パッドをoverlayへ強制する処理を
+// ここに置いていたが、フルスクリーン対象が .console-card になりパッドも画面内に残る
+// ようになったため不要になった(サイズ決定・パッド配置ともrescale()に一本化された)。
+function onNativeFullscreenChange(): void {
+  // ネイティブが遅れて通った場合(タイムアウトで疑似へ倒した後に fullscreenchange が来る)、
+  // 疑似との二重掛けを解いてネイティブ側に一本化する。
+  if (isNativeFullscreen() && isPseudoFullscreen()) document.body.classList.remove('pseudo-fullscreen');
+  document.body.classList.toggle('immersive', isNativeFullscreen() || isPseudoFullscreen());
+  rescale();
+}
+document.addEventListener('fullscreenchange', onNativeFullscreenChange);
+document.addEventListener('webkitfullscreenchange', onNativeFullscreenChange);
 
 // スクリプト読み込み直後(起動前オーバーレイが出ている段階)にも一度リスケールしておく。
 // resize 等のイベントが飛んでくるのを待つだけの設計だと、ユーザーが最初に開いたときに
@@ -2718,10 +3756,10 @@ window.addEventListener('load', () => rescale());
 //   (requestFullscreen はユーザー操作を必要とし、Esc 由来の離脱直後は特に拒否される)
 //
 // その結果「マウスを外したいだけなのにフルスクリーンも抜ける」ことになる。フルスクリーンの
-// 対象を .stage(画面のみ)にしている以上、全画面中はツールバーが見えず、キャプチャ解除の
-// 手段が Esc しかないためこれは避けられない。没入感を優先して画面のみを全画面にする方針を
-// 採ったうえで、この挙動は仕様として README / help.html に明記してある。
-// (.console-card ごと全画面にしてツールバーを残せば回避できるが、画面が狭くなるため採らない)
+// 対象は .console-card(ツールバーを内包)にしてあるため、Esc を使わずツールバーの
+// マウスキャプチャボタンから解除する経路も用意してあるが、Esc 自体の挙動(キャプチャと
+// 同時にフルスクリーンも抜ける)はブラウザ実装によるものでこちらからは制御できない。
+// この挙動は仕様として README / help.html に明記してある。
 //
 // 自動検証について: CDP(Input.dispatchKeyEvent)経由の合成 Esc では
 // pointerlockchange/fullscreenchange のどちらも発火しない。Chromium の Esc 解除処理が
@@ -2800,59 +3838,46 @@ function isFileManagerOpen(): boolean {
   return fileManagerRoot.querySelector('.fm-modal-backdrop:not(.hidden)') !== null;
 }
 
+// ディスクの吸い出しロジック本体は src/disk-persist.ts へ切り出した(DOM/wasm非依存。
+// restartCore() が flushAll → teardown+boot の「順序」を壊さないことを vitest で検証するため)。
+// ここでの各依存は main.ts 側の実体(host/slots等)への薄いアダプタ。
+const diskPersistence = createDiskPersistence(
+  {
+    getSlot: (slot) => slots[slot],
+    setSlot: (slot, entry) => {
+      slots[slot] = entry;
+    },
+    isLive: () => host !== null && running,
+    clearDirty: (slot) => {
+      const drive = fddDriveOf(slot);
+      host!.clearDirty(drive === null ? { hdd: true } : { fddDrive: drive });
+    },
+    readLiveImage: (slot) => readLiveSlotImage(slot),
+    saveDisk: (args) => saveDisk(args),
+    readDirtyState: () => host!.readDirtyState(),
+    fddDriveOf: (slot) => fddDriveOf(slot),
+    onSaved: () => {
+      if (!libraryBackdrop.classList.contains('hidden')) void refreshLibraryList();
+    },
+    now: () => Date.now(),
+  },
+  SLOT_IDS,
+);
+
 /**
  * スロットの現在の内容(ゲストの書き込み反映後)をディスクライブラリへ書き戻す。
- *
- * 同梱ディスクはライブラリ先頭の固定エントリで差し替えできないため対象外。
- * ダーティフラグのクリアは吸い出しの「前」に行う(後にすると、吸い出し中に発生した
- * 書き込みまで一緒に消えて、その分が二度と保存されなくなる)。
+ * 本体は src/disk-persist.ts。ここは既存呼び出し元(ejectSlot/pollAutoSave等)向けの薄いラッパ。
  */
 async function persistSlotToLibrary(slot: SlotId): Promise<boolean> {
-  const pending = slots[slot];
-  if (!host || !running || !pending) return false;
-  const { sourceKey } = pending;
-  if (!sourceKey || sourceKey === BUNDLED_DISK_SOURCE_KEY) return false;
-
-  const drive = fddDriveOf(slot);
-  host.clearDirty(drive === null ? { hdd: true } : { fddDrive: drive });
-
-  let live: Uint8Array | null = null;
-  try {
-    live = readLiveSlotImage(slot);
-  } catch (err) {
-    console.error('ディスクの吸い出しに失敗しました。', err);
-    return false;
-  }
-  if (!live) return false;
-  const data = live.slice();
-
-  try {
-    await saveDisk({ sourceKey, name: pending.name, bytes: data, savedAt: Date.now() });
-  } catch (err) {
-    console.error('ディスクライブラリへの書き戻しに失敗しました。', err);
-    return false;
-  }
-
-  // 待っている間に排出・差し替えが起きているかもしれないので、同じディスクのままの
-  // ときだけスロット側も更新する(そうしないと排出済みスロットを復活させてしまう)。
-  if (slots[slot]?.sourceKey === sourceKey) slots[slot] = { ...slots[slot]!, data };
-  if (!libraryBackdrop.classList.contains('hidden')) void refreshLibraryList();
-  return true;
+  return diskPersistence.persistSlot(slot);
 }
 
 /**
  * 全スロットを即座に書き戻す(排出・コア再起動・ページ離脱の直前用)。
- * readLiveSlotImage() による吸い出しは同期なので、await しなくてもバイト列の取得だけは
- * この関数を抜ける前に終わっている。IndexedDB への書き込みだけが非同期で後を追う。
+ * 本体は src/disk-persist.ts。
  */
 function flushAllSlots(): void {
-  if (!host || !running) return;
-  const dirty = host.readDirtyState();
-  for (const slot of SLOT_IDS) {
-    const drive = fddDriveOf(slot);
-    const isDirty = drive === null ? dirty.hdd : (dirty.fddMask & (1 << drive)) !== 0;
-    if (isDirty) void persistSlotToLibrary(slot);
-  }
+  diskPersistence.flushAll();
 }
 
 function pollAutoSave(now: number): void {
@@ -2892,6 +3917,15 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') flushAllSlots();
 });
 
+// iOS はアプリ切替/画面ロックで AudioContext を suspend し、復帰時に自動では
+// 再開しない。フォアグラウンド復帰のたびに running でなければ resume を試みる。
+// 上の保存用リスナとは用途が別のため混ぜず、新規に登録する。
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && audio?.context?.state !== 'running') {
+    audio?.resume();
+  }
+});
+
 // 開発時デバッグ用: 音声遅延(キュー滞留秒)とコアの現在 fps をコンソールから覗けるようにする。
 if (import.meta.env.DEV) {
   (window as unknown as Record<string, unknown>).__webx68kDebug = {
@@ -2904,9 +3938,17 @@ if (import.meta.env.DEV) {
     mouseButton: (button: 'left' | 'right', down: boolean) => host?.setMouseButton(button, down),
     // 各ポートの解決済みRetroPadビットマスクと、解決前の生の入力(pressed/axes)を返す。
     // ヘッドレスでの検証用(ブラウザUIを開かなくても割当が効いているか確認できる)。
+    //
+    // bits は host.onPoll が実際に setJoyState() へ渡すのと同じ値にすること
+    // (= ポート0はバーチャルパッドのビットもORした後の値)。ここが「物理パッドぶんだけ」に
+    // なっていると、バーチャルパッドの割当を調べているつもりで別の値を見ることになり、
+    // 「配線したのに0のまま」という誤った結論を導く。観測する値は必ず末端へ送る値と揃える。
     joy: () => {
       const pads = gamepadsByPort();
-      const [bits0, bits1] = pollBitsByPort(pads);
+      const [rawBits0, bits1] = pollBitsByPort(pads);
+      const vpadBits = virtualPad.getJoyBits();
+      const keyboardBits = hostKeyJoyBits();
+      const bits0 = rawBits0 | vpadBits | keyboardBits;
       const rawOf = (pad: Gamepad | null) =>
         pad === null
           ? null
@@ -2917,7 +3959,7 @@ if (import.meta.env.DEV) {
               axes: Array.from(pad.axes),
             };
       return {
-        port0: { bits: bits0, raw: rawOf(pads[0]) },
+        port0: { bits: bits0, raw: rawOf(pads[0]), physicalBits: rawBits0, vpadBits, keyboardBits },
         port1: { bits: bits1, raw: rawOf(pads[1]) },
       };
     },
@@ -2964,13 +4006,14 @@ function loop(t: number): void {
   const queued = audio?.queuedSeconds ?? 0;
   const err = queued - AudioEngine.TARGET_LATENCY_SEC;
   const adjust = Math.max(-0.02, Math.min(0.02, err / 2));
-  const frameInterval = (1 / fps) * (1 + adjust);
+  // 速度倍率ぶんフレーム間隔を短く(倍率>1)/長く(倍率<1)する。
+  const frameInterval = (1 / (fps * speedMultiplier)) * (1 + adjust);
   accumulator += dt;
 
-  // 補正が追いつかない急変(タブ復帰・重い処理からの復帰)に備えた保険。
-  let budget = 2;
-  if (queued > AudioEngine.MAX_LATENCY_SEC * 0.8) budget = 0;
-  else if (queued < AudioEngine.TARGET_LATENCY_SEC * 0.4) budget = 3;
+  // 補正が追いつかない急変(タブ復帰・重い処理からの復帰)や rAF スロットリング
+  // (低電力モード/サーマルスロットリングで30Hz等に落ちる環境)に備えた保険。
+  // 固定値ではなく実測dtから必要フレーム数を導出する(src/frameBudget.ts)。
+  const budget = computeFrameBudget(dt, frameInterval, queued, speedMultiplier);
 
   let ran = 0;
   while (accumulator >= frameInterval && ran < budget) {
@@ -2982,7 +4025,10 @@ function loop(t: number): void {
     pollDiskAccess(t);
     pollAutoSave(t);
     stepMouseTracking();
+    stepTouchTrackpad();
   }
+  speedMeasureFrameCount += ran;
+  updateSpeedActualDisplay(t);
   // 破綻(タブ非アクティブ復帰等)したら蓄積をリセット
   if (accumulator > frameInterval * 4) accumulator = 0;
 
@@ -3002,18 +4048,27 @@ function maybeShowAudioMutedBanner(): void {
 
   showToast(t('audioMutedBanner'), null);
 
+  // 復帰トリガーは pointerdown/touchend/click/keydown の4種、すべて capture 段で登録する。
+  // スマホでは仮想キーボードのボタン(virtual-keyboard.ts)が pointerdown で
+  // event.preventDefault() を呼んでおり、互換 click イベントが生成されない。
+  // bubble 段の document リスナには何も届かないため、preventDefault/stopPropagation
+  // より先に走る capture 段で拾う必要がある。
+  const resumeEvents: (keyof DocumentEventMap)[] = ['pointerdown', 'touchend', 'click', 'keydown'];
+
   const onStateChange = () => {
     if (ctx.state !== 'running') return;
     ctx.removeEventListener('statechange', onStateChange);
-    document.removeEventListener('click', tryResume);
-    document.removeEventListener('keydown', tryResume);
+    for (const ev of resumeEvents) {
+      document.removeEventListener(ev, tryResume, { capture: true });
+    }
     hideToast();
   };
   const tryResume = () => audio?.resume();
 
   ctx.addEventListener('statechange', onStateChange);
-  document.addEventListener('click', tryResume);
-  document.addEventListener('keydown', tryResume);
+  for (const ev of resumeEvents) {
+    document.addEventListener(ev, tryResume, { capture: true });
+  }
 }
 
 /** 起動前オーバーレイのボタン(「そのまま起動」/「システムディスクで起動」)から呼ばれる起動処理。 */
@@ -3038,12 +4093,27 @@ async function startFromOverlay(withSystemDisk: boolean): Promise<void> {
   bootOverlay.classList.add('hidden');
 
   try {
-    audio = new AudioEngine();
-    await audio.start();
-    // タイマーがスロットルされる環境向け: オーディオスレッドの tick でも駆動する
-    audio.setTickHandler(() => {
-      if (running) enterLoop();
-    });
+    // 音声の初期化失敗で起動そのものを止めないこと。AudioWorklet は secure context
+    // (https または localhost)でしか使えず、例えば LAN の IP アドレス
+    // (http://192.168.x.x:port/)で開くと ctx.audioWorklet が undefined になる。
+    // 以前はこの初期化を bootCore() と同じ try に入れて await していたため、
+    // そういう環境では「起動に失敗しました: Cannot read properties of undefined
+    // (reading 'addModule')」で Human68k すら立ち上がらなかった。
+    // 音が出ないだけならエミュレータとしては使えるので、警告を出して先へ進む。
+    try {
+      const engine = new AudioEngine();
+      await engine.start();
+      // タイマーがスロットルされる環境向け: オーディオスレッドの tick でも駆動する
+      engine.setTickHandler(() => {
+        if (running) enterLoop();
+      });
+      audio = engine;
+    } catch {
+      // audio は null のまま。以降の参照はすべて audio?. で null 安全にしてある。
+      // 駆動は rAF + setTimeout(scheduleNext())が担うので、無音でも実行は続く。
+      audio = null;
+      showToast(t('audioUnavailable'));
+    }
 
     await bootCore();
     // 起動直後(初回描画後)の実解像度で一度リスケールしておく。以降は
@@ -3054,6 +4124,7 @@ async function startFromOverlay(withSystemDisk: boolean): Promise<void> {
     btnSaveState.disabled = false;
     btnLoadState.disabled = false;
     btnScreenshot.disabled = false;
+    btnSpeed.disabled = false;
     btnFullscreen.disabled = false;
     btnVirtualKeyboard.disabled = false;
     updateMouseControls();
@@ -3239,6 +4310,7 @@ async function handleLoadState(): Promise<void> {
   }
   // 復元直後は旧状態の音がキューに残っているので捨て、フレーム供給の蓄積もリセットする
   audio?.flush();
+  resetResampleState(audioResampleState);
   lastFrameTime = 0;
   accumulator = 0;
   resetAccessLamps();
@@ -3319,7 +4391,7 @@ async function openLibraryVolume(sourceKey: string): Promise<FmVolumeHandle> {
   };
 }
 
-/** ファイルマネージャのターゲット一覧: FDD1/FDD2/HDD(実行中スロット) + ライブラリ内イメージ。 */
+/** ファイルマネージャのターゲット一覧: FDD0/FDD1/HDD(実行中スロット) + ライブラリ内イメージ。 */
 async function fmListTargets(): Promise<FmTarget[]> {
   const targets: FmTarget[] = [];
   for (const slot of SLOT_IDS) {
@@ -3341,16 +4413,15 @@ async function fmListTargets(): Promise<FmTarget[]> {
     targets.push({ kind: 'slot', ref: slot, label, mounted: !!pending, editable });
   }
 
-  const stored = await listDisks();
-  for (const item of stored) {
-    const kind = classifyDiskKind(item.name);
-    if (kind === null) continue;
-    const editable = kind === 'hdd' || (kind === 'fd' && isFmEditableFdName(item.name));
+  // ライブラリ側はライブラリ一覧/スロットメニューと同じ並び(グループごとにまとまり、表示名の自然順)にする。
+  // ここは平坦なセレクトなので、グループのディスクはそのグループの位置に連続して並べる。
+  const nodes = buildLibraryNodes(await listDisks(), classifyDiskKind);
+  for (const entry of nodes.flatMap((n) => (n.kind === 'group' ? n.group.entries : [n.entry]))) {
+    const editable = entry.kind === 'hdd' || (entry.kind === 'fd' && isFmEditableFdName(entry.name));
     const note = editable ? '' : t('fmNotEditableNote');
-    const mountedSlot = SLOT_IDS.find((s) => slots[s]?.sourceKey === item.sourceKey);
-    const displayName = item.displayName ?? item.name;
-    const label = `${displayName}${mountedSlot ? ` [${t('fmMountedBadge')}]` : ''}${note ? ` (${note})` : ''}`;
-    targets.push({ kind: 'library', ref: item.sourceKey, label, mounted: !!mountedSlot, editable });
+    const mountedSlot = SLOT_IDS.find((s) => slots[s]?.sourceKey === entry.sourceKey);
+    const label = `${entry.displayName}${mountedSlot ? ` [${t('fmMountedBadge')}]` : ''}${note ? ` (${note})` : ''}`;
+    targets.push({ kind: 'library', ref: entry.sourceKey, label, mounted: !!mountedSlot, editable });
   }
   return targets;
 }
@@ -3420,16 +4491,80 @@ btnFileManager.addEventListener('click', () => fileManagerDialog.open());
 btnHelp.addEventListener('click', () => window.open(`./help.html?lang=${getLang()}`, '_blank'));
 
 /**
- * URLパラメータ(fd1/fd2/hdd/system/run)に応じてディスクを起動前にセットし、
+ * URLパラメータ(fd1/fd2/hdd/system/run/lib)に応じてディスクを起動前にセットし、
  * run=1 なら自動起動する(WebNP2 の同名パラメータ方式に準拠)。
  * 1つのディスクの取得に失敗しても他スロットの読み込み・起動は継続する(要件3)。
  * いずれのパラメータも無ければ何もしない(要件7: 既存のオーバーレイ2択のまま)。
+ *
+ * lib=<url> (複数指定可): 種別を問わずディスクライブラリへ登録するだけの共有リンク用パラメータ
+ * (複数ディスク入りzipを配布し、受け取った側はリンクを開くだけでライブラリから選べるようにする用途)。
+ * fd1/fd2/hdd と異なりスロットへの自動挿入は行わず、必ずライブラリダイアログを開く。
+ * fd1/fd2/hdd と併用された場合は、それらのスロット処理を先に行ってから lib を処理する。
  */
+/**
+ * Sprout68k の共有リンク `#p1=` を開く。
+ *
+ * URL に載っているのは**利用者コードだけ**（数百バイト〜数KB）。ライブラリは
+ * この配布物が持っているランタイム(public/sprout-runtime/v1)側にあり、固定番地の
+ * ジャンプテーブル越しに呼ばれる。ここで両者を合体させて .xdf にする。
+ *
+ * 復号と組み立ては src/sprout-share.mts（Sprout68k の送信側とまったく同じ正典を
+ * tools/fetch-sprout-runtime.mjs が持ってきたもの）を通す。自前で書くと、
+ * 送信側と静かに食い違う。
+ *
+ * `#` より後ろはサーバへ送られないので、この作品はどこにもアップロードされていない。
+ */
+async function applySprout68kShare(): Promise<boolean> {
+  const fragment = location.hash;
+  if (!/(?:^|[#&])p1=/.test(fragment)) return false;
+  try {
+    const inflate = async (bytes: Uint8Array): Promise<Uint8Array> => {
+      // Uint8Array をそのまま Blob へ渡すと SharedArrayBuffer の可能性で型が通らないため、
+      // 実体の範囲だけを ArrayBuffer に切り出して渡す。
+      const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+      const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    };
+    const { bytes, tags } = await decodeShareFragment(fragment, inflate);
+
+    const base = './sprout-runtime/v1/';
+    const manifestResponse = await fetch(`${base}manifest.json`);
+    if (!manifestResponse.ok) throw new Error(`ランタイムを読み込めません (HTTP ${manifestResponse.status})`);
+    const manifest = await manifestResponse.json();
+    const fetchBin = async (name: string): Promise<Uint8Array> => {
+      const response = await fetch(`${base}${name}`);
+      if (!response.ok) throw new Error(`${name} を読み込めません (HTTP ${response.status})`);
+      return new Uint8Array(await response.arrayBuffer());
+    };
+    const [runtime, boot] = await Promise.all([fetchBin('runtime.bin'), fetchBin('boot.bin')]);
+    const layout = { ...manifest.layout, ...DEFAULT_DISK };
+
+    // ヘッダ検査をここで通す（版違いや壊れたURLをエミュレータへ渡さない）。
+    const user = unpackUserPayload(bytes, layout);
+    const { image } = assembleXdf(boot, runtime, packUserPayload(user, layout), layout);
+
+    const labels = tags.map((code) => tagLabel(code)).filter(Boolean);
+    const tagText = labels.length > 0 ? `(${labels.join(' / ')})` : '';
+    await insertDiskBytes('fdd0', 'sprout68k-share.xdf', image, undefined, 'sprout68k:share');
+    showToast(t('sproutShareLoaded', { tags: tagText }), 6000);
+    await startFromOverlay(false);
+    return true;
+  } catch (error) {
+    console.error('Sprout68k の共有リンクを開けませんでした', error);
+    showToast(t('sproutShareFailed', { message: (error as Error).message }), 8000);
+    return false;
+  }
+}
+
 async function applyUrlParams(): Promise<void> {
-  // system=1: fd1 の明示指定が無いときだけ、同梱システムディスクをFDD1として使う
+  // Sprout68k の共有リンクが来ていたら、それだけを処理して終わる
+  // （他のURLパラメータと混ざると、どのディスクで起動するのか分からなくなる）。
+  if (await applySprout68kShare()) return;
+
+  // system=1: fd1 の明示指定が無いときだけ、同梱システムディスクをFDD0として使う
   // (WebNP2 の freedos=1 相当。fd1 が指定されていればそちらを優先する)。
   const wantsBundledSystem = urlSystem && !urlFd1;
-  if (!urlFd1 && !urlFd2 && !urlHdd && !wantsBundledSystem && !urlRun) return;
+  if (!urlFd1 && !urlFd2 && !urlHdd && !wantsBundledSystem && !urlRun && !urlVpad && urlLib.length === 0) return;
 
   if (wantsBundledSystem) {
     const bytes = await fetchBytes(BUNDLED_DISK_URL);
@@ -3441,8 +4576,8 @@ async function applyUrlParams(): Promise<void> {
   }
 
   const jobs: Array<{ slot: SlotId; url: string | undefined; label: string }> = [
-    { slot: 'fdd0', url: urlFd1, label: t('fdSlotLabel', { drive: 1 }) },
-    { slot: 'fdd1', url: urlFd2, label: t('fdSlotLabel', { drive: 2 }) },
+    { slot: 'fdd0', url: urlFd1, label: t('fdSlotLabel', { drive: 0 }) },
+    { slot: 'fdd1', url: urlFd2, label: t('fdSlotLabel', { drive: 1 }) },
     { slot: 'hdd', url: urlHdd, label: t('hddSlotLabel') },
   ];
 
@@ -3466,6 +4601,25 @@ async function applyUrlParams(): Promise<void> {
     openLibraryModal(unresolvedGroupId);
     return; // 複数枚のときは run=1 でも自動起動しない(要件3)
   }
+
+  // lib=: 種別を問わずライブラリへ登録するだけの共有リンク。1件でもスロットへは挿入せず、
+  // 必ずライブラリを開く(共有リンクの意図として一貫させる)。run=1 でも自動起動しない。
+  if (urlLib.length > 0) {
+    let firstOutcome: UrlLibOutcome | undefined;
+    for (let i = 0; i < urlLib.length; i++) {
+      const label = t('urlLibSlotLabel', { index: i + 1 });
+      const outcome = await resolveUrlLibContent(urlLib[i], label);
+      if (outcome.kind === 'error') continue; // 失敗しても他のURLの処理は続行する
+      firstOutcome ??= outcome;
+    }
+    if (firstOutcome) {
+      openLibraryModal(firstOutcome.kind === 'group' ? firstOutcome.groupId : undefined);
+    }
+    return;
+  }
+
+  // vpad=1: タッチ端末でもリンクを開いた時点から操作できるようパッドを表示する。
+  if (urlVpad) openInputPanel('pad');
 
   // run=1: オーバーレイの2択を待たずそのまま自動起動する(ディスク未指定でも run=1 だけで起動する)。
   if (urlRun) await startFromOverlay(false);
@@ -3542,7 +4696,7 @@ const bridgeHost: BridgeHost = {
   insertDisk: async (slot, name, bytes) => {
     await insertDiskBytes(toSlotId(slot), name, bytes);
   },
-  ejectDisk: (slot) => ejectSlot(toSlotId(slot)),
+  ejectDisk: (slot) => ejectSlot(toSlotId(slot), false),
   diskListFiles: async (slot, path) => {
     const { entries } = await fmListDir({ kind: 'slot', ref: toSlotId(slot), label: slot, mounted: true, editable: true }, path);
     return entries.map((e) => ({ name: e.name, size: e.size, isDir: e.isDir, mtime: e.mtime }));
