@@ -84,6 +84,12 @@ MCPの `status` でFDD0の名前が `MDTK.XDF` になり、画面サイズなど
 
 開発用のXDFをファイル選択で確認する場合、開発ディスク単体をFDD0に入れても起動用のHuman68kが無いため、起動エラーになることがある。起動確認は、FDD0に同梱の`human302.xdf`を入れて起動した後、FDD1へ開発用XDFを入れる構成で行う。MCPの`status`でFDD0/FDD1の名前を確認し、`disk_list_files`で開発ディスクのルートまたは作業ディレクトリを列挙する。
 
+### 開発確認の標準方針
+
+今後の基本的な開発環境の実行確認は、アセンブラとリンカを含む専用の開発用XDFを正本として行う。開発用XDFには、Human68k上でのビルドに必要なツール、ソース配置、実行確認用のバッチまたは手順をまとめ、XDF単位で再現できる環境にする。
+
+開発用XDFが起動可能な構成ならFDD0から直接起動する。データディスク形式の場合は、FDD0に`human302.xdf`、FDD1に開発用XDFを入れる。現在の`ASM.XDF`はソース確認用、`ZMP7.XDF`はZ-MUSICのコンパイル・再生確認用、`BLANK.XDF`は一時的な転送先として扱い、通常の開発確認の正本にはしない。
+
 ### SCSI HDDイメージ（HDS）
 
 現在のHDD処理は、`src/disk-store.ts`の`HDD_EXTENSIONS`で分類される`.hdf`/`.dup`と、`src/api/fat.ts`の`HUMAN68K_PARTITION_TABLE_OFFSET`が示す、先頭`0x400`から始まるヘッダー無しのHuman68kイメージを対象にしている。
