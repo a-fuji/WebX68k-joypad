@@ -7,6 +7,8 @@ A web-based X68000 emulator player, powered by [px68k-libretro](https://github.c
 bundled, so it's a "just open the URL and Human68k boots" experience.
 
 See [docs/DESIGN.md](docs/DESIGN.md) for design and implementation details.
+The repeatable local X68000/MCP verification flow is documented in
+[docs/X68K_CHECK.ja.md](docs/X68K_CHECK.ja.md).
 
 ## Try it now
 
@@ -495,6 +497,10 @@ Then open `https://uraraworks.github.io/WebX68k/?bridge=1` (use a
 Chromium-based browser or Firefox — Safari blocks `ws://` from https pages
 even to localhost). Full instructions and the tool list live in
 [mcp/README.md](mcp/README.md).
+
+To verify this checkout, run `npm run check:local` from the repository root
+and open the printed `bridge` URL. See the Japanese
+[local verification runbook](docs/X68K_CHECK.ja.md) for the complete flow.
 
 The `screen_text` tool reads 8x16 ANK and 16x16 kanji drawn on the text screen
 (TVRAM) and returns recognition diagnostics. It cannot read text drawn on GVRAM,

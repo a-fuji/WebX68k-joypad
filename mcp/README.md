@@ -48,14 +48,15 @@ Chrome / Edge / Firefox ではローカルホスト例外で許可されます�
 
 ### リポジトリから直接動かす場合(開発者向け)
 
-`server.mjs` をそのまま使う方法です。リポジトリを触っている人向けで、
-上の単一ファイル版と機能は同じです。
+`server.mjs` をそのまま使う方法です。WebX68k本体とMCPブリッジを含めた
+チェックアウト全体の起動手順は [ローカル実行確認ランブック](../docs/X68K_CHECK.ja.md)
+を参照してください。MCPクライアントへサーバーだけを登録する場合は、リポジトリの
+ルートで依存を導入したあと、`mcp/server.mjs` の絶対パスを指定します。
 
 ```sh
-git clone https://github.com/uraraworks/WebX68k.git
-cd WebX68k/mcp
-npm install
-claude mcp add webx68k -- node "$PWD/server.mjs"
+npm ci
+npm --prefix mcp ci
+claude mcp add webx68k -- node "/絶対パス/WebX68k-joypad/mcp/server.mjs"
 ```
 
 ## 提供するツール

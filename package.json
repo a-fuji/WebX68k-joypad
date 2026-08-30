@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check:local": "node scripts/start-x68k-check.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",

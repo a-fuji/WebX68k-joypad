@@ -9,6 +9,8 @@ X68000 エミュレータ [px68k-libretro](https://github.com/uraraworks/px68k-l
 設計・実装の詳細は [docs/DESIGN.md](docs/DESIGN.md) を参照してください。
 Joypad・URL指定XDF・AI自動検証の現状監査と今後の作業順は
 [docs/JOYPAD_XDF_ROADMAP.md](docs/JOYPAD_XDF_ROADMAP.md) にまとめています。
+ローカルでX68000とMCPを接続して確認する手順は
+[docs/X68K_CHECK.ja.md](docs/X68K_CHECK.ja.md) にまとめています。
 
 ## 今すぐ試す
 
@@ -404,6 +406,10 @@ claude mcp add webx68k -- node "$PWD/webx68k-mcp.mjs"
 (公開ページで使う場合は Chrome 系か Firefox。Safari は https から `ws://` を
 localhost 宛てでもブロックします)。詳しい手順と提供ツールの一覧は
 [mcp/README.md](mcp/README.md) を参照してください。
+
+このフォークをチェックアウトから確認する場合は、ルートで `npm run check:local` を実行し、
+表示された `bridge` 付きのローカルURLを開いてください。依存の導入からMCP接続確認までの
+手順は [docs/X68K_CHECK.ja.md](docs/X68K_CHECK.ja.md) にまとめています。
 
 `screen_text` ツールでテキスト画面(TVRAM)の8x16 ANK・16x16漢字と認識診断を取得できます。
 GVRAM / BG / スプライト上の文字（ゲームの多くはこちら）は取得できません。カバレッジが 0 に
