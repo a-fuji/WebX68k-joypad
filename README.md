@@ -504,6 +504,9 @@ To verify this checkout, run `npm run check:local` from the repository root
 and open the printed `bridge` URL. See the Japanese
 [local verification runbook](docs/X68K_CHECK.ja.md) for the complete flow.
 
+For the Dev68K development-image layout and the build/verify workflow used by
+other X68000 projects, see [docs/DEV68K_MCP_WORKFLOW.md](docs/DEV68K_MCP_WORKFLOW.md).
+
 The `screen_text` tool reads 8x16 ANK and 16x16 kanji drawn on the text screen
 (TVRAM) and returns recognition diagnostics. It cannot read text drawn on GVRAM,
 BG, or sprites (as used by many games); use `screenshot` when coverage is near
