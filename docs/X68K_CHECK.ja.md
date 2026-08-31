@@ -1,6 +1,6 @@
 # X68000 実行確認ランブック
 
-この文書は、このリポジトリのWebX68k本体をローカルで起動し、ブラウザ上のX68000をMCPクライアントから確認する手順を定める。MCPサーバーのツール一覧と制約は [mcp/README.md](../mcp/README.md)、アプリの設計は [DESIGN.md](DESIGN.md) が正本である。
+この文書は、このリポジトリのWebX68k本体をローカルで起動し、ブラウザ上のX68000をMCPクライアントから確認する手順を定める。MCPサーバーのツール一覧と制約は [mcp/README.md](../mcp/README.md)、アプリの設計は [DESIGN.md](DESIGN.md) が正本である。これまでの実験結果と別Macでの再現手順は [X68000 検証履歴と別Mac向け再現手順](X68K_VERIFICATION_HISTORY.ja.md) にまとめている。
 
 ## 前提
 

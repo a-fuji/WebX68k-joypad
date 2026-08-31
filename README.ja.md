@@ -11,6 +11,8 @@ Joypad・URL指定XDF・AI自動検証の現状監査と今後の作業順は
 [docs/JOYPAD_XDF_ROADMAP.md](docs/JOYPAD_XDF_ROADMAP.md) にまとめています。
 ローカルでX68000とMCPを接続して確認する手順は
 [docs/X68K_CHECK.ja.md](docs/X68K_CHECK.ja.md) にまとめています。
+これまでの実験結果と別Macでの再現手順は
+[docs/X68K_VERIFICATION_HISTORY.ja.md](docs/X68K_VERIFICATION_HISTORY.ja.md) にまとめています。
 
 ## 今すぐ試す
 

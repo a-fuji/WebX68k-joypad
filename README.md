@@ -9,6 +9,8 @@ bundled, so it's a "just open the URL and Human68k boots" experience.
 See [docs/DESIGN.md](docs/DESIGN.md) for design and implementation details.
 The repeatable local X68000/MCP verification flow is documented in
 [docs/X68K_CHECK.ja.md](docs/X68K_CHECK.ja.md).
+The experiment record and a separate-Mac reproduction guide are in
+[docs/X68K_VERIFICATION_HISTORY.ja.md](docs/X68K_VERIFICATION_HISTORY.ja.md).
 
 ## Try it now
 
