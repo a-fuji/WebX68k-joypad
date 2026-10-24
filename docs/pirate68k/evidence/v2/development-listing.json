@@ -1,0 +1,149 @@
+{
+  "/": {
+    "entries": [
+      {
+        "name": "BIN",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SRC",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BUILD.BAT",
+        "size": 278,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "OUT",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "GO.BAT",
+        "size": 29,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "README.TXT",
+        "size": 220,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/BIN": {
+    "entries": [
+      {
+        "name": "HAS060.X",
+        "size": 73508,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "HLK.X",
+        "size": 28486,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "XSP2LIB.O",
+        "size": 10464,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/SRC": {
+    "entries": [
+      {
+        "name": "ART.INC",
+        "size": 1930,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "PIRATE.S",
+        "size": 15134,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SOUND.INC",
+        "size": 1801,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "STATE.INC",
+        "size": 725,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "VIDEO.INC",
+        "size": 8812,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "TITLE.RAW",
+        "size": 131072,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "GRAPHICS.INC",
+        "size": 4596,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SPRITES.SP",
+        "size": 19456,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SPRITES.PAL",
+        "size": 320,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BG1.BIN",
+        "size": 65536,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BG1.PAL",
+        "size": 512,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BG2.BIN",
+        "size": 65536,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BG2.PAL",
+        "size": 512,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/OUT": {
+    "entries": []
+  }
+}

@@ -28,3 +28,7 @@ bullets     equ 144
 hostile     equ 208
 drawpage    equ 64
 musicstep   equ 66
+xspactive   equ 68
+spritecount equ 70
+spritepeak  equ 72
+videostage  equ 74

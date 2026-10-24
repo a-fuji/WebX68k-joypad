@@ -1,0 +1,122 @@
+{
+  "format": "X68000 2HD FAT12",
+  "bytes": 1261568,
+  "sha256": "ee82c0591f3a9f5200253ddea8e20cc6aa2e5f509036b05c2791a76138dab4fb",
+  "used_bytes": 428927,
+  "allocated_bytes": 439296,
+  "filesystem_bytes": 11264,
+  "free_bytes": 811008,
+  "files": [
+    {
+      "path": "/BIN/HAS060.X",
+      "size": 73508,
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8"
+    },
+    {
+      "path": "/BIN/HLK.X",
+      "size": 28486,
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5"
+    },
+    {
+      "path": "/BIN/XSP2LIB.O",
+      "size": 10464,
+      "sha256": "1b347a338422a76cde14193f9ecbd0fb3a6d6a15b700fc7f6535858bab645d75"
+    },
+    {
+      "path": "/SRC/ART.INC",
+      "size": 1930,
+      "sha256": "b53219c18375f9fee3f04836fef6248e1cbd7e38956531e5713d256a88ed09b6"
+    },
+    {
+      "path": "/SRC/PIRATE.S",
+      "size": 15134,
+      "sha256": "bf667f20bccc40ed6cec8f967071d915ce7b340d2bd4a5c73b2435f2feb2ea85"
+    },
+    {
+      "path": "/SRC/SOUND.INC",
+      "size": 1801,
+      "sha256": "6d72995e6da9d1e8ed257b0e2016c239790412338d1cc1b5ea152ed121a2d74e"
+    },
+    {
+      "path": "/SRC/STATE.INC",
+      "size": 725,
+      "sha256": "44d4a7f53c9f2c276af86b7273f0c0d445dab872d52b1858269c47313e7b125d"
+    },
+    {
+      "path": "/SRC/VIDEO.INC",
+      "size": 8812,
+      "sha256": "eb112004e2d107ec6a0a833c53b52bad2dd9809f4263e898a59cd759422a7473"
+    },
+    {
+      "path": "/SRC/TITLE.RAW",
+      "size": 131072,
+      "sha256": "de1c1ccd0a1bef6278aa49f77e302dc782c9e970edc8af79f372b6be017820c4"
+    },
+    {
+      "path": "/SRC/GRAPHICS.INC",
+      "size": 4596,
+      "sha256": "0ced6231ea773de7e39f9b96b7e1c153008a6b6c01b5ff09a1a55f4367318c09"
+    },
+    {
+      "path": "/SRC/SPRITES.SP",
+      "size": 19456,
+      "sha256": "ec2d62422c5bf391d91b22d6dc7ea4214b866054acaf507dedc25d540ed30529"
+    },
+    {
+      "path": "/SRC/SPRITES.PAL",
+      "size": 320,
+      "sha256": "7344e382ef5de022e9000968d435d770ef5d948f8dfb5aad6723febfd2a73a67"
+    },
+    {
+      "path": "/SRC/BG1.BIN",
+      "size": 65536,
+      "sha256": "544fb806626ac0035f22ac087df98f7aeae400fa3d3305767073edd1c850fb0a"
+    },
+    {
+      "path": "/SRC/BG1.PAL",
+      "size": 512,
+      "sha256": "f27c9ab56d067b88e831131c842f75e00912893b4b6f87260143492e0f8f478a"
+    },
+    {
+      "path": "/SRC/BG2.BIN",
+      "size": 65536,
+      "sha256": "9bbc31f2ee4813f410b610dceedaa0074177594588b25665495715f3c93cb5b2"
+    },
+    {
+      "path": "/SRC/BG2.PAL",
+      "size": 512,
+      "sha256": "5055686eb03d56797be3d3365d5e58e5fabb7fa5ae1c9cb53f410c18eab5f9fd"
+    },
+    {
+      "path": "/BUILD.BAT",
+      "size": 278,
+      "sha256": "bf584cfd162d70a493b37a54c2d797b687d6801b903e14c5e9070a552fa6a2ed"
+    },
+    {
+      "path": "/GO.BAT",
+      "size": 29,
+      "sha256": "26684908d118405a6794e29699115931b8a5644c9b94bb904650b6f465874d26"
+    },
+    {
+      "path": "/README.TXT",
+      "size": 220,
+      "sha256": "cbdcd767a0412f83bdaae93cf8946ae741ed62517377c1ae2cc28e6b02ba5be4"
+    }
+  ],
+  "inputs": [
+    {
+      "source": "HDS:/BIN/HAS060.X",
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8",
+      "redistribution": "unreviewed; local only"
+    },
+    {
+      "source": "HDS:/BIN/HLK.X",
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5",
+      "redistribution": "unreviewed; local only"
+    },
+    {
+      "source": "Dev68K.XDF:/XSP2lib.o",
+      "sha256": "1b347a338422a76cde14193f9ecbd0fb3a6d6a15b700fc7f6535858bab645d75"
+    }
+  ]
+}

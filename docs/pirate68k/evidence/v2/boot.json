@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "lines": [
+    "�������� ��� ������ version 3.02",
+    "Copyright 1987,88,89,90,91,92,93 SHARP/Hudson",
+    "",
+    "PRINTER DRIVER for X68000 version 1.00",
+    "PRN/LPTのファイル名でプリンターに印字可能です",
+    "",
+    "RS-232C DRIVER for X68000 version 2.02",
+    "AUX0 から AUX5 のファイル名で、通信が可能です",
+    "",
+    "浮動小数点演算パッケージ for X680x0 version 2.03",
+    "（ＩＥＥＥフォーマット）",
+    "",
+    "日本語フロントプロセッサ ＡＳＫ６８Ｋ for X68000 version 3.02",
+    "Copyright 1987-94 SHARP Corp./ACCESS CO.,LTD．",
+    "\\SYS\\OPMDRV3.Xが登録できませんでした",
+    "",
+    "X68k FD driver extention version 1.00 Copyright 1993 SHARP/Hudson",
+    "拡張されたドライブで 2DD(640KB/720KB) 2HD(1.44MB) の読み書きが可能です",
+    "",
+    "Console/Graphic IOCS Version 1.50 Copyright 1990,91,92,93 SHARP",
+    "",
+    "ヒストリ DRIVER for X68000 version 1.10",
+    "ヒストリが使用できます",
+    "",
+    "Command version 3.00",
+    "",
+    "A>ECHO OFF",
+    "",
+    "",
+    "",
+    "",
+    "  �������� �������� �������� �������� ��������    �������� �������� �������� �������� ��������"
+  ],
+  "diagnostics": {
+    "columns": 96,
+    "rows": 32,
+    "nonEmptyCells": 766,
+    "matchedCells": 669,
+    "unknownCells": 97,
+    "coverage": 0.8733681462140992,
+    "nonEmptyPlaneCells": [
+      766,
+      766,
+      0,
+      0
+    ],
+    "kanjiFontAvailable": true
+  }
+}

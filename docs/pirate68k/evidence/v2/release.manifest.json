@@ -1,0 +1,27 @@
+{
+  "format": "X68000 2HD FAT12",
+  "bytes": 1261568,
+  "sha256": "b8f70c853d6090c15fdc8391a7e06bf019e467ad79efd37b1b73859bd3558887",
+  "used_bytes": 298188,
+  "allocated_bytes": 300032,
+  "filesystem_bytes": 11264,
+  "free_bytes": 950272,
+  "files": [
+    {
+      "path": "/PIRATE.X",
+      "size": 297948,
+      "sha256": "462abc0b74037daf6fe5a64729a9ac33429cee4b38c94009ccdd2aa77ce1158d"
+    },
+    {
+      "path": "/GO.BAT",
+      "size": 20,
+      "sha256": "1cdb04eeb8f33d41bad4cead75c97eef233504d6e96bed461dfc7e55846908a1"
+    },
+    {
+      "path": "/README.TXT",
+      "size": 220,
+      "sha256": "cbdcd767a0412f83bdaae93cf8946ae741ed62517377c1ae2cc28e6b02ba5be4"
+    }
+  ],
+  "inputs": []
+}

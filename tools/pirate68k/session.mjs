@@ -26,10 +26,12 @@ const server=createServer(async(req,res)=>{
   let body='';for await(const c of req)body+=c;
   const q=JSON.parse(body||'{}'); let r;
   if(req.url==='/keyboard'){
+   // Physical keyboard input is accepted only while the emulator canvas owns focus.
+   await page.focus('#screen');
    const wanted=new Set(q.keys||[]);
    for(const k of held)if(!wanted.has(k)){await page.keyboard.up(k);held.delete(k);}
    for(const k of wanted)if(!held.has(k)){await page.keyboard.down(k);held.add(k);}
-   r={keys:[...held]};
+   r={keys:[...held],focus:await page.evaluate(()=>document.activeElement?.id)};
   }else if(req.url==='/open'){
    await page.goto(q.url,{waitUntil:'networkidle0',timeout:60000});r={url:page.url()};
   }else if(req.url==='/insert'){
@@ -46,4 +48,11 @@ const server=createServer(async(req,res)=>{
 });
 server.listen(5399,'127.0.0.1');
 console.log('MCP control: http://127.0.0.1:5399; bridge:3199');
-process.on('SIGINT',async()=>{server.close();await browser.close();await client.close();process.exit();});
+let closing=false;
+async function shutdown(){
+ if(closing)return;closing=true;
+ server.close();await browser.close();await client.close();process.exit();
+}
+process.on('SIGINT',shutdown);
+process.on('SIGTERM',shutdown);
+process.on('SIGHUP',shutdown);

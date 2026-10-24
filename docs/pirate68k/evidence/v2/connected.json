@@ -1,0 +1,23 @@
+{
+  "running": true,
+  "fps": 55.49753952026367,
+  "screen": {
+    "width": 768,
+    "height": 512
+  },
+  "slots": [
+    {
+      "slot": "fdd0",
+      "name": "HUMAN302.XDF"
+    },
+    {
+      "slot": "fdd1",
+      "name": "dev.xdf"
+    },
+    {
+      "slot": "hdd",
+      "name": null
+    }
+  ],
+  "mouseCaptured": false
+}

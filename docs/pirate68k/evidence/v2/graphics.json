@@ -1,0 +1,107 @@
+{
+  "sprites": [
+    {
+      "name": "luffy_idle",
+      "width": 32,
+      "height": 32,
+      "palette": 1,
+      "tiles": 4
+    },
+    {
+      "name": "luffy_left",
+      "width": 32,
+      "height": 32,
+      "palette": 1,
+      "tiles": 4
+    },
+    {
+      "name": "luffy_right",
+      "width": 32,
+      "height": 32,
+      "palette": 1,
+      "tiles": 4
+    },
+    {
+      "name": "luffy_shot",
+      "width": 32,
+      "height": 32,
+      "palette": 1,
+      "tiles": 4
+    },
+    {
+      "name": "grunt_idle",
+      "width": 32,
+      "height": 32,
+      "palette": 2,
+      "tiles": 4
+    },
+    {
+      "name": "grunt_step",
+      "width": 32,
+      "height": 32,
+      "palette": 2,
+      "tiles": 4
+    },
+    {
+      "name": "zoro_art",
+      "width": 64,
+      "height": 64,
+      "palette": 3,
+      "tiles": 12
+    },
+    {
+      "name": "sanji_art",
+      "width": 64,
+      "height": 64,
+      "palette": 4,
+      "tiles": 14
+    },
+    {
+      "name": "bigmom_art",
+      "width": 96,
+      "height": 96,
+      "palette": 5,
+      "tiles": 35
+    },
+    {
+      "name": "kaido_art",
+      "width": 96,
+      "height": 96,
+      "palette": 6,
+      "tiles": 29
+    },
+    {
+      "name": "shot_art",
+      "width": 16,
+      "height": 16,
+      "palette": 7,
+      "tiles": 1
+    },
+    {
+      "name": "orb_art",
+      "width": 16,
+      "height": 16,
+      "palette": 8,
+      "tiles": 1
+    },
+    {
+      "name": "slash_art",
+      "width": 96,
+      "height": 64,
+      "palette": 9,
+      "tiles": 18
+    },
+    {
+      "name": "flame_art",
+      "width": 96,
+      "height": 64,
+      "palette": 10,
+      "tiles": 18
+    }
+  ],
+  "patterns": 152,
+  "source_sha256": {
+    "backgrounds-source.png": "2874f1b1a7031aff3d48a53c508546c0e5659352312cd77a04eda33fc646af6b",
+    "characters-source.png": "cafaef809698b98fc485c4191d0e2b100aa9a097bfe8c255cdefebc3f6d21aeb"
+  }
+}

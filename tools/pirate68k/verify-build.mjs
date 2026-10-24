@@ -1,7 +1,7 @@
 import {post,call,type,shot,waitFor,record,state} from './verify-lib.mjs';
 const system=process.argv[2];
 if(!system)throw new Error('Usage: node verify-build.mjs <HUMAN302.XDF>');
-await post('open',{url:'http://127.0.0.1:5299/?bridge=3199&system=1&run=1&cpu=16&ram=2'});
+await post('open',{url:'http://127.0.0.1:5299/?bridge=3199&system=1&run=1&cpu=16&ram=8'});
 await post('insert',{slot:'fdd0',path:system,name:'HUMAN302.XDF'});
 await post('insert',{slot:'fdd1',path:'_local/pirate68k/dev.xdf',name:'dev.xdf'});
 await call('reset');

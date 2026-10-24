@@ -5,8 +5,12 @@ import {post,call,type,key,shot,record,waitFor,state} from './verify-lib.mjs';
 const file=await readFile('_local/pirate68k/release.xdf');
 const manifest=JSON.parse(await readFile('_local/pirate68k/release.manifest.json'));
 const hash=createHash('sha256').update(file).digest('hex');assert.equal(hash,manifest.sha256);
-await post('keyboard',{keys:[]});
 await post('open',{url:'http://127.0.0.1:5299/?bridge=3199&system=1&run=1&cpu=16&ram=2&check=release-'+hash});
+if(process.env.HUMAN_XDF){
+ await post('insert',{slot:'fdd0',path:process.env.HUMAN_XDF,name:'HUMAN302.XDF'});
+ await call('reset');
+}
+await post('keyboard',{keys:[]});
 await waitFor(async()=>{const t=await call('screen_text');return t.lines.some(l=>l.includes('Command version'));},45000);
 await post('insert',{slot:'fdd1',path:'_local/pirate68k/release.xdf',name:'release-'+hash.slice(0,12)+'.xdf'});
 const listing=await call('disk_list_files',{slot:'fdd1'});
@@ -19,10 +23,18 @@ await waitFor(async()=>{const r=await call('status');return r.screen.width===256
 let title=await waitFor(async()=>{const s=await state();return s.mode===0&&s;});
 await call('wait_screen_change',{stable_ms:500,timeout_ms:5000});
 await shot('release-title');
-await key(122,180);
-const playing=await waitFor(async()=>{const r=await state();return r.mode===1&&r;});
+let playing;
+if(process.argv.includes('--full')){
+ await import('./verify-game.mjs');
+ playing=await state();
+}else{
+ await key(122,180);
+ playing=await waitFor(async()=>{const r=await state();return r.mode===1&&r;});
+}
+assert.equal(playing.xspactive,1,'Hardware sprite engine inactive');
 await call('wait_screen_change',{stable_ms:300,timeout_ms:1500});
 await shot('release-playing');
+if(process.argv.includes('--full'))await import('./verify-stages.mjs');
 await key(27,180);
 const exited=await waitFor(async()=>{const r=await call('status');return r.screen.width===768&&r.screen.height===512&&r;});
 await type('ECHO EXITOK\n');

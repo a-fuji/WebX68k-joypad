@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-25",
+  "source": "User report in the development conversation",
+  "result": "User confirmed playing the supplied release.xdf through stage 2 clear.",
+  "quote": "私の方でXDFファイルを確認し、ステージ2クリアまでの通しプレイも確認できました。",
+  "artifact": "_local/pirate68k/release.xdf",
+  "sha256": "b8f70c853d6090c15fdc8391a7e06bf019e467ad79efd37b1b73859bd3558887",
+  "verification_kind": "user_playtest",
+  "automated_full_playtest": "No successful v2 full-run record is claimed."
+}

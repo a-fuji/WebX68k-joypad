@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {post,call,type,waitFor,record} from './verify-lib.mjs';
+await post('open',{url:'http://127.0.0.1:5299/?bridge=3199&system=1&run=1&cpu=16&ram=8&check=rebuild'});
+await waitFor(async()=>{const r=await call('screen_text');return r.lines.some(l=>l.includes('Command version'));},45000);
 await post('insert',{slot:'fdd1',path:'_local/pirate68k/dev.xdf'});
 await type('B:\\BUILD\n');
 const log=await waitFor(async()=>{const r=await call('screen_text');if(r.lines.some(l=>l.includes('BUILD FAILED')))throw new Error('Rebuild failed');return r.lines.some(l=>l.includes('BUILD OK:'))&&r;},45000);

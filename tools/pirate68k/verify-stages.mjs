@@ -6,7 +6,7 @@ const keyboard=keys=>post('keyboard',{keys});
 await keyboard([]);await key(114,160);await sleep(700);
 for(const stage of [1,2]){
  await keyboard([]);
- const six=await waitFor(async()=>{const s=await state();if(s.mode===2)throw new Error('Game over before boss');await keyboard(s.y>112?['ArrowUp']:[]);return s.stage===stage&&s.enemies.filter(e=>e.active).length>=6&&s;},45000);
+ const six=await waitFor(async()=>{const s=await state();if(s.mode===2)throw new Error('Game over before boss');await keyboard(s.y>190?['ArrowUp']:[]);return s.stage===stage&&s.enemies.filter(e=>e.active).length>=6&&s;},45000);
  await keyboard([]);await key(120,200);
  let boss=await waitFor(async()=>{const s=await state();return s.bosshp>0&&s;});
  assert.equal(boss.stage,stage);assert(boss.kills>=6);
@@ -20,8 +20,8 @@ for(const stage of [1,2]){
   if(s.stage!==stage||s.mode===3){await keyboard([]);evidence.stages.at(-1).completed=s;break;}
   if(s.bosshp<=8&&s.bombs>0){await key(120,180);evidence.stages.at(-1).finishingBomb=await state();continue;}
   const keys=['z'];
-  if(s.y>112)keys.push('ArrowUp');
-  const target=s.bossx+(s.bossdx>0?40:8);
+  if(s.y>190)keys.push('ArrowUp');
+  const target=s.bossx+(s.bossdx>0?28:-28);
   if(s.x<target-8)keys.push('ArrowRight');
   if(s.x>target+8)keys.push('ArrowLeft');
   await keyboard(keys);await sleep(180);

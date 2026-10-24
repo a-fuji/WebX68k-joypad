@@ -86,3 +86,37 @@ WebX68k本体の機能破壊は認めていない。上記のアドレスエラ�
 ボスは元データを横3倍・縦2倍に拡大している。プレイヤーとザコの高さは画面の1/16であり、小さく見えるという指摘に対応する。改善案として24×24程度の新規ドット絵と、当たり判定・配置間隔の調整を提示したが、24×24への変更はユーザーが決定した仕様ではない。
 
 ユーザーはこの後、アストラへ画像制作とZ-MUSICの組み込みを含むパワーアップ版を依頼する予定とした。この時点の依頼は記録の保存であり、次版の実装・画像生成・モデル変更・別タスクへの送信は行っていない。引き継ぎの入口は[次版作業の引き継ぎ](NEXT_VERSION_HANDOFF.ja.md)にまとめた。
+
+
+## 2026-10-25: 背景・XSPスプライト版とユーザー通しプレイ
+
+初版から描画を更新し、港・要塞の背景、後ろ姿のプレイヤー、ザコ、ボス、ゾロ・サンジ風の援護を組み込んだ。通常キャラ32×32、ボス96×96、援護64×64の枠を使い、キャラクターはXSPのハードウェアスプライトで表示する。画像・ゲーム仕様は[設計](DESIGN.ja.md)、素材の生成経緯は[素材記録](../../games/pirate68k/assets/README.md)を参照する。XSP2lib.oは外部Dev68K.XDFからビルド時に読み取り、外部ディスク原本は変更していない。
+
+### 確認した結果
+
+| 確認項目 | 結果・証拠 |
+| --- | --- |
+| ホストテスト | 2026-10-24の`npm test`は35ファイル・558件成功、`npm run build`も成功。[テスト](evidence/v2/npm-test.txt)、[ビルド](evidence/v2/npm-build.txt) |
+| 画像・XDF処理 | Pythonの13テスト成功。[出力](evidence/v2/python-tests.txt) |
+| Human68k・MCP | Human68k 3.02の起動とMCP接続を確認。[起動](evidence/v2/boot.json)、[画面](evidence/v2/human68k.png)、[接続](evidence/v2/connected.json) |
+| 8MBゲストビルド | 16MHz・8MB設定でHAS060とHLKによるビルド成功。セッションログの最終成功時刻は2026-10-25 01:13:34 JST。[出力](evidence/v2/guest-build.json)、[画面](evidence/v2/guest-build.png) |
+| 実行ファイル | `PIRATE.X`は297,948バイト。配布XDF内のファイルとホストの生成物が一致。[生成物情報](evidence/v2/executable.json)、[ハッシュ](evidence/v2/release.manifest.json) |
+| 開発用XDF | HAS060、HLK、XSP2LIB.O、ソース、変換済み画像を収録。[一覧](evidence/v2/development-listing.json)、[マニフェスト](evidence/v2/dev.manifest.json) |
+| 素材の組み込み | 背景2枚・パレット・スプライトのバイト列が`.X`に含まれることを読取監査で確認。[寸法・素材ハッシュ](evidence/v2/graphics.json) |
+| 2MBでの実行 | タイトル、ゲーム開始、MCPによる右移動を既存ログで確認。港・キャラクター・HUDの[実行画面](evidence/v2/runtime-2mb.png)と[タイトル](evidence/v2/release-title.png)を保存 |
+| 通しプレイ | ユーザーが提示した配布XDFを実際に遊び、ステージ2クリアまで確認したと報告。[ユーザー確認記録](evidence/v2/user-playtest.json)。エージェントの自動通し検証成功とは区別する |
+
+配布XDFは1,261,568バイト、収録ファイルは`PIRATE.X`、`GO.BAT`、`README.TXT`のみ。空き950,272バイト。ディスク全体のSHA-256は次のとおりで、監査時に実ファイルと[マニフェスト](evidence/v2/release.manifest.json)の一致を確認した。
+
+```text
+b8f70c853d6090c15fdc8391a7e06bf019e467ad79efd37b1b73859bd3558887  release.xdf
+```
+
+生成物は`_local/pirate68k/`に保持し、XDF本体と外部ツールをGitへ追加していない。初版開発XDFは`dev-repeat.xdf`に残り、そのハッシュは初版の`evidence/dev.manifest.json`と一致する。初版配布XDFと実行ファイルは`baseline/`に保存されている。これらの既存成果物は変更しない。
+
+### 後続に残す項目
+
+- Z-MUSIC・ZPD効果音は未統合。音は従来の簡易FMフレーズ。
+- 配布ディスクはHuman68k起動ディスクと組み合わせる2ドライブ構成。単体ブートは後続対応。
+- 新版の再ビルド一致、物理パッド、実機X68000/X68000Zは未確認。
+- 初版の`evidence/rebuild.json`、`stages.json`などを新版の成功証拠として流用しない。新版の通しプレイ確認元は上記ユーザー報告。

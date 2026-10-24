@@ -12,7 +12,7 @@ export const type=text=>call('type_text',{text});
 export const shot=name=>post('shot',{name});
 export function decodeState(bytes,addr){
  const b=Buffer.from(bytes);
- return {addr,magic:b.subarray(0,8).toString(),mode:b.readUInt16BE(8),stage:b.readUInt16BE(10),x:b.readUInt16BE(12),y:b.readUInt16BE(14),score:b.readUInt32BE(16),kills:b.readUInt16BE(20),life:b.readUInt16BE(22),bombs:b.readUInt16BE(24),frame:b.readUInt32BE(28),keys:b.readUInt16BE(32),shots:b.readUInt16BE(36),bombsused:b.readUInt16BE(38),bosshp:b.readInt16BE(40),bossx:b.readUInt16BE(42),bossdx:b.readInt16BE(44),invul:b.readUInt16BE(46),musicstep:b.readUInt16BE(66),enemies:Array.from({length:8},(_,i)=>({active:b.readUInt16BE(80+8*i),x:b.readUInt16BE(82+8*i),y:b.readUInt16BE(84+8*i)}))};
+ return {addr,magic:b.subarray(0,8).toString(),mode:b.readUInt16BE(8),stage:b.readUInt16BE(10),x:b.readUInt16BE(12),y:b.readUInt16BE(14),score:b.readUInt32BE(16),kills:b.readUInt16BE(20),life:b.readUInt16BE(22),bombs:b.readUInt16BE(24),frame:b.readUInt32BE(28),keys:b.readUInt16BE(32),shots:b.readUInt16BE(36),bombsused:b.readUInt16BE(38),bosshp:b.readInt16BE(40),bossx:b.readUInt16BE(42),bossdx:b.readInt16BE(44),invul:b.readUInt16BE(46),musicstep:b.readUInt16BE(66),xspactive:b.readUInt16BE(68),spritecount:b.readUInt16BE(70),spritepeak:b.readUInt16BE(72),videostage:b.readUInt16BE(74),enemies:Array.from({length:8},(_,i)=>({active:b.readUInt16BE(80+8*i),x:b.readUInt16BE(82+8*i),y:b.readUInt16BE(84+8*i)}))};
 }
 let addr;
 export async function state(){

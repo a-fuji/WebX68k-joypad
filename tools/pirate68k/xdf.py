@@ -181,6 +181,8 @@ def main():
     dev = sub.add_parser('dev')
     dev.add_argument('--title', type=Path, required=True)
     dev.add_argument('--hds', type=Path, required=True)
+    dev.add_argument('--tool-disk', type=Path, required=True, help='Read-only Dev68K.XDF containing /XSP2lib.o')
+    dev.add_argument('--graphics', type=Path, default=ROOT / '_local/pirate68k/graphics')
     dev.add_argument('--output', type=Path, required=True)
     rel = sub.add_parser('release')
     rel.add_argument('--executable', type=Path, required=True)
@@ -207,11 +209,16 @@ def main():
             data = h.read('/BIN/' + name)
             d.put('/BIN/' + name, data)
             provenance.append(dict(source='HDS:/BIN/' + name, sha256=sha(data), redistribution='unreviewed; local only'))
+        library = Disk(bytearray(args.tool_disk.read_bytes())).read('/XSP2lib.o')
+        d.put('/BIN/XSP2LIB.O', library)
+        provenance.append(dict(source='Dev68K.XDF:/XSP2lib.o', sha256=sha(library)))
         for p in sorted((ROOT / 'games/pirate68k').glob('*')):
             if p.suffix.upper() in ('.S', '.INC'):
                 d.put('/SRC/' + p.name.upper(), p.read_bytes().replace(b'\r\n', b'\n').replace(b'\n', b'\r\n'))
         d.put('/BUILD.BAT', (ROOT / 'games/pirate68k/BUILD.BAT').read_bytes().replace(b'\r\n', b'\n').replace(b'\n', b'\r\n'))
         d.put('/SRC/TITLE.RAW', args.title.read_bytes())
+        for name in ['GRAPHICS.INC', 'SPRITES.SP', 'SPRITES.PAL', 'BG1.BIN', 'BG1.PAL', 'BG2.BIN', 'BG2.PAL']:
+            d.put('/SRC/' + name, (args.graphics / name).read_bytes())
         d.put('/OUT', b'', True)
     else:
         data = args.executable.read_bytes()
