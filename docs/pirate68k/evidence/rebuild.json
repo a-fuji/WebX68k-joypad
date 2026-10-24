@@ -1,0 +1,57 @@
+{
+  "result": "PASS",
+  "bytes": 135114,
+  "sha256": "8d1c1a09d2d8ee7c854601781fe3fa006ea78da891e5b1a573ecd0a5a3346a9b",
+  "log": {
+    "available": true,
+    "lines": [
+      "B>echo exitok",
+      "exitok",
+      "B>b:\\build",
+      "B>ECHO OFF",
+      "PIRATE.S           482: Warning: アドレスレジスタを adda.w で更新しています",
+      "        adda.w  d1,a0",
+      "PIRATE.S           493: Warning: アドレスレジスタを adda.w で更新しています",
+      "        adda.w  d7,a0",
+      "PIRATE.S           509: Warning: アドレスレジスタを adda.w で更新しています",
+      "        adda.w  #512,a0",
+      "PIRATE.S           803: Warning: 絶対アドレッシングです",
+      "        lea     $c00000,a5",
+      "PIRATE.S           812: Warning: アドレスレジスタを adda.w で更新しています",
+      "        adda.w  #512,a0",
+      "PIRATE.S           859: Warning: 絶対アドレッシングです",
+      "        lea     $c80000,a5",
+      "PIRATE.S           869: Warning: 絶対アドレッシングです",
+      "        lea     $c80000,a5",
+      "PIRATE.S           873: Warning: 絶対アドレッシングです",
+      "        lea     $c00000,a5",
+      "BUILD OK: B:\\OUT\\PIRATE.X",
+      "B>�",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "diagnostics": {
+      "columns": 96,
+      "rows": 32,
+      "nonEmptyCells": 571,
+      "matchedCells": 570,
+      "unknownCells": 1,
+      "coverage": 0.9982486865148862,
+      "nonEmptyPlaneCells": [
+        571,
+        571,
+        0,
+        0
+      ],
+      "kanjiFontAvailable": true
+    }
+  }
+}

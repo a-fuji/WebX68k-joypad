@@ -1,0 +1,1716 @@
+{
+  "time": "2026-10-24T13:07:59.017Z",
+  "checks": [
+    {
+      "name": "title",
+      "state": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 0,
+        "stage": 0,
+        "x": 0,
+        "y": 0,
+        "score": 0,
+        "kills": 0,
+        "life": 0,
+        "bombs": 0,
+        "frame": 0,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 0,
+        "bossdx": 0,
+        "invul": 0,
+        "musicstep": 0,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "start",
+      "state": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 2,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 38,
+        "musicstep": 0,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "MCP right movement",
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 2,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 38,
+        "musicstep": 0,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 149,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 10,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 30,
+        "musicstep": 1,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowUp"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 11,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 29,
+        "musicstep": 1,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 211,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 15,
+        "keys": 1,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 25,
+        "musicstep": 1,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowDown"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 211,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 15,
+        "keys": 1,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 25,
+        "musicstep": 1,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 19,
+        "keys": 2,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 21,
+        "musicstep": 2,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowLeft"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 19,
+        "keys": 2,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 21,
+        "musicstep": 2,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 119,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 23,
+        "keys": 4,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 17,
+        "musicstep": 2,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowRight"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 119,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 23,
+        "keys": 4,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 17,
+        "musicstep": 2,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 27,
+        "keys": 8,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 13,
+        "musicstep": 3,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowUp",
+        "ArrowLeft"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 217,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 27,
+        "keys": 8,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 13,
+        "musicstep": 3,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 119,
+        "y": 208,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 30,
+        "keys": 5,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 10,
+        "musicstep": 3,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 29
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowUp",
+        "ArrowRight"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 119,
+        "y": 208,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 30,
+        "keys": 5,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 10,
+        "musicstep": 3,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 29
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 125,
+        "y": 199,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 34,
+        "keys": 9,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 6,
+        "musicstep": 4,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 33
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowDown",
+        "ArrowLeft"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 125,
+        "y": 199,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 34,
+        "keys": 9,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 6,
+        "musicstep": 4,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 33
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 113,
+        "y": 211,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 38,
+        "keys": 6,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 2,
+        "musicstep": 4,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 37
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "direction",
+      "keys": [
+        "ArrowDown",
+        "ArrowRight"
+      ],
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 113,
+        "y": 211,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 38,
+        "keys": 6,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 2,
+        "musicstep": 4,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 37
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 122,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 41,
+        "keys": 10,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 0,
+        "musicstep": 5,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 40
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "MCP shot",
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 11,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 29,
+        "musicstep": 1,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 24,
+        "keys": 0,
+        "shots": 3,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 16,
+        "musicstep": 3,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "MCP bomb",
+      "before": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 92,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 0,
+        "musicstep": 11,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 91
+          },
+          {
+            "active": 1,
+            "x": 61,
+            "y": 61
+          },
+          {
+            "active": 1,
+            "x": 34,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "after": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 300,
+        "kills": 3,
+        "life": 3,
+        "bombs": 1,
+        "frame": 97,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 1,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 16,
+        "musicstep": 12,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 24,
+            "y": 91
+          },
+          {
+            "active": 0,
+            "x": 61,
+            "y": 61
+          },
+          {
+            "active": 0,
+            "x": 34,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "game over",
+      "state": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 2,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 0,
+        "bombs": 2,
+        "frame": 367,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 40,
+        "musicstep": 45,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 64,
+            "y": 126
+          },
+          {
+            "active": 1,
+            "x": 37,
+            "y": 96
+          },
+          {
+            "active": 1,
+            "x": 74,
+            "y": 66
+          },
+          {
+            "active": 1,
+            "x": 175,
+            "y": 36
+          },
+          {
+            "active": 0,
+            "x": 172,
+            "y": 246
+          },
+          {
+            "active": 1,
+            "x": 209,
+            "y": 215
+          },
+          {
+            "active": 1,
+            "x": 182,
+            "y": 185
+          },
+          {
+            "active": 1,
+            "x": 27,
+            "y": 155
+          }
+        ]
+      }
+    },
+    {
+      "name": "restart",
+      "state": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 220,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 1,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 39,
+        "musicstep": 0,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    }
+  ]
+}

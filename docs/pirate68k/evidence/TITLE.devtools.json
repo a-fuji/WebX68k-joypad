@@ -1,0 +1,22 @@
+{
+  "codec": "/Volumes/AITuberRetroMacDev/Projects/Dev68kTools/x68k_graphics_converter/codec.js",
+  "codec_sha256": "6bb78ce2a6d62ce59ba602c933d6a61bcf78fc910e78497da7ceaa23c9be4996",
+  "input_sha256": "7076fe9cd93a7668d46705c0b104e711981affbf8b9165311c70d9a7dbf3abce",
+  "files": [
+    {
+      "format": "GMD",
+      "bytes": 65536,
+      "sha256": "e4a91b55db1184c5cd3c57e78a3692dfd8798cf8c3b4ccfff801e433b066159d"
+    },
+    {
+      "format": "PAL",
+      "bytes": 512,
+      "sha256": "5f843ccadf57e8c8644ebcb10c7ac4838eeedb8536bc9b59927f68fca96d5981"
+    },
+    {
+      "format": "RAW",
+      "bytes": 131072,
+      "sha256": "de1c1ccd0a1bef6278aa49f77e302dc782c9e970edc8af79f372b6be017820c4"
+    }
+  ]
+}

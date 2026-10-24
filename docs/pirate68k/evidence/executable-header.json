@@ -1,0 +1,11 @@
+{
+  "base": 0,
+  "entry": 0,
+  "text": 2604,
+  "data": 132396,
+  "bss": 272,
+  "relocations": 50,
+  "symbols": 0,
+  "bytes": 135114,
+  "sha256": "8d1c1a09d2d8ee7c854601781fe3fa006ea78da891e5b1a573ecd0a5a3346a9b"
+}

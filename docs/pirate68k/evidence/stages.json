@@ -1,0 +1,3289 @@
+{
+  "time": "2026-10-24T13:08:37.275Z",
+  "stages": [
+    {
+      "stage": 1,
+      "swarm": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 106,
+        "score": 0,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 180,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 0,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 0,
+        "musicstep": 22,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 179
+          },
+          {
+            "active": 1,
+            "x": 61,
+            "y": 149
+          },
+          {
+            "active": 1,
+            "x": 34,
+            "y": 119
+          },
+          {
+            "active": 1,
+            "x": 71,
+            "y": 89
+          },
+          {
+            "active": 1,
+            "x": 172,
+            "y": 59
+          },
+          {
+            "active": 1,
+            "x": 209,
+            "y": 29
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "boss": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 1,
+        "x": 128,
+        "y": 106,
+        "score": 600,
+        "kills": 6,
+        "life": 3,
+        "bombs": 1,
+        "frame": 184,
+        "keys": 0,
+        "shots": 0,
+        "bombsused": 1,
+        "bosshp": 16,
+        "bossx": 108,
+        "bossdx": 2,
+        "invul": 17,
+        "musicstep": 23,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 24,
+            "y": 179
+          },
+          {
+            "active": 0,
+            "x": 61,
+            "y": 149
+          },
+          {
+            "active": 0,
+            "x": 34,
+            "y": 119
+          },
+          {
+            "active": 0,
+            "x": 71,
+            "y": 89
+          },
+          {
+            "active": 0,
+            "x": 172,
+            "y": 59
+          },
+          {
+            "active": 0,
+            "x": 209,
+            "y": 29
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "finishingBomb": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 2,
+        "x": 119,
+        "y": 220,
+        "score": 1600,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 229,
+        "keys": 52,
+        "shots": 10,
+        "bombsused": 2,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 37,
+        "musicstep": 28,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "completed": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 2,
+        "x": 119,
+        "y": 220,
+        "score": 1600,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 229,
+        "keys": 52,
+        "shots": 10,
+        "bombsused": 2,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 37,
+        "musicstep": 28,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    },
+    {
+      "stage": 2,
+      "swarm": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 2,
+        "x": 116,
+        "y": 106,
+        "score": 1600,
+        "kills": 0,
+        "life": 3,
+        "bombs": 2,
+        "frame": 392,
+        "keys": 0,
+        "shots": 10,
+        "bombsused": 2,
+        "bosshp": 0,
+        "bossx": 100,
+        "bossdx": 2,
+        "invul": 0,
+        "musicstep": 49,
+        "enemies": [
+          {
+            "active": 1,
+            "x": 24,
+            "y": 181
+          },
+          {
+            "active": 1,
+            "x": 61,
+            "y": 151
+          },
+          {
+            "active": 1,
+            "x": 34,
+            "y": 121
+          },
+          {
+            "active": 1,
+            "x": 71,
+            "y": 91
+          },
+          {
+            "active": 1,
+            "x": 172,
+            "y": 61
+          },
+          {
+            "active": 1,
+            "x": 209,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "boss": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 1,
+        "stage": 2,
+        "x": 116,
+        "y": 106,
+        "score": 2200,
+        "kills": 6,
+        "life": 3,
+        "bombs": 1,
+        "frame": 396,
+        "keys": 0,
+        "shots": 10,
+        "bombsused": 3,
+        "bosshp": 24,
+        "bossx": 108,
+        "bossdx": 2,
+        "invul": 17,
+        "musicstep": 49,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 24,
+            "y": 181
+          },
+          {
+            "active": 0,
+            "x": 61,
+            "y": 151
+          },
+          {
+            "active": 0,
+            "x": 34,
+            "y": 121
+          },
+          {
+            "active": 0,
+            "x": 71,
+            "y": 91
+          },
+          {
+            "active": 0,
+            "x": 172,
+            "y": 61
+          },
+          {
+            "active": 0,
+            "x": 209,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "finishingBomb": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 3,
+        "stage": 2,
+        "x": 92,
+        "y": 106,
+        "score": 3200,
+        "kills": 6,
+        "life": 2,
+        "bombs": 0,
+        "frame": 486,
+        "keys": 20,
+        "shots": 28,
+        "bombsused": 4,
+        "bosshp": 0,
+        "bossx": 82,
+        "bossdx": -2,
+        "invul": 20,
+        "musicstep": 60,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 24,
+            "y": 181
+          },
+          {
+            "active": 0,
+            "x": 61,
+            "y": 151
+          },
+          {
+            "active": 0,
+            "x": 34,
+            "y": 121
+          },
+          {
+            "active": 0,
+            "x": 71,
+            "y": 91
+          },
+          {
+            "active": 0,
+            "x": 172,
+            "y": 61
+          },
+          {
+            "active": 0,
+            "x": 209,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "completed": {
+        "addr": 591704,
+        "magic": "P68KSTAT",
+        "mode": 3,
+        "stage": 2,
+        "x": 92,
+        "y": 106,
+        "score": 3200,
+        "kills": 6,
+        "life": 2,
+        "bombs": 0,
+        "frame": 486,
+        "keys": 20,
+        "shots": 28,
+        "bombsused": 4,
+        "bosshp": 0,
+        "bossx": 82,
+        "bossdx": -2,
+        "invul": 20,
+        "musicstep": 60,
+        "enemies": [
+          {
+            "active": 0,
+            "x": 24,
+            "y": 181
+          },
+          {
+            "active": 0,
+            "x": 61,
+            "y": 151
+          },
+          {
+            "active": 0,
+            "x": 34,
+            "y": 121
+          },
+          {
+            "active": 0,
+            "x": 71,
+            "y": 91
+          },
+          {
+            "active": 0,
+            "x": 172,
+            "y": 61
+          },
+          {
+            "active": 0,
+            "x": 209,
+            "y": 31
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "active": 0,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      }
+    }
+  ],
+  "trace": [
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 128,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 184,
+      "keys": 0,
+      "shots": 0,
+      "bombsused": 1,
+      "bosshp": 16,
+      "bossx": 108,
+      "bossdx": 2,
+      "invul": 17,
+      "musicstep": 23,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 134,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 186,
+      "keys": 24,
+      "shots": 1,
+      "bombsused": 1,
+      "bosshp": 16,
+      "bossx": 112,
+      "bossdx": 2,
+      "invul": 15,
+      "musicstep": 23,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 143,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 189,
+      "keys": 24,
+      "shots": 1,
+      "bombsused": 1,
+      "bosshp": 16,
+      "bossx": 118,
+      "bossdx": 2,
+      "invul": 12,
+      "musicstep": 23,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 152,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 192,
+      "keys": 24,
+      "shots": 2,
+      "bombsused": 1,
+      "bosshp": 15,
+      "bossx": 124,
+      "bossdx": 2,
+      "invul": 9,
+      "musicstep": 24,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 164,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 196,
+      "keys": 24,
+      "shots": 3,
+      "bombsused": 1,
+      "bosshp": 14,
+      "bossx": 132,
+      "bossdx": 2,
+      "invul": 5,
+      "musicstep": 24,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 164,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 199,
+      "keys": 16,
+      "shots": 3,
+      "bombsused": 1,
+      "bosshp": 14,
+      "bossx": 138,
+      "bossdx": 2,
+      "invul": 2,
+      "musicstep": 24,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 173,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 202,
+      "keys": 24,
+      "shots": 4,
+      "bombsused": 1,
+      "bosshp": 13,
+      "bossx": 144,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 25,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 182,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 205,
+      "keys": 24,
+      "shots": 5,
+      "bombsused": 1,
+      "bosshp": 12,
+      "bossx": 150,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 25,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 185,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 209,
+      "keys": 16,
+      "shots": 5,
+      "bombsused": 1,
+      "bosshp": 12,
+      "bossx": 158,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 26,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 194,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 212,
+      "keys": 24,
+      "shots": 6,
+      "bombsused": 1,
+      "bosshp": 11,
+      "bossx": 164,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 26,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 203,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 215,
+      "keys": 24,
+      "shots": 7,
+      "bombsused": 1,
+      "bosshp": 10,
+      "bossx": 170,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 26,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 203,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 218,
+      "keys": 16,
+      "shots": 7,
+      "bombsused": 1,
+      "bosshp": 10,
+      "bossx": 176,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 27,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 212,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 222,
+      "keys": 24,
+      "shots": 8,
+      "bombsused": 1,
+      "bosshp": 9,
+      "bossx": 184,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 27,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 1,
+      "x": 203,
+      "y": 106,
+      "score": 600,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 225,
+      "keys": 20,
+      "shots": 9,
+      "bombsused": 1,
+      "bosshp": 8,
+      "bossx": 178,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 28,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 179
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 149
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 119
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 89
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 59
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 29
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 119,
+      "y": 220,
+      "score": 1600,
+      "kills": 0,
+      "life": 3,
+      "bombs": 2,
+      "frame": 229,
+      "keys": 52,
+      "shots": 10,
+      "bombsused": 2,
+      "bosshp": 0,
+      "bossx": 100,
+      "bossdx": 2,
+      "invul": 37,
+      "musicstep": 28,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 116,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 396,
+      "keys": 0,
+      "shots": 10,
+      "bombsused": 3,
+      "bosshp": 24,
+      "bossx": 108,
+      "bossdx": 2,
+      "invul": 17,
+      "musicstep": 49,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 122,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 398,
+      "keys": 24,
+      "shots": 11,
+      "bombsused": 3,
+      "bosshp": 24,
+      "bossx": 112,
+      "bossdx": 2,
+      "invul": 15,
+      "musicstep": 49,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 134,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 402,
+      "keys": 24,
+      "shots": 12,
+      "bombsused": 3,
+      "bosshp": 24,
+      "bossx": 120,
+      "bossdx": 2,
+      "invul": 11,
+      "musicstep": 50,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 143,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 405,
+      "keys": 24,
+      "shots": 12,
+      "bombsused": 3,
+      "bosshp": 24,
+      "bossx": 126,
+      "bossdx": 2,
+      "invul": 8,
+      "musicstep": 50,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 152,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 408,
+      "keys": 24,
+      "shots": 13,
+      "bombsused": 3,
+      "bosshp": 23,
+      "bossx": 132,
+      "bossdx": 2,
+      "invul": 5,
+      "musicstep": 51,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 161,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 411,
+      "keys": 24,
+      "shots": 13,
+      "bombsused": 3,
+      "bosshp": 23,
+      "bossx": 138,
+      "bossdx": 2,
+      "invul": 2,
+      "musicstep": 51,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 173,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 415,
+      "keys": 24,
+      "shots": 14,
+      "bombsused": 3,
+      "bosshp": 22,
+      "bossx": 146,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 51,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 182,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 418,
+      "keys": 24,
+      "shots": 15,
+      "bombsused": 3,
+      "bosshp": 21,
+      "bossx": 152,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 52,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 191,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 421,
+      "keys": 24,
+      "shots": 15,
+      "bombsused": 3,
+      "bosshp": 21,
+      "bossx": 158,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 52,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 194,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 425,
+      "keys": 16,
+      "shots": 16,
+      "bombsused": 3,
+      "bosshp": 20,
+      "bossx": 166,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 53,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 203,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 428,
+      "keys": 24,
+      "shots": 17,
+      "bombsused": 3,
+      "bosshp": 19,
+      "bossx": 172,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 53,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 212,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 431,
+      "keys": 24,
+      "shots": 17,
+      "bombsused": 3,
+      "bosshp": 19,
+      "bossx": 178,
+      "bossdx": 2,
+      "invul": 0,
+      "musicstep": 53,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 215,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 435,
+      "keys": 16,
+      "shots": 18,
+      "bombsused": 3,
+      "bosshp": 18,
+      "bossx": 182,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 54,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 206,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 3,
+      "bombs": 1,
+      "frame": 438,
+      "keys": 20,
+      "shots": 19,
+      "bombsused": 3,
+      "bosshp": 17,
+      "bossx": 176,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 54,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 197,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 441,
+      "keys": 20,
+      "shots": 19,
+      "bombsused": 3,
+      "bosshp": 17,
+      "bossx": 170,
+      "bossdx": -2,
+      "invul": 40,
+      "musicstep": 55,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 185,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 445,
+      "keys": 20,
+      "shots": 20,
+      "bombsused": 3,
+      "bosshp": 16,
+      "bossx": 162,
+      "bossdx": -2,
+      "invul": 36,
+      "musicstep": 55,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 176,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 448,
+      "keys": 20,
+      "shots": 21,
+      "bombsused": 3,
+      "bosshp": 15,
+      "bossx": 156,
+      "bossdx": -2,
+      "invul": 33,
+      "musicstep": 56,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 167,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 451,
+      "keys": 20,
+      "shots": 21,
+      "bombsused": 3,
+      "bosshp": 15,
+      "bossx": 150,
+      "bossdx": -2,
+      "invul": 30,
+      "musicstep": 56,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 158,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 454,
+      "keys": 20,
+      "shots": 22,
+      "bombsused": 3,
+      "bosshp": 14,
+      "bossx": 144,
+      "bossdx": -2,
+      "invul": 27,
+      "musicstep": 56,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 155,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 458,
+      "keys": 16,
+      "shots": 23,
+      "bombsused": 3,
+      "bosshp": 13,
+      "bossx": 136,
+      "bossdx": -2,
+      "invul": 23,
+      "musicstep": 57,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 146,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 461,
+      "keys": 20,
+      "shots": 23,
+      "bombsused": 3,
+      "bosshp": 13,
+      "bossx": 130,
+      "bossdx": -2,
+      "invul": 20,
+      "musicstep": 57,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 146,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 465,
+      "keys": 16,
+      "shots": 24,
+      "bombsused": 3,
+      "bosshp": 12,
+      "bossx": 122,
+      "bossdx": -2,
+      "invul": 16,
+      "musicstep": 58,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 137,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 468,
+      "keys": 20,
+      "shots": 25,
+      "bombsused": 3,
+      "bosshp": 11,
+      "bossx": 116,
+      "bossdx": -2,
+      "invul": 13,
+      "musicstep": 58,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 128,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 471,
+      "keys": 20,
+      "shots": 25,
+      "bombsused": 3,
+      "bosshp": 11,
+      "bossx": 110,
+      "bossdx": -2,
+      "invul": 10,
+      "musicstep": 58,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 119,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 474,
+      "keys": 20,
+      "shots": 26,
+      "bombsused": 3,
+      "bosshp": 10,
+      "bossx": 104,
+      "bossdx": -2,
+      "invul": 7,
+      "musicstep": 59,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 116,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 477,
+      "keys": 16,
+      "shots": 27,
+      "bombsused": 3,
+      "bosshp": 9,
+      "bossx": 98,
+      "bossdx": -2,
+      "invul": 4,
+      "musicstep": 59,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 107,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 481,
+      "keys": 20,
+      "shots": 27,
+      "bombsused": 3,
+      "bosshp": 9,
+      "bossx": 90,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 60,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 1,
+      "stage": 2,
+      "x": 98,
+      "y": 106,
+      "score": 2200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 1,
+      "frame": 484,
+      "keys": 20,
+      "shots": 28,
+      "bombsused": 3,
+      "bosshp": 8,
+      "bossx": 84,
+      "bossdx": -2,
+      "invul": 0,
+      "musicstep": 60,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    {
+      "addr": 591704,
+      "magic": "P68KSTAT",
+      "mode": 3,
+      "stage": 2,
+      "x": 92,
+      "y": 106,
+      "score": 3200,
+      "kills": 6,
+      "life": 2,
+      "bombs": 0,
+      "frame": 486,
+      "keys": 20,
+      "shots": 28,
+      "bombsused": 4,
+      "bosshp": 0,
+      "bossx": 82,
+      "bossdx": -2,
+      "invul": 20,
+      "musicstep": 60,
+      "enemies": [
+        {
+          "active": 0,
+          "x": 24,
+          "y": 181
+        },
+        {
+          "active": 0,
+          "x": 61,
+          "y": 151
+        },
+        {
+          "active": 0,
+          "x": 34,
+          "y": 121
+        },
+        {
+          "active": 0,
+          "x": 71,
+          "y": 91
+        },
+        {
+          "active": 0,
+          "x": 172,
+          "y": 61
+        },
+        {
+          "active": 0,
+          "x": 209,
+          "y": 31
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "active": 0,
+          "x": 0,
+          "y": 0
+        }
+      ]
+    }
+  ]
+}

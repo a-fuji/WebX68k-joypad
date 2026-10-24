@@ -1,0 +1,10 @@
+{
+  "source_sha256": "7051fd6c58ea54a108d64319ed946fbc9258c4a6fd463dcae59b0710d3b1563e",
+  "dimensions": [
+    256,
+    256
+  ],
+  "font": "/System/Library/Fonts/\u30d2\u30e9\u30ae\u30ce\u89d2\u30b4\u30b7\u30c3\u30af W6.ttc",
+  "font_sha256": "790fe535987adc662e83489e162dc54c1e50be8de15169300082f6cc7a082e4e",
+  "pillow": "12.3.0"
+}

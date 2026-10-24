@@ -1,0 +1,226 @@
+{
+  "sha256": "470dfb695a935b1621d7a08bcfccb5301d7380b6fa1d6dc67f03a5d3a604be9b",
+  "listing": {
+    "entries": [
+      {
+        "name": "PIRATE.X",
+        "size": 135114,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "GO.BAT",
+        "size": 20,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "README.TXT",
+        "size": 220,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "title": {
+    "addr": 591752,
+    "magic": "P68KSTAT",
+    "mode": 0,
+    "stage": 0,
+    "x": 0,
+    "y": 0,
+    "score": 0,
+    "kills": 0,
+    "life": 0,
+    "bombs": 0,
+    "frame": 0,
+    "keys": 0,
+    "shots": 0,
+    "bombsused": 0,
+    "bosshp": 0,
+    "bossx": 0,
+    "bossdx": 0,
+    "invul": 0,
+    "musicstep": 0,
+    "enemies": [
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "playing": {
+    "addr": 591752,
+    "magic": "P68KSTAT",
+    "mode": 1,
+    "stage": 1,
+    "x": 128,
+    "y": 220,
+    "score": 0,
+    "kills": 0,
+    "life": 3,
+    "bombs": 2,
+    "frame": 2,
+    "keys": 0,
+    "shots": 0,
+    "bombsused": 0,
+    "bosshp": 0,
+    "bossx": 100,
+    "bossdx": 2,
+    "invul": 38,
+    "musicstep": 0,
+    "enemies": [
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "active": 0,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "exited": {
+    "running": true,
+    "fps": 55.49753952026367,
+    "screen": {
+      "width": 768,
+      "height": 512
+    },
+    "slots": [
+      {
+        "slot": "fdd0",
+        "name": "human302.xdf"
+      },
+      {
+        "slot": "fdd1",
+        "name": "release-470dfb695a93.xdf"
+      },
+      {
+        "slot": "hdd",
+        "name": null
+      }
+    ],
+    "mouseCaptured": false
+  },
+  "prompt": {
+    "available": true,
+    "lines": [
+      "B>echo exitok",
+      "exitok",
+      "B>�",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "diagnostics": {
+      "columns": 96,
+      "rows": 32,
+      "nonEmptyCells": 21,
+      "matchedCells": 20,
+      "unknownCells": 1,
+      "coverage": 0.9523809523809523,
+      "nonEmptyPlaneCells": [
+        21,
+        21,
+        0,
+        0
+      ],
+      "kanjiFontAvailable": true
+    }
+  }
+}

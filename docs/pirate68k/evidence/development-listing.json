@@ -1,0 +1,95 @@
+{
+  "/": {
+    "entries": [
+      {
+        "name": "BIN",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SRC",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "BUILD.BAT",
+        "size": 225,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "OUT",
+        "size": 0,
+        "isDir": true,
+        "mtime": 315500400000
+      },
+      {
+        "name": "GO.BAT",
+        "size": 29,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "README.TXT",
+        "size": 220,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/BIN": {
+    "entries": [
+      {
+        "name": "HAS060.X",
+        "size": 73508,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "HLK.X",
+        "size": 28486,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/SRC": {
+    "entries": [
+      {
+        "name": "ART.INC",
+        "size": 5354,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "PIRATE.S",
+        "size": 21353,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "SOUND.INC",
+        "size": 1801,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "STATE.INC",
+        "size": 645,
+        "isDir": false,
+        "mtime": 315500400000
+      },
+      {
+        "name": "TITLE.RAW",
+        "size": 131072,
+        "isDir": false,
+        "mtime": 315500400000
+      }
+    ]
+  },
+  "/OUT": {
+    "entries": []
+  }
+}

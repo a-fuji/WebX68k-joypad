@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "lines": [
+    "X68k FD driver extention version 1.00 Copyright 1993 SHARP/Hudson",
+    "拡張されたドライブで 2DD(640KB/720KB) 2HD(1.44MB) の読み書きが可能です",
+    "",
+    "Console/Graphic IOCS Version 1.50 Copyright 1990,91,92,93 SHARP",
+    "",
+    "ヒストリ DRIVER for X68000 version 1.10",
+    "ヒストリが使用できます",
+    "",
+    "Command version 3.00",
+    "",
+    "A>ECHO OFF",
+    "A>b:\\build",
+    "A>ECHO OFF",
+    "PIRATE.S           482: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  d1,a0",
+    "PIRATE.S           493: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  d7,a0",
+    "PIRATE.S           509: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  #512,a0",
+    "PIRATE.S           803: Warning: 絶対アドレッシングです",
+    "        lea     $c00000,a5",
+    "PIRATE.S           812: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  #512,a0",
+    "PIRATE.S           859: Warning: 絶対アドレッシングです",
+    "        lea     $c80000,a5",
+    "PIRATE.S           869: Warning: 絶対アドレッシングです",
+    "        lea     $c80000,a5",
+    "PIRATE.S           873: Warning: 絶対アドレッシングです",
+    "        lea     $c00000,a5",
+    "BUILD OK: B:\\OUT\\PIRATE.X",
+    "B>",
+    "  �������� �������� �������� �������� ��������    �������� �������� �������� �������� ��������"
+  ],
+  "diagnostics": {
+    "columns": 96,
+    "rows": 32,
+    "nonEmptyCells": 896,
+    "matchedCells": 816,
+    "unknownCells": 80,
+    "coverage": 0.9107142857142857,
+    "nonEmptyPlaneCells": [
+      896,
+      896,
+      0,
+      0
+    ],
+    "kanjiFontAvailable": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "games/pirate68k/ART.INC": "66287a2d65439c997cd8e02f12d62a746aa9029bf291de7a4182c5efe4eef60d",
+  "games/pirate68k/BUILD.BAT": "9dafc4e4b0e451ceb6c3b0623d9eb2f0103842e7e86393f6f2035514f4771cfa",
+  "games/pirate68k/PIRATE.S": "dd7e3865025406605ebe5dac4afb865e7a5ae9be04344d59bc8fac4c5174290f",
+  "games/pirate68k/SOUND.INC": "1038f8dc8715b9b6790731540f6d850da5ba99e6886557a5defa33a02e169320",
+  "games/pirate68k/STATE.INC": "fe7c4e65adce66a36b9849d2d33486a075584c32afd7cf48dcc486009f65c483",
+  "tools/pirate68k/art.py": "2269ff79f7fe1d4116aff5f4460e4fae73db654c3e0a8b804d6be62fc45b99e8",
+  "tools/pirate68k/assets.py": "9f8a804971967c15bdeb26cae648b3efbc258602323c4a410732b1cce741aec0",
+  "tools/pirate68k/control.mjs": "68e327475189b98d29d6e1d47a3197886ac68cdb151d0d2313516ebee3fc9019",
+  "tools/pirate68k/devtools-title.mjs": "9641a32b6c98f1f1d5ef9e85b8868b9467ede58d7d46eef60e436a94f7d17cbe",
+  "tools/pirate68k/probe.mjs": "08d9eeaa5885c47993a3daaf9715426dccc634c9e650ba2c5e940a922cdb5a5c",
+  "tools/pirate68k/session.mjs": "b5e383faa07cff91144585104bd9dbccb3989efb80fdb91f436270da1cbcfefd",
+  "tools/pirate68k/test_xdf.py": "a5767f01de195161151f21427771856266f52d8a9238a96ca929fd5ae4fca939",
+  "tools/pirate68k/verify-build.mjs": "ee0a65affe708aa5ed0d6e5693b647c352ceab97d3b96f5ecd52d0404122b278",
+  "tools/pirate68k/verify-game.mjs": "d75a466c265419747ec40928c1c999be1b466187c2b12a5258e474373bae594f",
+  "tools/pirate68k/verify-hud.py": "12e8e6fddeae8e6122b82afc58640a3453b0e4a91063a0d5f95128b4f3d8076c",
+  "tools/pirate68k/verify-lib.mjs": "f7aa0cc74e046c61857775d6bf166cdd32010a33300ea5fa59470314c7204d12",
+  "tools/pirate68k/verify-mcp.mjs": "7b8fee84af75da609aeae48bb67ce836f9848459d080812eb52ca9c6038037e8",
+  "tools/pirate68k/verify-rebuild.mjs": "04c0cda19809670c872f4a63a4f2c4680686c72b7093a184cb853665fd1b156b",
+  "tools/pirate68k/verify-release.mjs": "399d37f7e9c6e04e4aca406640f020ede30a4803f54f1e277cfa1f10c8159df0",
+  "tools/pirate68k/verify-stages.mjs": "e8fdd2f0e4237d7921a02d00beea0a6ebebd722462f60225eb632edd2c694518",
+  "tools/pirate68k/xdf.py": "5fb818791b934cffaad1b86f3f1048ddef4f43cca4eb7ff31a00d4e525e3c01e"
+}

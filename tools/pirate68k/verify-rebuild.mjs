@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {post,call,type,waitFor,record} from './verify-lib.mjs';
+await post('insert',{slot:'fdd1',path:'_local/pirate68k/dev.xdf'});
+await type('B:\\BUILD\n');
+const log=await waitFor(async()=>{const r=await call('screen_text');if(r.lines.some(l=>l.includes('BUILD FAILED')))throw new Error('Rebuild failed');return r.lines.some(l=>l.includes('BUILD OK:'))&&r;},45000);
+await post('get',{slot:'fdd1',path:'/OUT/PIRATE.X',name:'PIRATE-rebuilt.X'});
+const first=await readFile('_local/pirate68k/PIRATE.X');const second=await readFile('_local/pirate68k/PIRATE-rebuilt.X');
+assert(first.equals(second),'Repeated guest build differs');
+const result={result:'PASS',bytes:first.length,sha256:createHash('sha256').update(first).digest('hex'),log};
+await record('rebuild',result);console.log(JSON.stringify({result:result.result,bytes:result.bytes,sha256:result.sha256}));

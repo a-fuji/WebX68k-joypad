@@ -1,0 +1,26 @@
+[
+  {
+    "name": "HUMAN302.XDF",
+    "bytes": 1261568,
+    "sha256": "bc814dab949f517ec3fb5b5b0e71f2adb468107ae0c431ee92ec38b30b031833",
+    "human_sys_bytes": 58496,
+    "version_strings": [
+      "[m version 3.02"
+    ]
+  },
+  {
+    "name": "ASM.XDF",
+    "bytes": 1261568,
+    "sha256": "8b0d5f113d5714c0bc28940276b5775631443702c92594727db320eaf39a83be"
+  },
+  {
+    "name": "BLANK.XDF",
+    "bytes": 1261568,
+    "sha256": "04bd3727cffa40f18047ae8695e962ce76e439a6f398126bb28cf533644a8f67"
+  },
+  {
+    "name": "ZMP7.XDF",
+    "bytes": 1261568,
+    "sha256": "2f3ac0fc0cab6f3cab0a442d7e96dae75188d173d7339308ba03eef46aa82f99"
+  }
+]

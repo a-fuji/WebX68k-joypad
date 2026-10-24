@@ -1,0 +1,24 @@
+// Use Dev68KTools' public codec in place; do not vendor another project's source.
+import {readFile,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {createHash} from 'node:crypto';
+const [root,input,output]=process.argv.slice(2);
+if(!root||!input||!output)throw new Error('Usage: node devtools-title.mjs <Dev68KTools root> <indexed.png> <output basename>');
+const codecPath=resolve(root,'x68k_graphics_converter/codec.js');
+await import(pathToFileURL(codecPath).href);
+const codec=globalThis.X68kGraphicsCodec;
+const png=await readFile(input);
+const {width,height,pixels,paletteRgb}=await codec.decodeIndexedPng(png);
+if(width!==256||height!==256)throw new Error('Title must be 256x256');
+const words=codec.paletteRgbToWords(paletteRgb);
+const gmd=codec.encodeGmd(pixels,width,height);
+const pal=codec.encodePalette(words);
+const raw=Buffer.alloc(width*height*2);
+for(let i=0;i<pixels.length;i++)raw.writeUInt16BE(words[pixels[i]],i*2);
+await writeFile(output+'.GMD',gmd);
+await writeFile(output+'.PAL',pal);
+await writeFile(output+'.RAW',raw);
+const sha=b=>createHash('sha256').update(b).digest('hex');
+await writeFile(output+'.devtools.json',JSON.stringify({codec:codecPath,codec_sha256:sha(await readFile(codecPath)),input_sha256:sha(png),files:[['GMD',gmd],['PAL',pal],['RAW',raw]].map(([format,b])=>({format,bytes:b.length,sha256:sha(b)}))},null,2)+'\n');
+console.log(`Dev68KTools: ${width}x${height}, GMD=${gmd.length}, PAL=${pal.length}, RAW=${raw.length}`);

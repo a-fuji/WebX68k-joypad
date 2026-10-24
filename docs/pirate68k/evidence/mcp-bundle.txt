@@ -1,0 +1,8 @@
+
+> webx68k-mcp@0.1.0 bundle
+> esbuild server.mjs --bundle --platform=node --format=esm --target=node18 --external:bufferutil --external:utf-8-validate --banner:js="import{createRequire as __webx68kCreateRequire}from'node:module';const require=__webx68kCreateRequire(import.meta.url);" --outfile=dist/webx68k-mcp.mjs
+
+
+  dist/webx68k-mcp.mjs  849.2kb
+
+⚡ Done in 35ms

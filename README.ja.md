@@ -432,6 +432,8 @@ Google Drive の中継取得を使いたい場合は、ビルド時に環境変�
 ホスト名の自動置換で直接取得するため中継設定は不要です(未検証の共有形式で直接取得が
 失敗した場合のみ、設定されていれば中継へフォールバックします)。
 
+X68000向けの独自サンプル「海賊王ゲーム」のソース、開発・配布XDFの生成、Human68k上のビルドとMCP検証は[ゲーム開発ランブック](docs/X68K_ORIGINAL_GAME.ja.md)を参照してください。
+
 エミュレータ本体(px68k-libretro → WebAssembly)のビルドは `scripts/build-core.sh` で行います。
 ビルドの前提セットアップや FDD0/FDD1/HDD 同時搭載の仕組みなど詳細は
 [docs/DESIGN.md](docs/DESIGN.md) を参照してください。

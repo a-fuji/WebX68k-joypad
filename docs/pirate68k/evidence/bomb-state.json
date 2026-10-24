@@ -1,0 +1,63 @@
+{
+  "addr": 591704,
+  "magic": "P68KSTAT",
+  "mode": 1,
+  "stage": 1,
+  "x": 128,
+  "y": 220,
+  "score": 300,
+  "kills": 3,
+  "life": 3,
+  "bombs": 1,
+  "frame": 97,
+  "keys": 0,
+  "shots": 0,
+  "bombsused": 1,
+  "bosshp": 0,
+  "bossx": 100,
+  "bossdx": 2,
+  "invul": 16,
+  "musicstep": 12,
+  "enemies": [
+    {
+      "active": 0,
+      "x": 24,
+      "y": 91
+    },
+    {
+      "active": 0,
+      "x": 61,
+      "y": 61
+    },
+    {
+      "active": 0,
+      "x": 34,
+      "y": 31
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    }
+  ]
+}

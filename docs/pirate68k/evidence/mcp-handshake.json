@@ -1,0 +1,28 @@
+{
+  "result": "PASS",
+  "server": {
+    "name": "webx68k-mcp",
+    "version": "0.1.0"
+  },
+  "bridgePort": 3299,
+  "tools": [
+    "status",
+    "screenshot",
+    "screen_text",
+    "type_text",
+    "key_sequence",
+    "mouse_move",
+    "mouse_click",
+    "reset",
+    "wait_screen_change",
+    "save_state",
+    "load_state",
+    "list_disks",
+    "insert_disk",
+    "eject_disk",
+    "disk_list_files",
+    "disk_read_file",
+    "disk_write_file",
+    "read_memory"
+  ]
+}

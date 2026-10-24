@@ -1,0 +1,73 @@
+{
+  "format": "X68000 2HD FAT12",
+  "bytes": 1261568,
+  "sha256": "52c48f91e46fc31a24f5a56a45abfb0b39143df55ac490aac14a6572a9e492cd",
+  "used_bytes": 262693,
+  "allocated_bytes": 270336,
+  "filesystem_bytes": 11264,
+  "free_bytes": 979968,
+  "files": [
+    {
+      "path": "/BIN/HAS060.X",
+      "size": 73508,
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8"
+    },
+    {
+      "path": "/BIN/HLK.X",
+      "size": 28486,
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5"
+    },
+    {
+      "path": "/SRC/ART.INC",
+      "size": 5354,
+      "sha256": "674a001ab7e8afe980ef541a152110d3f79c956edd14e104015e580189676c76"
+    },
+    {
+      "path": "/SRC/PIRATE.S",
+      "size": 21353,
+      "sha256": "eb23126ac6eeccb54cf38ab81d927be3b345648a83ad2eece91219f45f07de7d"
+    },
+    {
+      "path": "/SRC/SOUND.INC",
+      "size": 1801,
+      "sha256": "6d72995e6da9d1e8ed257b0e2016c239790412338d1cc1b5ea152ed121a2d74e"
+    },
+    {
+      "path": "/SRC/STATE.INC",
+      "size": 645,
+      "sha256": "efea7a27a58fdf94d13f4f99e51aebe3826fcf711313e5d77129a14dd3dc7b67"
+    },
+    {
+      "path": "/SRC/TITLE.RAW",
+      "size": 131072,
+      "sha256": "de1c1ccd0a1bef6278aa49f77e302dc782c9e970edc8af79f372b6be017820c4"
+    },
+    {
+      "path": "/BUILD.BAT",
+      "size": 225,
+      "sha256": "3579d6ab8a67262005ac54771e23e2db35010067f531f12cd42fe2c294ce0e49"
+    },
+    {
+      "path": "/GO.BAT",
+      "size": 29,
+      "sha256": "26684908d118405a6794e29699115931b8a5644c9b94bb904650b6f465874d26"
+    },
+    {
+      "path": "/README.TXT",
+      "size": 220,
+      "sha256": "cbdcd767a0412f83bdaae93cf8946ae741ed62517377c1ae2cc28e6b02ba5be4"
+    }
+  ],
+  "inputs": [
+    {
+      "source": "HDS:/BIN/HAS060.X",
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8",
+      "redistribution": "unreviewed; local only"
+    },
+    {
+      "source": "HDS:/BIN/HLK.X",
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5",
+      "redistribution": "unreviewed; local only"
+    }
+  ]
+}

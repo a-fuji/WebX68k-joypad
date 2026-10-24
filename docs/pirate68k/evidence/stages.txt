@@ -1,0 +1,5 @@
+Stage 1: boss HP 16, kills 6, life 3
+Stage 1: defeated, score 1600, life 3
+Stage 2: boss HP 24, kills 6, life 3
+Stage 2: defeated, score 3200, life 2
+PASS: both bosses defeated through real inputs

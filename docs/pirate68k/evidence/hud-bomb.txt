@@ -1,0 +1,1 @@
+{"result": "PASS", "score": 300, "life": 3, "bombs": 1, "stage": 1}

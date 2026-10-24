@@ -1,0 +1,13 @@
+test_capacity (test_xdf.XdfTests.test_capacity) ... ok
+test_cyclic_chain (test_xdf.XdfTests.test_cyclic_chain) ... ok
+test_deterministic_bytes (test_xdf.XdfTests.test_deterministic_bytes) ... ok
+test_duplicate_is_rejected (test_xdf.XdfTests.test_duplicate_is_rejected) ... ok
+test_fat_mirrors (test_xdf.XdfTests.test_fat_mirrors) ... ok
+test_geometry_is_rejected (test_xdf.XdfTests.test_geometry_is_rejected) ... ok
+test_large_file_and_directories (test_xdf.XdfTests.test_large_file_and_directories) ... ok
+test_manifest_capacity_and_hashes (test_xdf.XdfTests.test_manifest_capacity_and_hashes) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.004s
+
+OK
