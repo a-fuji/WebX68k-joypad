@@ -17,3 +17,4 @@ X68000 / Human68k用の固定画面シューティングの最小実装です。
 - [生成・ビルド・MCP検証の手順](../../docs/X68K_ORIGINAL_GAME.ja.md)
 - [最小仕様と設計理由](../../docs/pirate68k/DESIGN.ja.md)
 - [開発・検証記録と制限](../../docs/pirate68k/VERIFICATION.ja.md)
+- [次版作業の引き継ぎ](../../docs/pirate68k/NEXT_VERSION_HANDOFF.ja.md)
