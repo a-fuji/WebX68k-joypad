@@ -1,0 +1,77 @@
+{
+  "temporary_data": true,
+  "files": [
+    {
+      "file": "TONE.ZMD",
+      "size": 5152,
+      "sha256": "d7143055f0d9599495fcf60bc490423fadb4d5fce60aef000603ab7389747de0",
+      "source": "MaidLand XDF:/MDLAND/ZM/BTSND.ZMD"
+    },
+    {
+      "file": "TITLE.ZMD",
+      "size": 696,
+      "sha256": "e2b1f18afaf05a2b8082dfb9e715b050d62f3cbe0b0493f9cfc85404a9d7e7d6",
+      "source": "MaidLand XDF:/MDLAND/ZM/MLDEMO.ZMD"
+    },
+    {
+      "file": "STAGE1.ZMD",
+      "size": 1624,
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7",
+      "source": "MaidLand XDF:/MDLAND/ZM/MLMAIN.ZMD"
+    },
+    {
+      "file": "STAGE2.ZMD",
+      "size": 1624,
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7",
+      "source": "MaidLand XDF:/MDLAND/ZM/MLMAIN.ZMD"
+    },
+    {
+      "file": "CLEAR.ZMD",
+      "size": 632,
+      "sha256": "9067bf869ec6385a004980020ce7ad57be484b786dba557af97412af815307be",
+      "source": "MaidLand XDF:/MDLAND/ZM/MLCLEAR.ZMD"
+    },
+    {
+      "file": "OVER.ZMD",
+      "size": 529,
+      "sha256": "22637dbf3844f851e77949c85110c56f9bd1a3014936cb53193a0f3780184bb8",
+      "source": "MaidLand XDF:/MDLAND/ZM/MLGO.ZMD"
+    },
+    {
+      "file": "SHOT.SE",
+      "size": 19,
+      "sha256": "59127300973190aacbeafb957693586e0de68ea48250ffc8660f31c5237c8f62",
+      "source": "MaidLand src/SOUND.S:se13"
+    },
+    {
+      "file": "HIT.SE",
+      "size": 22,
+      "sha256": "f28af10fe670276238a177d1bb3f3c2f04e4e9e2d3c5dbedb9a1dc9357798111",
+      "source": "MaidLand src/SOUND.S:se14"
+    },
+    {
+      "file": "HURT.SE",
+      "size": 22,
+      "sha256": "ed73e52e224d784a76856b6adc08871f9da362253fe02b383f06da18990aa667",
+      "source": "MaidLand src/SOUND.S:se12"
+    },
+    {
+      "file": "BOMB.SE",
+      "size": 19,
+      "sha256": "24a9a13e1953e49e7eb2bfaf75560ba9e6f80a72a39098f695cd7141479842a7",
+      "source": "MaidLand src/SOUND.S:se21"
+    },
+    {
+      "file": "SFX.ZPD",
+      "size": 80332,
+      "sha256": "9360c22105f087dc1e216549259dcd23c871faa77552b1a5f3a311ebd745c465",
+      "source": "MaidLand XDF:/MDLAND/MDLD.ZPD"
+    },
+    {
+      "file": "ZMSC.X",
+      "size": 25518,
+      "sha256": "4c3129a2aff655d55b9e977c05e6fbf1c75b49c159771858a83208111de190e7",
+      "source": "MaidLand XDF:/MDLAND/ZMSC.X"
+    }
+  ]
+}

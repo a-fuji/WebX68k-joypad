@@ -1,5 +1,7 @@
 # 海賊王ゲームの生成・実行ランブック
 
+音楽版の抽出・起動・検証・差し替えは[Z-MUSIC音声手順](pirate68k/AUDIO.ja.md)を併せて使用する。
+
 この手順は、[独立したゲームソース](../games/pirate68k/README.ja.md)から、Human68k上で`.X`をビルドし、開発・配布XDFを検証するためのものである。[仕様の理由](pirate68k/DESIGN.ja.md)と[実測記録](pirate68k/VERIFICATION.ja.md)は別文書で管理する。
 
 ## 前提
@@ -35,9 +37,12 @@ HDSは`X68SCSI1`形式の最初のHuman68k FAT16パーティションから`/BIN
 node tools/pirate68k/devtools-title.mjs "$DEVTOOLS" \
   _local/pirate68k/TITLE.indexed.png _local/pirate68k/TITLE
 "$PYTHON" tools/pirate68k/xdf.py dev --hds "$HDS" \
-  --tool-disk "$TOOLDISK" --title _local/pirate68k/TITLE.RAW --output _local/pirate68k/dev.xdf
-"$PYTHON" tools/pirate68k/xdf.py list _local/pirate68k/dev.xdf
+  --tool-disk "$TOOLDISK" --title _local/pirate68k/TITLE.RAW \
+  --audio _local/pirate68k/audio --output _local/pirate68k/audio-dev.xdf
+"$PYTHON" tools/pirate68k/xdf.py list _local/pirate68k/audio-dev.xdf
 ```
+
+XDF生成前に、[暫定音声の準備](pirate68k/AUDIO.ja.md#暫定データの準備)を実行して`audio/`を作る。正常な既存開発XDFを上書きしない。
 
 `assets.py`は日本語見出し用フォントにmacOSのヒラギノ角ゴシックを使う。他OSでは`--font`に日本語フォントを指定する。Pillowの版・フォント・DevToolsの版によって変換結果が変わるので、生成される`TITLE.json`と`TITLE.devtools.json`で入力と変換器のSHA-256を確認する。DevToolsのコードは外部パスから実行し、ソースを取り込まない。
 
@@ -47,6 +52,9 @@ node tools/pirate68k/devtools-title.mjs "$DEVTOOLS" \
 /BIN/HAS060.X, HLK.X, XSP2LIB.O
 /SRC/PIRATE.S, STATE.INC, ART.INC, SOUND.INC, VIDEO.INC, TITLE.RAW
 /SRC/GRAPHICS.INC, SPRITES.SP, SPRITES.PAL, BG1.BIN, BG1.PAL, BG2.BIN, BG2.PAL
+/SRC/AUDIO.INC
+/AUDIO/                    ← 外部ZMD、FM効果音、ZPD
+/ZMSC.X
 /OUT/                      ← Human68k側の出力先
 /BUILD.BAT
 /GO.BAT
@@ -55,61 +63,22 @@ node tools/pirate68k/devtools-title.mjs "$DEVTOOLS" \
 
 ## Human68k上でビルド
 
-ビルド時はWebX68kを16MHz・8MBに設定する。通常のブラウザ検証はWebX68kへFDD0=HUMAN302.XDF、FDD1=dev.xdfを装填し、起動後に次を入力する。
+ビルド時はWebX68kを16MHz・8MBに設定する。通常のブラウザ検証はWebX68kへFDD0=HUMAN302.XDF、FDD1=audio-dev.xdfを装填し、起動後に次を入力する。
 
 ```text
 A>B:\BUILD
-B>B:\OUT\PIRATE
+B>B:\GO
 ```
 
 `BUILD.BAT`はB:\SRCでHAS060を実行し、B:\OUTにオブジェクトと一時ファイルを作り、HLKでXSP2LIB.OをリンクしてB:\OUT\PIRATE.Xを生成する。エラー時はBUILD FAILED、成功時はBUILD OKを表示する。HAS060のVRAM絶対アドレス・ADDA.Wに関する警告は、直接描画する箇所に対応する。ビルド成功表示と`.X`の存在・サイズを併せて判定する。
 
-## MCPを使う自動検証
+## MCPと配布用XDFの検証
 
-別々のターミナルで、次の2プロセスを起動する。検証用セッションはMCPのstdioクライアントとしてサーバーを起動し、専用の隔離Chromeを開く。既存のユーザーブラウザやその保存データを変更しない。
+音楽版は[音声手順のビルド・XDF生成](pirate68k/AUDIO.ja.md#ビルドxdf生成)に従う。`verify-audio.mjs`がMCPと隔離Chromeを起動し、8MBでのビルド、2MBでのプレイ、音声録音を行う。FDD0はHuman68k、FDD1は音楽版XDFを使用する。`GO.BAT`が音声ドライバを登録し、終了後に解除する。
 
-```sh
-npm run dev -- --host 127.0.0.1 --port 5299
-```
+`xdf.py release`には`--audio`で外部音声ディレクトリを指定する。生成先は`_local/pirate68k/release-audio.xdf`とし、既存の`release.xdf`は保持する。配布ディスクの収録ファイル・容量・SHA-256は自動生成される同名のマニフェストで確認する。音声は実行ファイルとは別に収録する。
 
-```sh
-node tools/pirate68k/session.mjs
-```
-
-自動ビルドはURLで16MHz/8MB、配布版のプレイ検証は16MHz/2MBに指定する。検証用ブリッジは3199、ローカル操作エンドポイントは5399を使う。ここで起動したMCPサーバーと同じポートのサーバーを重複して起動しない。
-
-さらに別ターミナルで順に実行する。
-
-```sh
-node tools/pirate68k/verify-build.mjs "$SYSTEM"
-
-```
-
-`verify-build`は外部Human68kの起動、MCP接続、開発ディスク一覧、ゲストでのビルド、`.X`回収、タイトルを検証する。`verify-game`はMCPの`key_sequence`で開始・移動・攻撃を、通常のブラウザキーイベントで斜めを含む8方向を検査し、ゲームオーバーと再開まで待つ。`verify-stages`はゲスト状態をMCPで読みながら実際のキーを操作して2体のボスを倒す。メモリの書き換えやテスト専用の無敵設定は使わない。
-
-画面PNG、JSONの状態記録、回収された`.X`は`_local/pirate68k/`に保存する。検証スクリプトが途中で失敗した場合は、操作キーを解放してセッションを終了し、新しい`session.mjs`から再開する。複数回アプリを起動したゲストでは、解放済みヒープに古い`P68KSTAT`が残ることがあるため、正式な検証は新しいブラウザセッションで一巡させる。
-
-手動MCP操作には`status`→`disk_list_files`→`type_text`→`screen_text`/`screenshot`→`disk_read_file`を使う。背景はGVRAM、キャラクターはハードウェアスプライト、HUDは独自のTVRAMフォントなので、`screen_text`の空結果で失敗と判定しない。任意コマンドの例:
-
-```sh
-node tools/pirate68k/control.mjs call '{"name":"status"}'
-node tools/pirate68k/control.mjs shot '{"name":"manual-check"}'
-```
-
-## 配布用データディスク
-
-```sh
-"$PYTHON" tools/pirate68k/xdf.py release \
-  --executable _local/pirate68k/PIRATE.X --output _local/pirate68k/release.xdf
-"$PYTHON" tools/pirate68k/xdf.py list _local/pirate68k/release.xdf
-node tools/pirate68k/verify-release.mjs --full
-node tools/pirate68k/verify-rebuild.mjs
-"$PYTHON" tools/pirate68k/verify-hud.py _local/pirate68k/bomb.png _local/pirate68k/bomb-state.json
-"$PYTHON" tools/pirate68k/verify-hud.py _local/pirate68k/all-clear.png _local/pirate68k/all-clear-state.json
-shasum -a 256 _local/pirate68k/release.xdf
-```
-
-`.X`にタイトル・背景・スプライト・XSP・FM曲が埋め込まれているため、配布用XDFには`PIRATE.X`、`GO.BAT`、`README.TXT`だけが必要。FDD0からHuman68kを起動し、FDD1の配布ディスクで`B:`、`GO`を実行する。同じベース名の`release.manifest.json`と`release.sha256`が自動生成される。XDF内の各ファイルのサイズ・SHA-256、空き容量、ディスク全体のSHA-256を含む。
+従来の`session.mjs`は手動MCP観測に使用できる。背景はGVRAM、キャラクターはハードウェアスプライト、HUDは独自のTVRAMフォントなので、`screen_text`の空結果で失敗と判定しない。ゲームの起動と終了は`GO.BAT`を通して検証する。
 
 ## ホスト側の検査
 
@@ -128,4 +97,4 @@ node tools/pirate68k/verify-mcp.mjs
 
 `graphics.py`は`games/pirate68k/assets/`のPNGを読み、32×32の通常キャラ、96×96のボス、64×64の援護キャラを作る。キャラは各15色＋透明色、背景は256色に量子化する。XSP用16×16 PCGは8×8区画の左上・左下・右上・右下順で格納する。生成物は`_local/pirate68k/graphics/`。`native-preview.png`で実寸を拡大表示し、`graphics.json`で素材ハッシュ・タイル数を確認する。PNGの生成経緯は[素材記録](../games/pirate68k/assets/README.md)を参照する。
 
-`verify-release.mjs --full`は配布XDFから2MBで起動し、入力・ゲームオーバー・再開・両ボス・クリア・終了を一巡する。再ビルド比較は`verify-rebuild.mjs`が8MBへ切り替えて実行する。
+音楽版の検証は`verify-audio.mjs`を使う。初版用の`verify-build`、`verify-release`、`verify-rebuild`は旧ファイル名・旧収録構成を対象にするため、音楽版へそのまま使用しない。

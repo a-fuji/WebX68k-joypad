@@ -1,0 +1,21 @@
+{
+  "music": {
+    "TONE.ZMD": "/MDLAND/ZM/BTSND.ZMD",
+    "TITLE.ZMD": "/MDLAND/ZM/MLDEMO.ZMD",
+    "STAGE1.ZMD": "/MDLAND/ZM/MLMAIN.ZMD",
+    "STAGE2.ZMD": "/MDLAND/ZM/MLMAIN.ZMD",
+    "CLEAR.ZMD": "/MDLAND/ZM/MLCLEAR.ZMD",
+    "OVER.ZMD": "/MDLAND/ZM/MLGO.ZMD"
+  },
+  "fm_effects": {
+    "SHOT.SE": "se13",
+    "HIT.SE": "se14",
+    "HURT.SE": "se12",
+    "BOMB.SE": "se21"
+  },
+  "pcm_bank": "/MDLAND/MDLD.ZPD",
+  "driver": "/MDLAND/ZMSC.X",
+  "pcm_bomb_note": 3,
+  "pcm_boss_note": 4,
+  "pcm_mode": "00100403"
+}

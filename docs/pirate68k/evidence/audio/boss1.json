@@ -1,0 +1,71 @@
+{
+  "mode": 1,
+  "stage": 1,
+  "x": 215,
+  "y": 212,
+  "score": 600,
+  "kills": 6,
+  "life": 3,
+  "bombs": 1,
+  "frame": 188,
+  "shots": 0,
+  "bosshp": 16,
+  "bossx": 138,
+  "bossdx": 2,
+  "xspactive": 1,
+  "videostage": 1,
+  "enemies": [
+    {
+      "active": 0,
+      "x": 48,
+      "y": 194
+    },
+    {
+      "active": 0,
+      "x": 85,
+      "y": 164
+    },
+    {
+      "active": 0,
+      "x": 122,
+      "y": 134
+    },
+    {
+      "active": 0,
+      "x": 159,
+      "y": 104
+    },
+    {
+      "active": 0,
+      "x": 196,
+      "y": 74
+    },
+    {
+      "active": 0,
+      "x": 73,
+      "y": 44
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "active": 0,
+      "x": 0,
+      "y": 0
+    }
+  ],
+  "audio": {
+    "ready": 1,
+    "version": 8195,
+    "bgm": 2,
+    "bgmcalls": 5,
+    "fm": 12,
+    "pcm": 2,
+    "lastfm": 3,
+    "lastpcm": 3,
+    "errors": 0,
+    "result": 0
+  }
+}

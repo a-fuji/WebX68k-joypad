@@ -120,3 +120,37 @@ b8f70c853d6090c15fdc8391a7e06bf019e467ad79efd37b1b73859bd3558887  release.xdf
 - 配布ディスクはHuman68k起動ディスクと組み合わせる2ドライブ構成。単体ブートは後続対応。
 - 新版の再ビルド一致、物理パッド、実機X68000/X68000Zは未確認。
 - 初版の`evidence/rebuild.json`、`stages.json`などを新版の成功証拠として流用しない。新版の通しプレイ確認元は上記ユーザー報告。
+
+
+## 2026-10-25: Z-MUSIC BGM・FM効果音・ZPD効果音
+
+ユーザーの指定により、MaidLandの音声データを暫定流用するZ-MUSIC版を実装した。正常な既存XDFは保持し、開発用は`_local/pirate68k/audio-dev.xdf`、配布用は`_local/pirate68k/release-audio.xdf`へ生成した。音声の抽出元・差し替え契約・実行手順は[音声手順](AUDIO.ja.md)を参照する。WebX68k本体とMCP本体は変更していない。
+
+### 実装と場面別の検証
+
+従来の直接OPM操作を撤去し、BGMは常駐ドライバの割込みで再生する。ZMDとFM効果音は起動時に外部ファイルから先読みする。ZPDは起動バッチで登録し、終了後にドライバを解除する。使用したドライバの常駐識別バージョンは`$2003`。下表は音楽版に対するエージェントの検証であり、前節のユーザーによる背景・XSP版のプレイ報告とは区別する。
+
+| 確認項目 | 結果・証拠 |
+| --- | --- |
+| ホスト検査 | `npm test`35ファイル・558件成功、`npm run build`成功、Python17テスト成功。[テスト](evidence/audio/npm-test.txt)、[ビルド](evidence/audio/npm-build.txt)、[Python](evidence/audio/python-tests.txt) |
+| Human68k・8MBビルド | MCPを通じて起動・HAS060/HLK実行・生成物回収を確認。[起動](evidence/audio/build-boot.json)、[ビルド](evidence/audio/guest-build.json)、[画面](evidence/audio/guest-build.png) |
+| 実行ファイル | 298,730バイト。text=12,016、data=285,052、bss=236,462。[ヘッダーとハッシュ](evidence/audio/executable-header.json) |
+| 再現性 | 同じソースを8MBで再ビルドした`.X`がバイト一致。配布XDFの再生成もバイト一致。[再ビルド](evidence/audio/rebuild.json)、[XDF](evidence/audio/determinism.json) |
+| 2MB起動 | Human68k起動ディスクと音楽版配布XDFの2台構成で起動。タイトル曲、ゲーム開始、XSP表示を確認。[状態](evidence/audio/title-state.json)、[タイトル](evidence/audio/title.png)、[ステージ画面](evidence/audio/stage1.png) |
+| BGM | タイトル・ステージ・ゲームオーバー・クリアの各WAVで変動する音声出力を確認。[録音解析](evidence/audio/recording-analysis.json) |
+| FM効果音 | BGMを無音にした検証専用XDFで、無操作の無音とショットのFM音を分離して確認。[状態](evidence/audio/isolated-effects-state.json)、[解析](evidence/audio/recording-analysis.json)。通常ディスクで命中・被弾イベントも発生 |
+| ZPD効果音 | 同じ実行ファイルと元のZPDを使い、BGM・必殺技FM音を除いた状態で必殺技のADPCM音を確認。[録音解析](evidence/audio/recording-analysis.json)。通常ディスクで必殺技ノート3、ボス撃破ノート4を要求 |
+| ステージ進行・クリア曲 | 実際のキー操作で両ボスを撃破。ステージ2、ALL CLEAR状態、3,200点、残機1、BGM番号4、BGM APIエラー0を確認。[操作時の状態推移](evidence/audio/play-trace.json)、[クリア状態](evidence/audio/clear-state.json)、[クリア曲解析](evidence/audio/recording-analysis.json) |
+| 終了 | ESC後にDOSへ復帰し、ECHO実行、ZMSC解除を確認。終了直後のPCMを含むケースでも録音の変動成分RMS=0。[結果](evidence/audio/exit-result.json)、[DOS出力](evidence/audio/exit.json)、[録音](evidence/audio/exit-silence.json) |
+| ドライバ未常駐 | 解除後に`.X`を直接起動すると案内を表示して終了。[出力](evidence/audio/missing-driver.json)、[画面](evidence/audio/missing-driver.png) |
+| 既存成果物の保持 | 以前の開発用・配布用XDFのSHA-256一致を確認。[保全確認](evidence/audio/protected-artifacts.json) |
+
+WAVはWebX68kのミキサー出力を記録したもので、録音結果の聴感評価・実機確認は別工程。ADPCM終了後に保持される一定のDAC値は、変動する音声信号と分けて判定した。音声バイナリや録音WAVはローカルに保持し、Gitにはサイズ・解析結果・ハッシュだけを保存する。ゲームの残機や敵HPを検証用に変更したり、メモリにゲーム状態を書き込んだりしていない。
+
+配布用XDFは1,261,568バイト、ファイル合計415,183バイト、クラスタ割当425,984バイト、空き824,320バイト。`PIRATE.X`、`ZMSC.X`、`AUDIO/`、`GO.BAT`、`README.TXT`を収録し、開発ツールとソースは含めない。[配布マニフェスト](evidence/audio/release-audio.manifest.json)、[開発マニフェスト](evidence/audio/audio-dev.manifest.json)、[暫定音声の抽出元](evidence/audio/source-audio.manifest.json)、[実装入力](evidence/audio/source-inputs.json)で内容を識別する。
+
+```text
+f20e951437d8392591cfd9d24e5e718639b22ecd4c1ee9cd65882f7e43a68a4b  release-audio.xdf
+```
+
+制作予定の新曲はまだ使用していない。ステージ1と2は暫定的に同じMaidLand曲で、独立したファイル名を用意している。単体ブート、物理パッド、実機X68000/X68000Zは後続の確認対象。

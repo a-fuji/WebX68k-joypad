@@ -12,6 +12,11 @@ start:
         dc.w    $ff20
         addq.l  #4,sp
         move.l  d0,oldsp(a6)
+        move.l  #'P68K',soundstate
+        move.l  #'SND!',soundstate+4
+        bsr     musicinit
+        tst.l   d0
+        bmi     soundstartupfailed
         moveq   #-1,d1
         moveq   #$10,d0
         trap    #15
@@ -24,6 +29,8 @@ start:
         move.w  #$90,d0
         trap    #15
         bsr     title
+        moveq   #1,d0
+        bsr     musicplay
         moveq   #$7f,d0
         trap    #15
         move.l  d0,lasttick(a6)
@@ -58,7 +65,6 @@ ending:
         bra     loop
 newgame:
         bsr     gameplayvideo
-        bsr     musicinit
         move.w  #1,mode(a6)
         move.w  #1,stage(a6)
         clr.l   score(a6)
@@ -86,6 +92,9 @@ clearentities:
         clr.w   (a0)+
         dbra    d0,clearentities
         bsr     background
+        moveq   #1,d0
+        add.w   stage(a6),d0
+        bsr     musicplay
         rts
 
 * _BITSNS senses held keys, unlike buffered DOS input. Keyboard + JOYGET OR.
@@ -160,7 +169,6 @@ inputdone:
         rts
 update:
         addq.l  #1,frame(a6)
-        bsr     musicupdate
         tst.w   invul(a6)
         beq     noinvul
         subq.w  #1,invul(a6)
@@ -216,6 +224,8 @@ addshot:
         sub.w   #18,4(a0)
         move.w  #4,cooldown(a6)
         addq.w  #1,shots(a6)
+        moveq   #0,d0
+        bsr     soundfm
 bomb:
         btst    #5,edges+1(a6)
         beq     spawn
@@ -225,6 +235,10 @@ bomb:
         addq.w  #1,bombsused(a6)
         move.w  #20,flash(a6)
         move.w  #24,invul(a6)
+        moveq   #3,d0
+        bsr     soundfm
+        moveq   #PCM_BOMB,d0
+        bsr     soundpcm
         lea     enemies(a6),a0
         moveq   #7,d7
 bombenemies:
@@ -392,10 +406,13 @@ hurt:
         tst.w   invul(a6)
         bne     hurtdone
         move.w  #40,invul(a6)
+        moveq   #2,d0
+        bsr     soundfm
         subq.w  #1,life(a6)
         bgt     hurtdone
         move.w  #2,mode(a6)
-        bsr     musicstop
+        moveq   #5,d0
+        bsr     musicplay
 hurtdone:
         rts
 updateshots:
@@ -418,6 +435,9 @@ shotloop:
         bhi     shotenemies
         clr.w   (a3)
         subq.w  #1,bosshp(a6)
+        moveq   #1,d0
+        bsr     soundfm
+        tst.w   bosshp(a6)
         bne     shotnext
         bsr     bossdead
         rts
@@ -444,6 +464,8 @@ hity:
         clr.w   (a4)
         addq.w  #1,kills(a6)
         add.l   #100,score(a6)
+        moveq   #1,d0
+        bsr     soundfm
         bra     removeshot
 hitnext:
         addq.l  #8,a4
@@ -477,6 +499,8 @@ hostilenext:
         dbra    d6,hostileloop
         rts
 bossdead:
+        moveq   #PCM_BOSS,d0
+        bsr     soundpcm
         clr.w   bosshp(a6)
         add.l   #1000,score(a6)
         cmp.w   #2,stage(a6)
@@ -486,7 +510,8 @@ bossdead:
         rts
 allclear:
         move.w  #3,mode(a6)
-        bsr     musicstop
+        moveq   #4,d0
+        bsr     musicplay
         rts
 
         .include VIDEO.INC
@@ -579,6 +604,12 @@ flushkeys:
         bra     flushkeys
 flushed:
         rts
+soundstartupfailed:
+        move.l  oldsp(a6),-(sp)
+        dc.w    $ff20
+        addq.l  #4,sp
+        move.w  #1,-(sp)
+        dc.w    $ff4c
 exit:
         bsr     graphicsstop
         bsr     musicstop

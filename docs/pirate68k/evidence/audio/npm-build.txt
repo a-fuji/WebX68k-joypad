@@ -1,0 +1,13 @@
+
+> webx68k@0.1.0 build
+> tsc && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 41 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                  21.78 kB │ gzip:  6.39 kB
+dist/assets/index-DcdDYPfw.css   27.70 kB │ gzip:  5.59 kB
+dist/assets/index-LLzyEtdN.js   221.58 kB │ gzip: 76.15 kB
+✓ built in 422ms

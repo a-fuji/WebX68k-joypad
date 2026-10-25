@@ -1,0 +1,10 @@
+{
+  "games/pirate68k/PIRATE.S": "b64f69e595f50119cfde9ac16e55b0c483b77892e034b0e8a0d05b71753be78b",
+  "games/pirate68k/SOUND.INC": "3470290e4b4f3985f04d24c9e53a0a8220a124258dedc8365c6e4fd631b01e64",
+  "games/pirate68k/STATE.INC": "9794ab5cf098ea12cbab10300e30f25a5c941a244305d92b281f8708c9679a8c",
+  "games/pirate68k/VIDEO.INC": "9d85da80277f691f44e0022e979433c0e4f33a7bea7286f9d5f68f3324609010",
+  "games/pirate68k/BUILD.BAT": "232385424b38aece295958dbe64b75ea0ab44fe424974c4bbbb94d2232c6a273",
+  "games/pirate68k/audio.json": "d28df882fbc3ee732ab87c73963d0ca5986ae14bb425a7f05ff06afeb229c197",
+  "tools/pirate68k/audio.py": "d3ba244c018c457d0a40b2d0f79ba416c55e1e5dad8e6a600628b4725fed2496",
+  "tools/pirate68k/xdf.py": "8b2366c25b97fa4a8ac92ac9ace002d9087f4283678d3402b33f3ac6a394b84d"
+}

@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "lines": [
+    "������ has been released from your system．",
+    "B>echo audioexitok",
+    "audioexitok",
+    "B>�",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "diagnostics": {
+    "columns": 96,
+    "rows": 32,
+    "nonEmptyCells": 67,
+    "matchedCells": 60,
+    "unknownCells": 7,
+    "coverage": 0.8955223880597015,
+    "nonEmptyPlaneCells": [
+      65,
+      65,
+      0,
+      0
+    ],
+    "kanjiFontAvailable": true
+  }
+}

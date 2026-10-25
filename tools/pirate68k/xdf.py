@@ -184,9 +184,11 @@ def main():
     dev.add_argument('--tool-disk', type=Path, required=True, help='Read-only Dev68K.XDF containing /XSP2lib.o')
     dev.add_argument('--graphics', type=Path, default=ROOT / '_local/pirate68k/graphics')
     dev.add_argument('--output', type=Path, required=True)
+    dev.add_argument('--audio', type=Path, required=True, help='Directory prepared by audio.py')
     rel = sub.add_parser('release')
     rel.add_argument('--executable', type=Path, required=True)
     rel.add_argument('--output', type=Path, required=True)
+    rel.add_argument('--audio', type=Path, required=True, help='Directory prepared by audio.py')
     ls = sub.add_parser('list')
     ls.add_argument('image', type=Path)
     get = sub.add_parser('get')
@@ -217,6 +219,7 @@ def main():
                 d.put('/SRC/' + p.name.upper(), p.read_bytes().replace(b'\r\n', b'\n').replace(b'\n', b'\r\n'))
         d.put('/BUILD.BAT', (ROOT / 'games/pirate68k/BUILD.BAT').read_bytes().replace(b'\r\n', b'\n').replace(b'\n', b'\r\n'))
         d.put('/SRC/TITLE.RAW', args.title.read_bytes())
+        d.put('/SRC/AUDIO.INC', (args.audio / 'AUDIO.INC').read_bytes())
         for name in ['GRAPHICS.INC', 'SPRITES.SP', 'SPRITES.PAL', 'BG1.BIN', 'BG1.PAL', 'BG2.BIN', 'BG2.PAL']:
             d.put('/SRC/' + name, (args.graphics / name).read_bytes())
         d.put('/OUT', b'', True)
@@ -225,8 +228,20 @@ def main():
         if data[:2] != b'HU' or len(data) < 64:
             raise ValueError('Expected linked Human68k .X executable')
         d.put('/PIRATE.X', data)
-    d.put('/GO.BAT', b'ECHO OFF\r\nPIRATE.X\r\n' if args.command == 'release' else b'ECHO OFF\r\nCD \\OUT\r\nPIRATE.X\r\n')
-    d.put('/README.TXT', b'PIRATE68K - FAN GAME PROTOTYPE\r\nBoot Human68k in A:, this disk in B:.\r\nB: then GO (development: BUILD first).\r\nArrows: move; Z: shot; X: bomb; R: restart; ESC: quit.\r\nUnofficial fan work. No original anime/game assets.\r\n')
+    config = json.loads((ROOT / 'games/pirate68k/audio.json').read_text())
+    for name in [*config['music'], *config['fm_effects'], 'SFX.ZPD']:
+        data = (args.audio / name).read_bytes()
+        d.put('/AUDIO/' + name, data)
+        provenance.append(dict(source='audio/' + name, sha256=sha(data)))
+    driver = (args.audio / 'ZMSC.X').read_bytes()
+    d.put('/ZMSC.X', driver)
+    provenance.append(dict(source='audio/ZMSC.X', sha256=sha(driver)))
+    executable = 'PIRATE.X' if args.command == 'release' else 'OUT\\PIRATE.X'
+    launch = ('ECHO OFF\r\nB:\r\nCD \\\r\n'
+              'ZMSC.X -m -b AUDIO\\SFX.ZPD\r\n'
+              + executable + '\r\nZMSC.X -r\r\n')
+    d.put('/GO.BAT', launch.encode('ascii'))
+    d.put('/README.TXT', b'PIRATE68K - FAN GAME\r\nBoot Human68k in A:, this disk in B:. B: then GO.\r\nArrows: move; Z: shot; X: bomb; R: restart; ESC: quit.\r\nZ-MUSIC v2 BGM/FM/ADPCM. Temporary audio borrowed from MaidLand.\r\n')
     emit(d, args.output, provenance)
 
 

@@ -1,0 +1,42 @@
+{
+  "title-bgm": {
+    "seconds": 2.1993197278911563,
+    "acRms": 0.017636849573384943,
+    "sha256": "e3f29ddc7dd8ad0db12bace461e13fc288739b117005dbc977850b2a43e54d1c"
+  },
+  "stage-bgm": {
+    "seconds": 2.0010204081632654,
+    "acRms": 0.005383819685957903,
+    "sha256": "701af89dd6460b97252e03bcbb5a943345c5f004887cdd6f72d5bc6d37393eca"
+  },
+  "gameover-bgm": {
+    "seconds": 2.0010204081632654,
+    "acRms": 0.055506979488919306,
+    "sha256": "7a5672cce6d6bf019aeda2fb6abfc8dcf6e5439bb8b68110f72fdcf8cdf52f37"
+  },
+  "clear-bgm": {
+    "seconds": 2.1993197278911563,
+    "acRms": 0.06645695353172232,
+    "sha256": "ab02a6669fb3c94df7bb340217d661c0b5ed51d7a41a0f604f98e8e2ccb4f959"
+  },
+  "isolated-fm": {
+    "seconds": 0.8292517006802721,
+    "acRms": 0.03342012911056504,
+    "sha256": "517f02e40cfe1d44cfdc1ec074dc7d4cf8a51c1543311e2d5377f6a8ec77d49a"
+  },
+  "isolated-zpd": {
+    "seconds": 1.1717687074829932,
+    "acRms": 0.06725070140105562,
+    "sha256": "05bd01ae337e4ac4be54f6653ce2f780e7e4dc4e9aae21d51fe57ca6e3fec770"
+  },
+  "effects-silence": {
+    "seconds": 0.7210884353741497,
+    "acRms": 0.0,
+    "sha256": "b0985156c74bd6001cc78f6ace0fe629d98479bc093cadd36247740eb4723a49"
+  },
+  "exit-silence": {
+    "seconds": 1.2078231292517008,
+    "acRms": 0.0,
+    "sha256": "03e54e87af2a06f3d2910c2ac5833104cc2afaa0a5e00c787cf9c2851b98d8a9"
+  }
+}

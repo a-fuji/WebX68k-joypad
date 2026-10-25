@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "lines": [
+    "������ has been released from your system．",
+    "B>echo audioexitok",
+    "audioexitok",
+    "B>pirate",
+    "Z-MUSIC v2 required．Start with GO.BAT．",
+    "B>�",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "diagnostics": {
+    "columns": 96,
+    "rows": 32,
+    "nonEmptyCells": 109,
+    "matchedCells": 102,
+    "unknownCells": 7,
+    "coverage": 0.9357798165137615,
+    "nonEmptyPlaneCells": [
+      107,
+      107,
+      0,
+      0
+    ],
+    "kanjiFontAvailable": true
+  }
+}

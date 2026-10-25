@@ -1,0 +1,619 @@
+
+> webx68k@0.1.0 test
+> vitest run
+
+
+ RUN  v2.1.9 /Users/m1prime/Projects/WebX68k-joypad
+
+ ✓ test/input-profile.test.ts (42 tests) 23ms
+(node:55165) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:55167) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ test/input-profile-ui.test.ts (25 tests) 80ms
+ ✓ test/gamepad-ui.test.ts (21 tests) 147ms
+stdout | test/core-sram-persistence-integration.test.ts > SRAM永続化の往復(sram.dat書き込み → _webx68k_sram_read読み出し) > 1台目のコアで読んだSRAMのバイト列をoffset 0x3a/0x3bだけ書き換え、2台目の新しいコアインスタンスへretro_load_game()前に置いて起動すると、書き換えた値がそのまま読める(バイト順が file==ゲスト順であることの実測)
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+ ✓ test/virtual-pad.test.ts (57 tests) 53ms
+stdout | test/core-sram-persistence-integration.test.ts > SRAM永続化の往復(sram.dat書き込み → _webx68k_sram_read読み出し) > 1台目のコアで読んだSRAMのバイト列をoffset 0x3a/0x3bだけ書き換え、2台目の新しいコアインスタンスへretro_load_game()前に置いて起動すると、書き換えた値がそのまま読める(バイト順が file==ゲスト順であることの実測)
+[px68k] sram write enable = 1
+
+
+stdout | test/core-key-repeat-integration.test.ts > 実ROMでのmakeのみキーリピート結合 > 押しっぱなし中は300ms後から35ms間隔でmakeだけを5回追加し、解放時のbreakは1回だけ
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+stdout | test/core-key-repeat-integration.test.ts > 実ROMでのmakeのみキーリピート結合 > 押しっぱなし中は300ms後から35ms間隔でmakeだけを5回追加し、解放時のbreakは1回だけ
+[px68k] sram write enable = 1
+
+
+ ✓ test/gamepad.test.ts (119 tests) 173ms
+stdout | test/core-key-repeat-integration.test.ts > 実ROMでのmakeのみキーリピート結合 > 押しっぱなし中は300ms後から35ms間隔でmakeだけを5回追加し、解放時のbreakは1回だけ
+[px68k] KeyDown: lrkey =  97 code = 1e
+
+[px68k] KeyUp: lrkey =  97 code = 1e
+
+
+stdout | test/core-key-repeat-integration.test.ts > 実ROM起動後のSRAM読み出し(webx68k_sram_read/キーリピート設定) > 実ROM起動後、SRAM先頭が機種シグネチャ「Ｘ68000W」になり、$ED003A/$ED003Bからキーリピート設定(開始500ms/間隔50ms)を読める。値はゲスト上でSWITCH.Xを実際に起動した表示(FIRST_KEY 3=500ms/NEXT_KEY 2=50ms)と一致することを確認済み。あわせて$ED0059/$ED005A(以前誤って読んでいた番地)が0/1という別の値であることも固定しておく。この2つはたまたま段階値の範囲(0..15)に収まる値だったため、シグネチャ照合・範囲チェックのどちらも素通りしてしまい、番地の取り違えを検出できなかった経緯があるため
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+stdout | test/core-key-repeat-integration.test.ts > 実ROM起動後のSRAM読み出し(webx68k_sram_read/キーリピート設定) > 実ROM起動後、SRAM先頭が機種シグネチャ「Ｘ68000W」になり、$ED003A/$ED003Bからキーリピート設定(開始500ms/間隔50ms)を読める。値はゲスト上でSWITCH.Xを実際に起動した表示(FIRST_KEY 3=500ms/NEXT_KEY 2=50ms)と一致することを確認済み。あわせて$ED0059/$ED005A(以前誤って読んでいた番地)が0/1という別の値であることも固定しておく。この2つはたまたま段階値の範囲(0..15)に収まる値だったため、シグネチャ照合・範囲チェックのどちらも素通りしてしまい、番地の取り違えを検出できなかった経緯があるため
+[px68k] sram write enable = 1
+
+
+stdout | test/core-ramsize-integration.test.ts > マシン構成の RAM 設定とゲスト構造(SRAM)の一致 > px68k_ramsize=2MB を指定すると SRAM の 0xed0008 が 2MB になる
+[px68k] sram write enable = 1
+
+
+ ✓ test/core-sram-persistence-integration.test.ts (1 test) 727ms
+   ✓ SRAM永続化の往復(sram.dat書き込み → _webx68k_sram_read読み出し) > 1台目のコアで読んだSRAMのバイト列をoffset 0x3a/0x3bだけ書き換え、2台目の新しいコアインスタンスへretro_load_game()前に置いて起動すると、書き換えた値がそのまま読める(バイト順が file==ゲスト順であることの実測) 725ms
+ ✓ test/disk-fetch.test.ts (42 tests) 9ms
+stdout | test/core-joystick-integration.test.ts > px68k-libretro ジョイスティック結合 > port0: UP+B(Trigger1)相当のビットが JoyState に負論理で現れる
+[px68k] sram write enable = 1
+
+
+ ✓ test/core-key-repeat-integration.test.ts (2 tests) 724ms
+   ✓ 実ROMでのmakeのみキーリピート結合 > 押しっぱなし中は300ms後から35ms間隔でmakeだけを5回追加し、解放時のbreakは1回だけ 383ms
+   ✓ 実ROM起動後のSRAM読み出し(webx68k_sram_read/キーリピート設定) > 実ROM起動後、SRAM先頭が機種シグネチャ「Ｘ68000W」になり、$ED003A/$ED003Bからキーリピート設定(開始500ms/間隔50ms)を読める。値はゲスト上でSWITCH.Xを実際に起動した表示(FIRST_KEY 3=500ms/NEXT_KEY 2=50ms)と一致することを確認済み。あわせて$ED0059/$ED005A(以前誤って読んでいた番地)が0/1という別の値であることも固定しておく。この2つはたまたま段階値の範囲(0..15)に収まる値だったため、シグネチャ照合・範囲チェックのどちらも素通りしてしまい、番地の取り違えを検出できなかった経緯があるため 339ms
+ ✓ test/text-screen.test.ts (9 tests) 143ms
+ ✓ test/core-fdd-hotswap.test.ts (3 tests) 122ms
+stdout | test/core-joystick-integration.test.ts > px68k-libretro ジョイスティック結合 > port1: UP+B(Trigger1)相当のビットが JoyState に負論理で現れる
+[px68k] sram write enable = 1
+
+
+ ✓ test/core-joystick-integration.test.ts (2 tests) 198ms
+stdout | test/core-ramsize-integration.test.ts > マシン構成の RAM 設定とゲスト構造(SRAM)の一致 > px68k_ramsize=12MB を指定すると SRAM の 0xed0008 が 12MB になる
+[px68k] sram write enable = 1
+
+
+stdout | test/core-ramsize-integration.test.ts > マシン構成の RAM 設定とゲスト構造(SRAM)の一致 > 再起動(コア作り直し)を模擬しても新しい設定が反映される
+[px68k] sram write enable = 1
+
+
+stdout | test/core-ramsize-integration.test.ts > マシン構成の RAM 設定とゲスト構造(SRAM)の一致 > 再起動(コア作り直し)を模擬しても新しい設定が反映される
+[px68k] sram write enable = 1
+
+
+ ✓ test/core-ramsize-integration.test.ts (3 tests) 757ms
+   ✓ マシン構成の RAM 設定とゲスト構造(SRAM)の一致 > 再起動(コア作り直し)を模擬しても新しい設定が反映される 323ms
+ ✓ test/vpad-safe-area.test.ts (20 tests) 13ms
+ ✓ test/touch-mouse.test.ts (17 tests) 12ms
+ ✓ test/disk-persist.test.ts (5 tests) 6ms
+ ✓ test/library.test.ts (12 tests) 28ms
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+
+ ✓ test/speed.test.ts (13 tests) 126ms
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] KeyDown: lrkey =   8 code = 0f
+
+[px68k] KeyUp: lrkey =   8 code = 0f
+
+[px68k] KeyDown: lrkey =   9 code = 10
+
+[px68k] KeyUp: lrkey =   9 code = 10
+
+[px68k] KeyDown: lrkey =  12 code = 3f
+
+[px68k] KeyUp: lrkey =  12 code = 3f
+
+[px68k] KeyDown: lrkey =  13 code = 1d
+
+[px68k] KeyUp: lrkey =  13 code = 1d
+
+[px68k] KeyDown: lrkey =  19 code = 61
+
+[px68k] KeyUp: lrkey =  19 code = 61
+
+[px68k] KeyDown: lrkey =  27 code = 01
+
+[px68k] KeyUp: lrkey =  27 code = 01
+
+[px68k] KeyDown: lrkey =  32 code = 35
+
+[px68k] KeyUp: lrkey =  32 code = 35
+
+[px68k] KeyDown: lrkey =  39 code = 28
+
+[px68k] KeyUp: lrkey =  39 code = 28
+
+[px68k] KeyDown: lrkey =  44 code = 31
+
+[px68k] KeyUp: lrkey =  44 code = 31
+
+[px68k] KeyDown: lrkey =  45 code = 0c
+
+[px68k] KeyUp: lrkey =  45 code = 0c
+
+[px68k] KeyDown: lrkey =  46 code = 32
+
+[px68k] KeyUp: lrkey =  46 code = 32
+
+[px68k] KeyDown: lrkey =  47 code = 33
+
+[px68k] KeyUp: lrkey =  47 code = 33
+
+[px68k] KeyDown: lrkey =  48 code = 0b
+
+[px68k] KeyDown: lrkey =  48 code = 34
+
+[px68k] KeyUp: lrkey =  48 code = 0b
+
+[px68k] KeyUp: lrkey =  48 code = 34
+
+[px68k] KeyDown: lrkey =  49 code = 02
+
+[px68k] KeyUp: lrkey =  49 code = 02
+
+[px68k] KeyDown: lrkey =  50 code = 03
+
+[px68k] KeyUp: lrkey =  50 code = 03
+
+[px68k] KeyDown: lrkey =  51 code = 04
+
+[px68k] KeyUp: lrkey =  51 code = 04
+
+[px68k] KeyDown: lrkey =  52 code = 05
+
+[px68k] KeyUp: lrkey =  52 code = 05
+
+[px68k] KeyDown: lrkey =  53 code = 06
+
+[px68k] KeyUp: lrkey =  53 code = 06
+
+[px68k] KeyDown: lrkey =  54 code = 07
+
+[px68k] KeyUp: lrkey =  54 code = 07
+
+[px68k] KeyDown: lrkey =  55 code = 08
+
+[px68k] KeyUp: lrkey =  55 code = 08
+
+[px68k] KeyDown: lrkey =  56 code = 09
+
+[px68k] KeyUp: lrkey =  56 code = 09
+
+[px68k] KeyDown: lrkey =  57 code = 0a
+
+[px68k] KeyUp: lrkey =  57 code = 0a
+
+[px68k] KeyDown: lrkey =  59 code = 27
+
+[px68k] KeyUp: lrkey =  59 code = 27
+
+[px68k] KeyDown: lrkey =  61 code = 0d
+
+[px68k] KeyUp: lrkey =  61 code = 0d
+
+[px68k] KeyDown: lrkey =  91 code = 1c
+
+[px68k] KeyUp: lrkey =  91 code = 1c
+
+[px68k] KeyDown: lrkey =  92 code = 0e
+
+[px68k] KeyUp: lrkey =  92 code = 0e
+
+[px68k] KeyDown: lrkey =  93 code = 29
+
+[px68k] KeyUp: lrkey =  93 code = 29
+
+[px68k] KeyDown: lrkey =  96 code = 1b
+
+[px68k] KeyUp: lrkey =  96 code = 1b
+
+[px68k] KeyDown: lrkey =  97 code = 1e
+
+[px68k] KeyUp: lrkey =  97 code = 1e
+
+[px68k] KeyDown: lrkey =  98 code = 2e
+
+[px68k] KeyUp: lrkey =  98 code = 2e
+
+[px68k] KeyDown: lrkey =  99 code = 2c
+
+[px68k] KeyUp: lrkey =  99 code = 2c
+
+[px68k] KeyDown: lrkey = 100 code = 20
+
+[px68k] KeyUp: lrkey = 100 code = 20
+
+[px68k] KeyDown: lrkey = 101 code = 13
+
+[px68k] KeyUp: lrkey = 101 code = 13
+
+[px68k] KeyDown: lrkey = 102 code = 21
+
+[px68k] KeyUp: lrkey = 102 code = 21
+
+[px68k] KeyDown: lrkey = 103 code = 22
+
+[px68k] KeyUp: lrkey = 103 code = 22
+
+[px68k] KeyDown: lrkey = 104 code = 23
+
+[px68k] KeyUp: lrkey = 104 code = 23
+
+[px68k] KeyDown: lrkey = 105 code = 18
+
+[px68k] KeyUp: lrkey = 105 code = 18
+
+[px68k] KeyDown: lrkey = 106 code = 24
+
+[px68k] KeyUp: lrkey = 106 code = 24
+
+[px68k] KeyDown: lrkey = 107 code = 25
+
+[px68k] KeyUp: lrkey = 107 code = 25
+
+[px68k] KeyDown: lrkey = 108 code = 26
+
+[px68k] KeyUp: lrkey = 108 code = 26
+
+[px68k] KeyDown: lrkey = 109 code = 30
+
+[px68k] KeyUp: lrkey = 109 code = 30
+
+[px68k] KeyDown: lrkey = 110 code = 2f
+
+[px68k] KeyUp: lrkey = 110 code = 2f
+
+[px68k] KeyDown: lrkey = 111 code = 19
+
+[px68k] KeyUp: lrkey = 111 code = 19
+
+[px68k] KeyDown: lrkey = 112 code = 1a
+
+[px68k] KeyUp: lrkey = 112 code = 1a
+
+[px68k] KeyDown: lrkey = 113 code = 11
+
+[px68k] KeyUp: lrkey = 113 code = 11
+
+[px68k] KeyDown: lrkey = 114 code = 14
+
+[px68k] KeyUp: lrkey = 114 code = 14
+
+[px68k] KeyDown: lrkey = 115 code = 1f
+
+[px68k] KeyUp: lrkey = 115 code = 1f
+
+[px68k] KeyDown: lrkey = 116 code = 15
+
+[px68k] KeyUp: lrkey = 116 code = 15
+
+[px68k] KeyDown: lrkey = 117 code = 17
+
+[px68k] KeyUp: lrkey = 117 code = 17
+
+[px68k] KeyDown: lrkey = 118 code = 2d
+
+[px68k] KeyUp: lrkey = 118 code = 2d
+
+
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+
+ ✓ test/sprout-share.test.ts (8 tests) 17ms
+ ✓ test/fat-hdd.test.ts (8 tests) 127ms
+ ✓ test/archive-metadata-filter.test.ts (3 tests) 8ms
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] KeyDown: lrkey = 119 code = 12
+
+[px68k] KeyUp: lrkey = 119 code = 12
+
+[px68k] KeyDown: lrkey = 120 code = 2b
+
+[px68k] KeyUp: lrkey = 120 code = 2b
+
+[px68k] KeyDown: lrkey = 121 code = 16
+
+[px68k] KeyUp: lrkey = 121 code = 16
+
+[px68k] KeyDown: lrkey = 122 code = 2a
+
+[px68k] KeyUp: lrkey = 122 code = 2a
+
+[px68k] KeyDown: lrkey = 127 code = 37
+
+[px68k] KeyUp: lrkey = 127 code = 37
+
+[px68k] KeyDown: lrkey = 256 code = 4f
+
+[px68k] KeyUp: lrkey = 256 code = 4f
+
+[px68k] KeyDown: lrkey = 257 code = 4b
+
+[px68k] KeyUp: lrkey = 257 code = 4b
+
+[px68k] KeyDown: lrkey = 258 code = 4c
+
+[px68k] KeyUp: lrkey = 258 code = 4c
+
+[px68k] KeyDown: lrkey = 259 code = 4d
+
+[px68k] KeyUp: lrkey = 259 code = 4d
+
+[px68k] KeyDown: lrkey = 260 code = 47
+
+[px68k] KeyUp: lrkey = 260 code = 47
+
+[px68k] KeyDown: lrkey = 261 code = 48
+
+[px68k] KeyUp: lrkey = 261 code = 48
+
+[px68k] KeyDown: lrkey = 262 code = 49
+
+[px68k] KeyUp: lrkey = 262 code = 49
+
+[px68k] KeyDown: lrkey = 263 code = 43
+
+[px68k] KeyUp: lrkey = 263 code = 43
+
+[px68k] KeyDown: lrkey = 264 code = 44
+
+[px68k] KeyUp: lrkey = 264 code = 44
+
+[px68k] KeyDown: lrkey = 265 code = 45
+
+[px68k] KeyUp: lrkey = 265 code = 45
+
+[px68k] KeyDown: lrkey = 266 code = 51
+
+[px68k] KeyUp: lrkey = 266 code = 51
+
+[px68k] KeyDown: lrkey = 267 code = 40
+
+[px68k] KeyUp: lrkey = 267 code = 40
+
+[px68k] KeyDown: lrkey = 268 code = 41
+
+[px68k] KeyUp: lrkey = 268 code = 41
+
+[px68k] KeyDown: lrkey = 269 code = 42
+
+[px68k] KeyUp: lrkey = 269 code = 42
+
+[px68k] KeyDown: lrkey = 270 code = 46
+
+[px68k] KeyUp: lrkey = 270 code = 46
+
+[px68k] KeyDown: lrkey = 271 code = 4e
+
+[px68k] KeyUp: lrkey = 271 code = 4e
+
+[px68k] KeyDown: lrkey = 272 code = 4a
+
+[px68k] KeyUp: lrkey = 272 code = 4a
+
+[px68k] KeyDown: lrkey = 273 code = 3c
+
+[px68k] KeyUp: lrkey = 273 code = 3c
+
+[px68k] KeyDown: lrkey = 274 code = 3e
+
+[px68k] KeyUp: lrkey = 274 code = 3e
+
+[px68k] KeyDown: lrkey = 275 code = 3d
+
+[px68k] KeyUp: lrkey = 275 code = 3d
+
+[px68k] KeyDown: lrkey = 276 code = 3b
+
+[px68k] KeyUp: lrkey = 276 code = 3b
+
+[px68k] KeyDown: lrkey = 277 code = 5e
+
+[px68k] KeyUp: lrkey = 277 code = 5e
+
+[px68k] KeyDown: lrkey = 278 code = 36
+
+[px68k] KeyUp: lrkey = 278 code = 36
+
+[px68k] KeyDown: lrkey = 279 code = 3a
+
+[px68k] KeyUp: lrkey = 279 code = 3a
+
+[px68k] KeyDown: lrkey = 280 code = 39
+
+[px68k] KeyUp: lrkey = 280 code = 39
+
+[px68k] KeyDown: lrkey = 281 code = 38
+
+[px68k] KeyUp: lrkey = 281 code = 38
+
+[px68k] KeyDown: lrkey = 282 code = 63
+
+[px68k] KeyUp: lrkey = 282 code = 63
+
+[px68k] KeyDown: lrkey = 283 code = 64
+
+[px68k] KeyUp: lrkey = 283 code = 64
+
+[px68k] KeyDown: lrkey = 284 code = 65
+
+[px68k] KeyUp: lrkey = 284 code = 65
+
+[px68k] KeyDown: lrkey = 285 code = 66
+
+[px68k] KeyUp: lrkey = 285 code = 66
+
+[px68k] KeyDown: lrkey = 286 code = 67
+
+[px68k] KeyUp: lrkey = 286 code = 67
+
+[px68k] KeyDown: lrkey = 287 code = 68
+
+[px68k] KeyUp: lrkey = 287 code = 68
+
+[px68k] KeyDown: lrkey = 288 code = 69
+
+[px68k] KeyUp: lrkey = 288 code = 69
+
+[px68k] KeyDown: lrkey = 289 code = 6a
+
+[px68k] KeyUp: lrkey = 289 code = 6a
+
+[px68k] KeyDown: lrkey = 290 code = 6b
+
+[px68k] KeyUp: lrkey = 290 code = 6b
+
+[px68k] KeyDown: lrkey = 291 code = 6c
+
+[px68k] KeyUp: lrkey = 291 code = 6c
+
+[px68k] KeyDown: lrkey = 292 code = 54
+
+[px68k] KeyUp: lrkey = 292 code = 54
+
+[px68k] KeyDown: lrkey = 301 code = 5d
+
+[px68k] KeyUp: lrkey = 301 code = 5d
+
+[px68k] KeyDown: lrkey = 302 code = 53
+
+[px68k] KeyUp: lrkey = 302 code = 53
+
+[px68k] KeyDown: lrkey = 303 code = 70
+
+[px68k] KeyUp: lrkey = 303 code = 70
+
+[px68k] KeyDown: lrkey = 304 code = 70
+
+[px68k] KeyUp: lrkey = 304 code = 70
+
+[px68k] KeyDown: lrkey = 305 code = 71
+
+[px68k] KeyUp: lrkey = 305 code = 71
+
+[px68k] KeyDown: lrkey = 306 code = 71
+
+[px68k] KeyUp: lrkey = 306 code = 71
+
+[px68k] KeyDown: lrkey = 307 code = 73
+
+[px68k] KeyUp: lrkey = 307 code = 73
+
+[px68k] KeyDown: lrkey = 308 code = 72
+
+[px68k] KeyUp: lrkey = 308 code = 72
+
+
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+[px68k] sram write enable = 0
+
+
+ ✓ test/key-repeat.test.ts (11 tests) 10ms
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] sram write enable = 1
+
+
+ ✓ test/disk-store.test.ts (10 tests) 211ms
+ ✓ test/vpad-sides-size.test.ts (10 tests) 7ms
+ ✓ test/core-keyboard-integration.test.ts (1 test) 1011ms
+   ✓ px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する 1010ms
+stdout | test/core-keyboard-integration.test.ts > px68k-libretro キーボード結合 > RETROK_TO_SCANCODEの全エントリがコア自身の変換結果と一致する
+[px68k] KeyDown: lrkey = 311 code = 72
+
+[px68k] KeyUp: lrkey = 311 code = 72
+
+[px68k] KeyDown: lrkey = 312 code = 73
+
+[px68k] KeyUp: lrkey = 312 code = 73
+
+[px68k] KeyDown: lrkey = 316 code = 52
+
+[px68k] KeyUp: lrkey = 316 code = 52
+
+[px68k] KeyDown: lrkey = 318 code = 61
+
+[px68k] KeyUp: lrkey = 318 code = 61
+
+[px68k] KeyDown: lrkey = 321 code = 55
+
+[px68k] KeyUp: lrkey = 321 code = 55
+
+[px68k] KeyDown: lrkey = 322 code = 56
+
+[px68k] KeyUp: lrkey = 322 code = 56
+
+[px68k] KeyDown: lrkey = 323 code = 57
+
+[px68k] KeyUp: lrkey = 323 code = 57
+
+[px68k] KeyDown: lrkey = 324 code = 58
+
+[px68k] KeyUp: lrkey = 324 code = 58
+
+[px68k] KeyDown: lrkey = 325 code = 59
+
+[px68k] KeyUp: lrkey = 325 code = 59
+
+[px68k] KeyDown: lrkey = 326 code = 5a
+
+[px68k] KeyUp: lrkey = 326 code = 5a
+
+[px68k] KeyDown: lrkey = 327 code = 5b
+
+[px68k] KeyUp: lrkey = 327 code = 5b
+
+[px68k] KeyDown: lrkey = 328 code = 5c
+
+[px68k] KeyUp: lrkey = 328 code = 5c
+
+[px68k] KeyDown: lrkey = 329 code = 5f
+
+[px68k] KeyUp: lrkey = 329 code = 5f
+
+[px68k] KeyDown: lrkey = 330 code = 60
+
+[px68k] KeyUp: lrkey = 330 code = 60
+
+[px68k] KeyDown: lrkey = 331 code = 62
+
+[px68k] KeyUp: lrkey = 331 code = 62
+
+
+ ✓ test/aspect-ratio-target-size.test.ts (9 tests) 12ms
+ ✓ test/frameBudget.test.ts (10 tests) 6ms
+ ✓ test/sram-store.test.ts (3 tests) 140ms
+ ✓ test/virtual-keyboard.test.ts (5 tests) 2ms
+ ✓ test/version-format.test.ts (7 tests) 3ms
+ ✓ test/fat-blank-fd.test.ts (24 tests) 19ms
+ ✓ test/fit-device-scale.test.ts (7 tests) 21ms
+(node:55248) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ test/fat-not-formatted.test.ts (2 tests) 6ms
+ ✓ test/platform.test.ts (7 tests) 6ms
+ ✓ test/url-params.test.ts (37 tests) 4ms
+ ✓ test/libretro-host-text-screen.test.ts (3 tests) 1192ms
+   ✓ LibretroHost TVRAM テキスト取得 > コアへ渡した CGROM の同じ保持配列を逆引きにも使う 1190ms
+
+ Test Files  35 passed (35)
+      Tests  558 passed (558)
+   Start at  03:27:34
+   Duration  3.67s (transform 1.07s, setup 0ms, collect 2.67s, tests 6.14s, environment 7ms, prepare 3.28s)

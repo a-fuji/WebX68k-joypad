@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "lines": [
+    "A>ECHO OFF",
+    "A>���� ���",
+    "A>b:\\build",
+    "A>ECHO OFF",
+    "VIDEO.INC           36: Warning: 絶対アドレッシングです",
+    "        lea     $e82220,a1",
+    "VIDEO.INC           41: Warning: 絶対アドレッシングです",
+    "        move.w  #$ffff,$e82202",
+    "VIDEO.INC           42: Warning: 絶対アドレッシングです",
+    "        move.w  #$12e4,$e82500",
+    "VIDEO.INC           43: Warning: 絶対アドレッシングです",
+    "        move.w  #$0061,$e82600",
+    "VIDEO.INC           55: Warning: 絶対アドレッシングです",
+    "        lea     $e82000,a1",
+    "VIDEO.INC           60: Warning: 絶対アドレッシングです",
+    "        lea     $c00000,a1",
+    "VIDEO.INC           69: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  #512,a1",
+    "VIDEO.INC           77: Warning: 絶対アドレッシングです",
+    "        lea     $e00000,a0",
+    "VIDEO.INC           84: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  #96,a0",
+    "VIDEO.INC          102: Warning: 絶対アドレッシングです",
+    "        lea     $e00000,a0",
+    "PIRATE.S           584: Warning: 絶対アドレッシングです",
+    "        lea     $c00000,a5",
+    "PIRATE.S           593: Warning: アドレスレジスタを adda.w で更新しています",
+    "        adda.w  #512,a0",
+    "SOUND.INC            8: Warning: 絶対ショートアドレッシングです",
+    "        movea.l $8c.w,a0",
+    "BUILD OK: B:\\OUT\\PIRATE.X",
+    "  �������� �������� �������� �������� ��������    �������� �������� �������� �������� ��������"
+  ],
+  "diagnostics": {
+    "columns": 96,
+    "rows": 32,
+    "nonEmptyCells": 939,
+    "matchedCells": 852,
+    "unknownCells": 87,
+    "coverage": 0.9073482428115016,
+    "nonEmptyPlaneCells": [
+      939,
+      939,
+      0,
+      0
+    ],
+    "kanjiFontAvailable": true
+  }
+}

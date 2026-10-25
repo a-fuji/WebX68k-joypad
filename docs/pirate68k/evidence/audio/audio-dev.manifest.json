@@ -1,0 +1,235 @@
+{
+  "format": "X68000 2HD FAT12",
+  "bytes": 1261568,
+  "sha256": "46e56c1d419a8015558598be02ed1d57fecd3e7d1c74ce4d0a60e1b944c72824",
+  "used_bytes": 549989,
+  "allocated_bytes": 570368,
+  "filesystem_bytes": 11264,
+  "free_bytes": 679936,
+  "files": [
+    {
+      "path": "/BIN/HAS060.X",
+      "size": 73508,
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8"
+    },
+    {
+      "path": "/BIN/HLK.X",
+      "size": 28486,
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5"
+    },
+    {
+      "path": "/BIN/XSP2LIB.O",
+      "size": 10464,
+      "sha256": "1b347a338422a76cde14193f9ecbd0fb3a6d6a15b700fc7f6535858bab645d75"
+    },
+    {
+      "path": "/SRC/ART.INC",
+      "size": 1930,
+      "sha256": "b53219c18375f9fee3f04836fef6248e1cbd7e38956531e5713d256a88ed09b6"
+    },
+    {
+      "path": "/SRC/PIRATE.S",
+      "size": 15940,
+      "sha256": "54d3958a10b78b76d1deb3e3ba2c184510f2e1c3a1b5d435274718bdaf7e9d5a"
+    },
+    {
+      "path": "/SRC/SOUND.INC",
+      "size": 5752,
+      "sha256": "0874fd01dc5ba61b125a69fcdc6475883533aedb1b92535358baa5b72f4fb1c3"
+    },
+    {
+      "path": "/SRC/STATE.INC",
+      "size": 725,
+      "sha256": "44d4a7f53c9f2c276af86b7273f0c0d445dab872d52b1858269c47313e7b125d"
+    },
+    {
+      "path": "/SRC/VIDEO.INC",
+      "size": 8812,
+      "sha256": "eb112004e2d107ec6a0a833c53b52bad2dd9809f4263e898a59cd759422a7473"
+    },
+    {
+      "path": "/SRC/TITLE.RAW",
+      "size": 131072,
+      "sha256": "de1c1ccd0a1bef6278aa49f77e302dc782c9e970edc8af79f372b6be017820c4"
+    },
+    {
+      "path": "/SRC/AUDIO.INC",
+      "size": 97,
+      "sha256": "dc7f62fb16cec2ac7b0d4b3d42324b22bce9d1afa66aa142b97c301af2946fcd"
+    },
+    {
+      "path": "/SRC/GRAPHICS.INC",
+      "size": 4596,
+      "sha256": "0ced6231ea773de7e39f9b96b7e1c153008a6b6c01b5ff09a1a55f4367318c09"
+    },
+    {
+      "path": "/SRC/SPRITES.SP",
+      "size": 19456,
+      "sha256": "ec2d62422c5bf391d91b22d6dc7ea4214b866054acaf507dedc25d540ed30529"
+    },
+    {
+      "path": "/SRC/SPRITES.PAL",
+      "size": 320,
+      "sha256": "7344e382ef5de022e9000968d435d770ef5d948f8dfb5aad6723febfd2a73a67"
+    },
+    {
+      "path": "/SRC/BG1.BIN",
+      "size": 65536,
+      "sha256": "544fb806626ac0035f22ac087df98f7aeae400fa3d3305767073edd1c850fb0a"
+    },
+    {
+      "path": "/SRC/BG1.PAL",
+      "size": 512,
+      "sha256": "f27c9ab56d067b88e831131c842f75e00912893b4b6f87260143492e0f8f478a"
+    },
+    {
+      "path": "/SRC/BG2.BIN",
+      "size": 65536,
+      "sha256": "9bbc31f2ee4813f410b610dceedaa0074177594588b25665495715f3c93cb5b2"
+    },
+    {
+      "path": "/SRC/BG2.PAL",
+      "size": 512,
+      "sha256": "5055686eb03d56797be3d3365d5e58e5fabb7fa5ae1c9cb53f410c18eab5f9fd"
+    },
+    {
+      "path": "/BUILD.BAT",
+      "size": 278,
+      "sha256": "bf584cfd162d70a493b37a54c2d797b687d6801b903e14c5e9070a552fa6a2ed"
+    },
+    {
+      "path": "/AUDIO/TONE.ZMD",
+      "size": 5152,
+      "sha256": "d7143055f0d9599495fcf60bc490423fadb4d5fce60aef000603ab7389747de0"
+    },
+    {
+      "path": "/AUDIO/TITLE.ZMD",
+      "size": 696,
+      "sha256": "e2b1f18afaf05a2b8082dfb9e715b050d62f3cbe0b0493f9cfc85404a9d7e7d6"
+    },
+    {
+      "path": "/AUDIO/STAGE1.ZMD",
+      "size": 1624,
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7"
+    },
+    {
+      "path": "/AUDIO/STAGE2.ZMD",
+      "size": 1624,
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7"
+    },
+    {
+      "path": "/AUDIO/CLEAR.ZMD",
+      "size": 632,
+      "sha256": "9067bf869ec6385a004980020ce7ad57be484b786dba557af97412af815307be"
+    },
+    {
+      "path": "/AUDIO/OVER.ZMD",
+      "size": 529,
+      "sha256": "22637dbf3844f851e77949c85110c56f9bd1a3014936cb53193a0f3780184bb8"
+    },
+    {
+      "path": "/AUDIO/SHOT.SE",
+      "size": 19,
+      "sha256": "59127300973190aacbeafb957693586e0de68ea48250ffc8660f31c5237c8f62"
+    },
+    {
+      "path": "/AUDIO/HIT.SE",
+      "size": 22,
+      "sha256": "f28af10fe670276238a177d1bb3f3c2f04e4e9e2d3c5dbedb9a1dc9357798111"
+    },
+    {
+      "path": "/AUDIO/HURT.SE",
+      "size": 22,
+      "sha256": "ed73e52e224d784a76856b6adc08871f9da362253fe02b383f06da18990aa667"
+    },
+    {
+      "path": "/AUDIO/BOMB.SE",
+      "size": 19,
+      "sha256": "24a9a13e1953e49e7eb2bfaf75560ba9e6f80a72a39098f695cd7141479842a7"
+    },
+    {
+      "path": "/AUDIO/SFX.ZPD",
+      "size": 80332,
+      "sha256": "9360c22105f087dc1e216549259dcd23c871faa77552b1a5f3a311ebd745c465"
+    },
+    {
+      "path": "/ZMSC.X",
+      "size": 25518,
+      "sha256": "4c3129a2aff655d55b9e977c05e6fbf1c75b49c159771858a83208111de190e7"
+    },
+    {
+      "path": "/GO.BAT",
+      "size": 73,
+      "sha256": "994e954de6673f38eef9e8b9d15bc784efb78278145992f577fb5bd892cb95f2"
+    },
+    {
+      "path": "/README.TXT",
+      "size": 195,
+      "sha256": "43714c094024809ba21786ec582cf01c24b95fd45a2022812b08f669740de935"
+    }
+  ],
+  "inputs": [
+    {
+      "source": "HDS:/BIN/HAS060.X",
+      "sha256": "359af345ec054adb1e8560acf17b333b240ced758e08513912bb83e9c2775db8",
+      "redistribution": "unreviewed; local only"
+    },
+    {
+      "source": "HDS:/BIN/HLK.X",
+      "sha256": "08d9b9a9c025557177ee10861cfc5aee84efbedd21293aee43d220f39d38acf5",
+      "redistribution": "unreviewed; local only"
+    },
+    {
+      "source": "Dev68K.XDF:/XSP2lib.o",
+      "sha256": "1b347a338422a76cde14193f9ecbd0fb3a6d6a15b700fc7f6535858bab645d75"
+    },
+    {
+      "source": "audio/TONE.ZMD",
+      "sha256": "d7143055f0d9599495fcf60bc490423fadb4d5fce60aef000603ab7389747de0"
+    },
+    {
+      "source": "audio/TITLE.ZMD",
+      "sha256": "e2b1f18afaf05a2b8082dfb9e715b050d62f3cbe0b0493f9cfc85404a9d7e7d6"
+    },
+    {
+      "source": "audio/STAGE1.ZMD",
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7"
+    },
+    {
+      "source": "audio/STAGE2.ZMD",
+      "sha256": "098447082a49439735a6ef1be435368ecf5d197a780f54c0cfde74a2e52724e7"
+    },
+    {
+      "source": "audio/CLEAR.ZMD",
+      "sha256": "9067bf869ec6385a004980020ce7ad57be484b786dba557af97412af815307be"
+    },
+    {
+      "source": "audio/OVER.ZMD",
+      "sha256": "22637dbf3844f851e77949c85110c56f9bd1a3014936cb53193a0f3780184bb8"
+    },
+    {
+      "source": "audio/SHOT.SE",
+      "sha256": "59127300973190aacbeafb957693586e0de68ea48250ffc8660f31c5237c8f62"
+    },
+    {
+      "source": "audio/HIT.SE",
+      "sha256": "f28af10fe670276238a177d1bb3f3c2f04e4e9e2d3c5dbedb9a1dc9357798111"
+    },
+    {
+      "source": "audio/HURT.SE",
+      "sha256": "ed73e52e224d784a76856b6adc08871f9da362253fe02b383f06da18990aa667"
+    },
+    {
+      "source": "audio/BOMB.SE",
+      "sha256": "24a9a13e1953e49e7eb2bfaf75560ba9e6f80a72a39098f695cd7141479842a7"
+    },
+    {
+      "source": "audio/SFX.ZPD",
+      "sha256": "9360c22105f087dc1e216549259dcd23c871faa77552b1a5f3a311ebd745c465"
+    },
+    {
+      "source": "audio/ZMSC.X",
+      "sha256": "4c3129a2aff655d55b9e977c05e6fbf1c75b49c159771858a83208111de190e7"
+    }
+  ]
+}
