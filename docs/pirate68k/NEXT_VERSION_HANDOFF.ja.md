@@ -1,10 +1,10 @@
 # 海賊王ゲーム 次版作業の引き継ぎ
 
-背景・XSPスプライト版から次の作業へ進むための引き継ぎ資料。2026-10-25、ユーザーが配布XDFをステージ2クリアまで通しプレイしたと報告した。Z-MUSIC版の制作音源への差し替えは[音声手順](AUDIO.ja.md)に従う。確認結果と成果物の識別情報は[開発・検証記録の更新版](VERIFICATION.ja.md#2026-10-25-背景xspスプライト版とユーザー通しプレイ)を参照する。
+Z-MUSIC版から次の作業へ進むための引き継ぎ資料。初版、背景・大型XSPスプライト、BGM・FM/ZPD効果音の各段階は[開発・検証記録](VERIFICATION.ja.md)にまとめている。背景版のステージ2クリアはユーザー報告、音楽版の実行・音声出力はエージェントの検証であり、確認元を区別する。制作音源への差し替えは[音声手順](AUDIO.ja.md)に従う。
 
 ## 最初に読むもの
 
-1. [開発・検証記録](VERIFICATION.ja.md)の「背景・XSPスプライト版とユーザー通しプレイ」。ビルド結果、ユーザー確認とエージェント検証の区別、成果物を記録している。
+1. [開発・検証記録](VERIFICATION.ja.md)の「Z-MUSIC BGM・FM効果音・ZPD効果音」と「開発記録の整理と公開ブランチの確認」。段階別の確認元と成果物を記録している。
 2. [ゲームソースの入口](../../games/pirate68k/README.ja.md)。描画・音・入力・ビルドの各ファイルを示す。
 3. [最小仕様と設計理由](DESIGN.ja.md)。背景・XSPスプライト版の仕様と判断を記録している。
 4. [再現ランブック](../X68K_ORIGINAL_GAME.ja.md)。ビルド・XDF生成・MCP検証の実行手順。
@@ -13,12 +13,12 @@
 
 - 主プロジェクト: `/Users/m1prime/Projects/WebX68k-joypad`
 - 作業ブランチ: `codex/x68k-original-game`。masterへ直接作業しない。再開時はGit状態とHEADを確認し、ユーザーの変更を保持する。
-- 動作確認済み初版: `76634771cfef5a302c663c326a418cd7bbdf1bb7`。最新の記録コミットはGit履歴で確認する。
+- 実装の段階とコミットは[開発記録](VERIFICATION.ja.md#2026-10-30-開発記録の整理と公開ブランチの確認)を参照する。再開するコミットはGit履歴で確認する。
 - ゲームソース: `games/pirate68k/`
 - ホスト側ツールと検証スクリプト: `tools/pirate68k/`
-- ローカル生成物: `_local/pirate68k/`の`PIRATE.X`、`dev.xdf`、`release.xdf`、`TITLE.RAW`、`TITLE.GMD`、`TITLE.PAL`等。Gitには含まれないので存在を確認する。
-- 初版の証拠: `docs/pirate68k/evidence/`。背景・XSPスプライト版の証拠: `docs/pirate68k/evidence/v2/`。
-- 保全対象: 初版開発XDFの`_local/pirate68k/dev-repeat.xdf`、初版配布物の`_local/pirate68k/baseline/`。既存の正常な開発XDFを上書きせず、追加作業は別名で生成する。
+- 音楽版のローカル生成物: `_local/pirate68k/`の`PIRATE-audio.X`、`audio-dev.xdf`、`release-audio.xdf`、`audio/`。Gitには含まれないので存在を確認する。タイトルと画像変換の入力も同ディレクトリに保持する。
+- 証拠の保存先: 初版は`docs/pirate68k/evidence/`、背景・XSP版は`evidence/v2/`、音楽版は`evidence/audio/`。
+- 保全対象: 初版開発XDFの`_local/pirate68k/dev-repeat.xdf`、初版配布物の`baseline/`、背景版の`dev.xdf`・`release.xdf`、音楽版の検証済みXDF。追加作業は別名で生成し、既存の正常な開発XDFを上書きしない。
 
 ゲームは「海賊王ゲーム」という非公式ファンゲーム。ユーザーが合意した題材はルフィ風の主人公、百獣海賊団の手下・怪物風のザコ、ビッグ・マムとカイドウのボス、ゾロ・サンジ風の全体攻撃。256×256画面と8方向・2トリガーを引き継ぐ。
 

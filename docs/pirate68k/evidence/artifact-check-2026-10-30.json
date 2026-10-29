@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-30",
+  "operation": "read-only artifact hash check; no image regeneration or runtime replay",
+  "result": "PASS",
+  "files": [
+    {
+      "path": "_local/pirate68k/release-audio.xdf",
+      "bytes": 1261568,
+      "sha256": "f20e951437d8392591cfd9d24e5e718639b22ecd4c1ee9cd65882f7e43a68a4b",
+      "matches_manifest": "docs/pirate68k/evidence/audio/release-audio.manifest.json"
+    },
+    {
+      "path": "_local/pirate68k/audio-dev.xdf",
+      "bytes": 1261568,
+      "sha256": "46e56c1d419a8015558598be02ed1d57fecd3e7d1c74ce4d0a60e1b944c72824",
+      "matches_manifest": "docs/pirate68k/evidence/audio/audio-dev.manifest.json"
+    },
+    {
+      "path": "_local/pirate68k/release.xdf",
+      "bytes": 1261568,
+      "sha256": "b8f70c853d6090c15fdc8391a7e06bf019e467ad79efd37b1b73859bd3558887",
+      "matches_manifest": "docs/pirate68k/evidence/v2/release.manifest.json"
+    },
+    {
+      "path": "_local/pirate68k/dev.xdf",
+      "bytes": 1261568,
+      "sha256": "ee82c0591f3a9f5200253ddea8e20cc6aa2e5f509036b05c2791a76138dab4fb",
+      "matches_manifest": "docs/pirate68k/evidence/v2/dev.manifest.json"
+    },
+    {
+      "path": "_local/pirate68k/dev-repeat.xdf",
+      "bytes": 1261568,
+      "sha256": "52c48f91e46fc31a24f5a56a45abfb0b39143df55ac490aac14a6572a9e492cd",
+      "matches_manifest": "docs/pirate68k/evidence/dev.manifest.json"
+    }
+  ]
+}
